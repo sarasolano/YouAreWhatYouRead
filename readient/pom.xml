@@ -5,35 +5,13 @@
  
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.brown.cs</groupId>
-  <artifactId>youarewhatyouread</artifactId>
+  <artifactId>readient</artifactId>
   <packaging>jar</packaging>
   <version>1.0</version>
  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-  <!-- Open NLP -->
-  <dependency>
-    <groupId>org.apache.opennlp</groupId>
-    <artifactId>opennlp-tools</artifactId>
-    <version>1.6.0</version>
-  </dependency>
-  <dependency>
-    <groupId>org.apache.opennlp</groupId>
-    <artifactId>opennlp-uima</artifactId>
-    <version>1.6.0</version>
-  </dependency>
-  <dependency>
-    <groupId>org.apache.opennlp</groupId>
-    <artifactId>opennlp-tools</artifactId>
-    <version>1.6.1-SNAPSHOT</version>
-  </dependency>
-  <repositories>
-  <repository>
-      <id>apache opennlp snapshot</id>
-      <url>https://repository.apache.org/content/repositories/snapshots/</url>
-    </repository>
-  </repositories>
 
   <dependencies>
     <dependency>
@@ -107,20 +85,6 @@
           <target>1.8</target>
           <compilerArgument>-Xlint:all</compilerArgument>
         </configuration>
-      </plugin>
-
-      <!-- Tell checkstyle plugin to use Checkstyle 6.1, for Java 8 -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.13</version>
-        <dependencies>
-          <dependency>
-            <groupId>com.puppycrawl.tools</groupId>
-            <artifactId>checkstyle</artifactId>
-            <version>6.1</version>
-          </dependency>
-        </dependencies>
       </plugin>
     </plugins>
   </build>
