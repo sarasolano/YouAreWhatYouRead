@@ -175,10 +175,10 @@ public class SQLImporter {
    * @throws IOException
    *           if the program is unable to read the csv file
    */
-  private static void createMoodTable(String csv)
+  private static void createSentimentTable(String csv)
       throws SQLException, IOException {
-    String query = "CREATE TABLE mood("
-        + "mood INT NOT NULL," // mood is 0 for negative and 1 for positive
+    String query = "CREATE TABLE sentiment("
+        + "sentiment INT NOT NULL," // mood is 0 for negative and 1 for positive
         + "article TEXT NOT NULL,"
         + "probability REAL NOT NULL,"
         + "PRIMARY KEY(mood, article),"
@@ -193,13 +193,13 @@ public class SQLImporter {
     CSVReader reader = new CSVReader(new FileReader(csv));
     String[] line = reader.readNext();
     while (line != null) {
-      int mood = Integer.parseInt(line[0]);
+      int sentiment = Integer.parseInt(line[0]);
       String article = line[1];
       double prob = Double.parseDouble(line[2]);
       if (!articles.containsKey(article)) {
         continue;
       }
-      statement.setInt(1, mood);
+      statement.setInt(1, sentiment);
       statement.setString(2, article);
       statement.setDouble(3, prob);
       statement.addBatch();
@@ -209,7 +209,7 @@ public class SQLImporter {
   }
 
   /**
-   * Creates the artible_sent table.
+   * Creates the mood table.
    *
    * @param csv
    *          the csv file where the article-sentiment data is saved
@@ -218,11 +218,11 @@ public class SQLImporter {
    * @throws IOException
    *           if the program is unable to read the csv file
    */
-  private static void createSentimentTable(String csv)
+  private static void createMoodTable(String csv)
       throws SQLException, IOException {
-    String query = "CREATE TABLE article_sent("
+    String query = "CREATE TABLE mood("
         + "article TEXT NOT NULL,"
-        + "sentiment TEXT NOT NULL,"
+        + "mood TEXT NOT NULL,"
         + "probability REAL NOT NULL,"
         + "PRIMARY KEY(article, sentiment),"
         + "FOREIGN KEY(article) REFERENCES article(id),"
