@@ -25,7 +25,7 @@ public class SentimentCategorizer {
     twitterCategorizer.classifyNewTweet(
         "Middleton grew up in Chapel Row, a village near Newbury, Berkshire, England.");
     twitterCategorizer.classifyNewTweet("The man has ebola.");
-    
+
   }
 
   public void trainModel() {
@@ -52,15 +52,15 @@ public class SentimentCategorizer {
     }
   }
 
-  public void classifyNewTweet(String tweet) {
+  public int classifyNewTweet(String tweet) {
     DocumentCategorizerME myCategorizer = new DocumentCategorizerME(model);
     double[] outcomes = myCategorizer.categorize(tweet);
     String category = myCategorizer.getBestCategory(outcomes);
 
     if (category.equalsIgnoreCase("4")) {
-      System.out.println("The tweet is positive :) ");
+      return 1;
     } else {
-      System.out.println("The tweet is negative :( ");
+      return 0;
     }
   }
 }

@@ -7,7 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 
-public class ParseInput {
+public class ParseTwitterData {
 
   public static void parseDoc(String path) throws IOException {
     BufferedReader br = new BufferedReader(new FileReader(path));
