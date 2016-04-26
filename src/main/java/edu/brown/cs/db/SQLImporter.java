@@ -92,7 +92,7 @@ public class SQLImporter {
   private static void createReadLevel() throws SQLException {
     String query = "CREATE TABLE read_level("
         + "article TEXT NOT NULL,"
-        + "read_level INT NOT NULL,"
+        + "read_level REAL NOT NULL,"
         + "PRIMARY KEY(article, read_level)"
         + "FOREIGN KEY(article) REFERENCES article(id)"
         + ")";

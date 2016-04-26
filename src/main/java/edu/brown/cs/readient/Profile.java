@@ -6,16 +6,26 @@ import java.util.List;
 public class Profile {
   private User user;
   private int wordsRead;
+  private double avgReadLevel;
   private List<Article> articles;
 
-  public Profile(User u, int wordsRead) {
+  public Profile(User u, int readLevel, int wordsRead, List<Article> arts) {
     this.user = u;
-    this.wordsRead = 0;
-    this.articles = new ArrayList<>();
+    this.avgReadLevel = readLevel;
+    this.wordsRead = wordsRead;
+    this.articles = arts;
+  }
+
+  public Profile(User u, int readLevel, int wordsRead) {
+    this(u, readLevel, wordsRead, new ArrayList<>());
   }
 
   public String getUserName() {
     return user.getUsername();
+  }
+
+  public double getAvgReadLevel() {
+    return avgReadLevel;
   }
 
   public int wordsRead() {

@@ -8,16 +8,20 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
-import java.util.Set;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
+
+import edu.brown.cs.readient.Article;
+import edu.brown.cs.readient.User;
 
 /**
  * A QueryManager for a database with the following schema.
@@ -59,6 +63,109 @@ public class QueryManager implements AutoCloseable {
   public QueryManager(String db) throws SQLException, ClassNotFoundException {
     Class.forName("org.sqlite.JDBC");
     conn = DriverManager.getConnection("jdbc:sqlite:" + db);
+  }
+
+  /**
+   * Gets a user given the username.
+   *
+   * @param username
+   *          the username of the user
+   * @return the user if exists, null otherwise
+   * @throws SQLException
+   *           if there is an error while querying
+   */
+  public User getUser(String username) throws SQLException {
+    String query =
+        "SELECT user_name, first_name, last_name, "
+            + "password_hash, salt FROM user WHERE user_name = ?";
+    PreparedStatement stat = conn.prepareStatement(query);
+    stat.setString(1, username);
+    ResultSet rs = stat.executeQuery();
+    User toReturn = null;
+    while (rs.next()) {
+      toReturn = new User(rs.getString(1), rs.getString(2), rs.getString(3),
+          rs.getString(4), rs.getString(5));
+    }
+    rs.close();
+    stat.close();
+    return toReturn;
+  }
+
+  /**
+   * Gets all the articles submitted by a given user.
+   *
+   * @param username
+   *          the username of the user
+   * @return a list of articles submitted by the user
+   * @throws SQLException
+   */
+  public List<Article> getArticles(String username) throws SQLException {
+    String query =
+        "SELECT id, name, user, rank, read_level FROM article,read_level "
+            + "WHERE article.id == read_level.article AND article.user == ?";
+    PreparedStatement stat = conn.prepareStatement(query);
+    stat.setString(1, username);
+    ResultSet rs = stat.executeQuery();
+    List<Article> toReturn = new ArrayList<>();
+    while (rs.next()) {
+      toReturn
+          .add(new Article(rs.getString(1), rs.getString(2), rs.getString(3),
+              rs.getDouble(4), rs.getDouble(5)));
+    }
+    rs.close();
+    stat.close();
+    return toReturn;
+  }
+
+  /**
+   * Gets the amount of words read by a user.
+   *
+   * @param username
+   *          the username of the user
+   * @return the amount of words read by the user, which is the sum of the count
+   *         of words in every article submitted by the user
+   * @throws SQLException
+   *           if there is an error while querying
+   */
+  public int wordsRead(String username) throws SQLException {
+    String query = "SELECT SUM(words) FROM article WHERE user == ?";
+    PreparedStatement stat = conn.prepareStatement(query);
+    stat.setString(1, username);
+    ResultSet results = stat.executeQuery();
+    // only add if results isn't empty
+    int toReturn = 0;
+    if (results.next()) {
+      toReturn = results.getInt(1);
+    }
+    stat.close();
+    results.close();
+    return toReturn;
+  }
+
+  /**
+   * Gets the avg reading level for a user's profile.
+   *
+   * @param username
+   *          the user name of the user
+   * @return the avg reading level of the user
+   * @throws SQLException
+   *           if there is an error while querying
+   */
+  public double avgReadLevel(String username) throws SQLException {
+    String query = "SELECT SUM(read_level)*100/COUNT(*) FROM "
+        + "read_level, article WHERE article.id == read_level.article "
+        + "AND article.user == ?";
+    PreparedStatement stat = conn.prepareStatement(query);
+    stat.setString(1, username);
+    ResultSet results = stat.executeQuery();
+    // only add if results isn't empty
+    double toReturn = 0;
+    if (results.next()) {
+      toReturn = results.getDouble(1);
+    }
+    stat.close();
+    results.close();
+    return toReturn;
   }
 
   /**
@@ -186,11 +293,11 @@ public class QueryManager implements AutoCloseable {
    * @param artID
    *          the id of the article.
    * @param topics
-   *          the set of topic of the article
+   *          the list of topic of the article
    * @throws SQLException
    *           if there is an error while executing
    */
-  public void addTopics(String artID, Set<String> topics) throws SQLException {
+  public void addTopics(String artID, List<String> topics) throws SQLException {
     String query = "INSERT INTO topic VALUES(?, ?)";
     PreparedStatement stat = conn.prepareStatement(query);
     for (String topic : topics) {
@@ -247,32 +354,6 @@ public class QueryManager implements AutoCloseable {
     }
     stat.executeBatch();
     stat.close();
-  }
-
-  /**
-   * Gets the avg reading level for a user's profile.
-   *
-   * @param username
-   *          the user name of the user
-   * @return the avg reading level of the user
-   * @throws SQLException
-   *           if there is an error while querying
-   */
-  public double avgReadLevel(String username) throws SQLException {
-    String query = "SELECT SUM(read_level)*100/COUNT(*) FROM "
-        + "read_level, article WHERE article.id == read_level.article "
-        + "AND article.user == ?";
-    PreparedStatement stat = conn.prepareStatement(query);
-    stat.setString(1, username);
-    ResultSet results = stat.executeQuery();
-    // only add if results isn't empty
-    double toReturn = 0;
-    if (results.next()) {
-      toReturn = results.getDouble(1);
-    }
-    stat.close();
-    results.close();
-    return toReturn;
   }
 
   /**
