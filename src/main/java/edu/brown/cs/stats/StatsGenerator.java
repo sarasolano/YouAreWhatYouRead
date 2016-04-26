@@ -15,21 +15,10 @@ public class StatsGenerator {
   private static final Pattern SYLLABLE =
       Pattern.compile("[bcdfghjklmnpqrstvwxz]*[aeiouy]"
           + "+[bcdfghjklmnpqrstvwxz]*");
-          // private static final Pattern END_SENTENCE =
-          // Pattern.compile("\\b\\s*[.!?]\\s*\\b");
-          // private static final Pattern END_LINE_SENTENCE =
-          // Pattern.compile("\\b\\s*[.!?]\\s*$");
-          // private static final String[] ABBREVIATIONS = new String[]{
-          // // personal titles
-          // "Mr", "Mrs", "M", "Dr", "Prof", "Det", "Insp",
-          // // Commercial abbreviations
-          // "Pty", "PLC", "Ltd", "Inc",
-          // // Other abbreviations
-          // "etc", "vs",};
 
-  // public static Stats analyze(Parser p) {
-  // TODO(ssolano): make it input a concurrent parser
-  // }
+  public static Stats analyze(Iterator p) {
+   TODO(ssolano): make it input a concurrent parser
+   }
 
   private static Stats analize(Stats st, String sentence) {
     Stats stats = st == null ? new Stats() : st;
@@ -60,24 +49,6 @@ public class StatsGenerator {
     }
 
     stats.sentences++;
-
-    // // replace abbreviations to not confuse it with the end of the sentences
-    // s = replaceAbbreviations(s);
-    //
-    // // clean up quotation marks
-    // s.replaceAll("[\"']", "");
-    //
-    // m = END_SENTENCE.matcher(s);
-    //
-    // while (m.find()) {
-    // stats.sentences++;
-    // }
-    //
-    // m = END_LINE_SENTENCE.matcher(s);
-    //
-    // if (m.find()) {
-    // stats.sentences++;
-    // }
 
     return stats;
   }
