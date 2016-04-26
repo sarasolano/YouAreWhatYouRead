@@ -96,17 +96,22 @@ public class QueryManager implements AutoCloseable {
    *          the name of the article
    * @param username
    *          the user that submitted the article
+   * @param rank
+   *          the ranking given by the user
+   * @param words
+   *          the number of words in the article
    * @throws SQLException
    *           if there is an error while executing
    */
-  public void addArticle(String name, String username, double rank)
+  public void addArticle(String name, String username, double rank, int words)
       throws SQLException {
     String query = "INSERT INTO article VALUES(?, ?, ?, ?)";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, "NULL");
     stat.setString(2, name);
     stat.setString(3, username);
-    stat.setDouble(3, rank);
+    stat.setDouble(4, rank);
+    stat.setInt(5, words);
     stat.execute();
     stat.close();
   }
