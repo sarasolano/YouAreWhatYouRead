@@ -58,6 +58,7 @@ public class SQLImporter {
         + "id CHAR(36),"
         + "name TEXT NOT NULL,"
         + "user TEXT NOT NULL,"
+        + "rank INT NOT NULL,"
         + "PRIMARY KEY(id, user),"
         + "FOREIGN KEY(user) REFERENCES user(id)"
         + ")";

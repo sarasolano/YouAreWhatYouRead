@@ -99,12 +99,14 @@ public class QueryManager implements AutoCloseable {
    * @throws SQLException
    *           if there is an error while executing
    */
-  public void addArticle(String name, String username) throws SQLException {
-    String query = "INSERT INTO article VALUES(?, ?, ?)";
+  public void addArticle(String name, String username, double rank)
+      throws SQLException {
+    String query = "INSERT INTO article VALUES(?, ?, ?, ?)";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, "NULL");
     stat.setString(2, name);
     stat.setString(3, username);
+    stat.setDouble(3, rank);
     stat.execute();
     stat.close();
   }
