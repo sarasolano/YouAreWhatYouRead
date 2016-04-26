@@ -31,13 +31,12 @@ public class SQLImporter {
       throws SQLException, IOException {
     String query =
         "CREATE TABLE user("
-            + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
             + "first_name VARCHAR(40) NULL,"
             + "last_name VARCHAR(40) NULL,"
             + "user_name VARCHAR(40) NOT NULL,"
             + "password_hash VARCHAR(100) NOT NULL,"
             + "salt VARCHAR(100) NOT NULL,"
-            + "CONSTRAINT user_name UNIQUE (user_name)"
+            + "PRIMARY KEY(user_name)"
             + ")";
     PreparedStatement statement = CONN.prepareStatement(query);
     statement.execute();
@@ -55,30 +54,15 @@ public class SQLImporter {
   private static void createArticleTable()
       throws SQLException, IOException {
     String query = "CREATE TABLE article("
-        + "id CHAR(36),"
+        + "id TEXT NOT NULL,"
         + "name TEXT NOT NULL,"
         + "user TEXT NOT NULL,"
         + "rank REAL NOT NULL,"
         + "words INT NOT NULL,"
         + "PRIMARY KEY(id, user),"
-        + "FOREIGN KEY(user) REFERENCES user(id)"
+        + "FOREIGN KEY(user) REFERENCES user(user_name)"
         + ")";
     PreparedStatement statement = CONN.prepareStatement(query);
-    statement.execute();
-    statement.close();
-    query = "CREATE TRIGGER AutoGenerateGUID"
-        + " AFTER INSERT ON article"
-        + " FOR EACH ROW"
-        + " WHEN (NEW.id IS NULL)"
-        + " BEGIN UPDATE tblUsers SET id ="
-        + " (select 'a/'|| hex( randomblob(4)) ||"
-        + " '-' || hex( randomblob(2))"
-        + " || '-' || '4' || substr( hex( randomblob(2)), 2) || '-'"
-        + " || substr('AB89', 1 + (abs(random()) % 4) , 1)  ||"
-        + " substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6)) )"
-        + " WHERE rowid = NEW.rowid;"
-        + " END;";
-    statement = CONN.prepareStatement(query);
     statement.execute();
     statement.close();
   }

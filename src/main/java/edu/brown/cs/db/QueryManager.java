@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.UUID;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -29,6 +30,14 @@ import edu.brown.cs.readient.User;
  * @author sarasolano
  */
 public class QueryManager implements AutoCloseable {
+  public static void main(String[] args)
+      throws Exception {
+    QueryManager m = new QueryManager("data.db");
+    // m.addUser("ssolano", "apples", "Sara", "Solano");
+    // m.addArticle("test article", "ssolano", 2, 0);
+    m.close();
+  }
+
   /**
    * The secure random number generator for salts.
    */
@@ -70,11 +79,13 @@ public class QueryManager implements AutoCloseable {
    *
    * @param username
    *          the username of the user
+   * @param password
+   *          the user password
    * @return the user if exists, null otherwise
    * @throws SQLException
    *           if there is an error while querying
    */
-  public User getUser(String username) throws SQLException {
+  public User getUser(String username, String password) throws SQLException {
     String query =
         "SELECT user_name, first_name, last_name, "
             + "password_hash, salt FROM user WHERE user_name = ?";
@@ -83,12 +94,17 @@ public class QueryManager implements AutoCloseable {
     ResultSet rs = stat.executeQuery();
     User toReturn = null;
     while (rs.next()) {
-      toReturn = new User(rs.getString(1), rs.getString(2), rs.getString(3),
-          rs.getString(4), rs.getString(5));
+      byte[] expectedHash = stringToByte(rs.getString(4));
+      byte[] salt = stringToByte(rs.getString(5));
+      if (isExpectedPassword(password, salt, expectedHash)) {
+        toReturn = new User(rs.getString(1), rs.getString(2), rs.getString(3),
+            rs.getString(4), rs.getString(5));
+      }
     }
     rs.close();
     stat.close();
     return toReturn;
+
   }
 
   /**
@@ -212,9 +228,9 @@ public class QueryManager implements AutoCloseable {
    */
   public void addArticle(String name, String username, double rank, int words)
       throws SQLException {
-    String query = "INSERT INTO article VALUES(?, ?, ?, ?)";
+    String query = "INSERT INTO article VALUES(?, ?, ?, ?, ?)";
     PreparedStatement stat = conn.prepareStatement(query);
-    stat.setString(1, "NULL");
+    stat.setString(1, "a/" + UUID.randomUUID());
     stat.setString(2, name);
     stat.setString(3, username);
     stat.setDouble(4, rank);
@@ -451,5 +467,4 @@ public class QueryManager implements AutoCloseable {
   public void close() throws Exception {
     conn.close();
   }
-
 }
