@@ -10,7 +10,7 @@ public class EmotionComparator implements Comparator<Emotion> {
 
   @Override
   public int compare(Emotion o1, Emotion o2) {
-    return Integer.compare(o1.getPresent(), o2.getPresent());
+    return Integer.compare(o2.getPresent(),o1.getPresent());
   }
 
 }

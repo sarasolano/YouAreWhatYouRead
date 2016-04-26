@@ -20,15 +20,31 @@ public class EmotionDictionary {
     BufferedReader br = new BufferedReader(new FileReader(dict));
     String line = br.readLine();
     while (line != null) {
-      String[] splitLine = line.split(" ");
+      String[] splitLine = line.split("\\s+");
       String word = splitLine[0];
       List<Emotion> emotions = emotionLexicons.get(word);
       if (emotions == null) {
-        emotions = new LinkedList<Emotion>();
-        emotions.add(new Emotion(splitLine[1], Integer.parseInt(splitLine[2])));
-        emotionLexicons.put(word, emotions);
+        if (splitLine.length >= 3) {
+          if (!splitLine[1].equals("positive")
+              && !splitLine[1].equals("negative")) {
+            emotions = new LinkedList<Emotion>();
+            emotions
+                .add(new Emotion(splitLine[1], Integer.parseInt(splitLine[2])));
+            emotionLexicons.put(word, emotions);
+          }
+
+        }
+
       } else {
-        emotions.add(new Emotion(splitLine[1], Integer.parseInt(splitLine[2])));
+        if (splitLine.length >= 3) {
+          if (!splitLine[1].equals("positive")
+              && !splitLine[1].equals("negative")) {
+            emotions
+                .add(new Emotion(splitLine[1], Integer.parseInt(splitLine[2])));
+          }
+
+        }
+
       }
       line = br.readLine();
     }
