@@ -22,11 +22,11 @@ public class Readability {
     return Utils.round(score, Utils.DECIMAL_PLACE);
   }
 
-  // http://en.wikipedia.org/wiki/SMOG
-  public double smog() {
-    double score = Math.sqrt(stat.complex() * (30 / stat.sentences())) + 3;
-    return Utils.round(score, Utils.DECIMAL_PLACE);
-  }
+  // // http://en.wikipedia.org/wiki/SMOG
+  // public double smog() {
+  // double score = Math.sqrt(stat.complex() * (30 / stat.sentences())) + 3;
+  // return Utils.round(score, Utils.DECIMAL_PLACE);
+  // }
 
   // http://en.wikipedia.org/wiki/Flesch-Kincaid_Readability_Test
   public double fleschReadingEase() {
@@ -35,12 +35,12 @@ public class Readability {
     return Utils.round(score, Utils.DECIMAL_PLACE);
   }
 
-  // http://en.wikipedia.org/wiki/Flesch-Kincaid_Readability_Test
-  public double fleschGradeLevel() {
-    double score = 0.39 * stat.words() / stat.sentences()
-        + 11.8 * stat.syllables() / stat.words() - 15.59;
-    return Utils.round(score, Utils.DECIMAL_PLACE);
-  }
+  // // http://en.wikipedia.org/wiki/Flesch-Kincaid_Readability_Test
+  // public double fleschGradeLevel() {
+  // double score = 0.39 * stat.words() / stat.sentences()
+  // + 11.8 * stat.syllables() / stat.words() - 15.59;
+  // return Utils.round(score, Utils.DECIMAL_PLACE);
+  // }
 
   // http://en.wikipedia.org/wiki/Automated_Readability_Index
   public double ari() {
@@ -69,9 +69,10 @@ public class Readability {
    * @return the avg score
    */
   public double avg() {
-    double sum = smogIndex() + smog() + fleschReadingEase()
-        + fleschGradeLevel() + ari() + gunningFog() + colemanLiau();
-    double avg = sum / SCORES;
+    double sum = smogIndex() + fleschReadingEase() // + fleschGradeLevel() +
+                                                   // smog()
+        + ari() + gunningFog() + colemanLiau();
+    double avg = sum / 5;
     return Utils.round(avg, Utils.DECIMAL_PLACE);
   }
 }

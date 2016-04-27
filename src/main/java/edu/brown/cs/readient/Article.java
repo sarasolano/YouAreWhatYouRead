@@ -11,7 +11,7 @@ public class Article {
   private String id;
   private String title;
   private String user;
-  private double ranking;
+  private Integer ranking;
   private double readLevel;
   private List<String> topics;
   private Map<Integer, Double> sentiments;
@@ -46,7 +46,7 @@ public class Article {
    *
    * @return the ranking
    */
-  public double getRanking() {
+  public Integer getRanking() {
     return ranking;
   }
 
