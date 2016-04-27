@@ -9,7 +9,7 @@ public class Profile {
   private double avgReadLevel;
   private List<Article> articles;
 
-  public Profile(User u, int readLevel, int wordsRead, List<Article> arts) {
+  public Profile(User u, double readLevel, int wordsRead, List<Article> arts) {
     this.user = u;
     this.avgReadLevel = readLevel;
     this.wordsRead = wordsRead;

@@ -99,6 +99,8 @@ public class QueryManager implements AutoCloseable {
       if (isExpectedPassword(password, salt, expectedHash)) {
         toReturn = new User(rs.getString(1), rs.getString(2), rs.getString(3),
             rs.getString(4), rs.getString(5));
+      } else {
+        throw new IllegalArgumentException("Error: wrong password");
       }
     }
     rs.close();
