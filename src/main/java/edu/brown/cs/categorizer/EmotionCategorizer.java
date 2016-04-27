@@ -43,7 +43,6 @@ public class EmotionCategorizer {
     topEmotions.addAll(emotions.values());
     topEmotions.sort(new EmotionComparator());
     if (!topEmotions.isEmpty()) {
-      System.out.println(topEmotions.get(1).getEmotion());
       return topEmotions;
     } else {
       return null;
