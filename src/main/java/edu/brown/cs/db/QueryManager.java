@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -110,6 +111,40 @@ public class QueryManager implements AutoCloseable {
   }
 
   /**
+   * Gets a user given the username.
+   *
+   * @param username
+   *          the username of the user
+   * @param hash
+   *          the hashed password
+   * @param salt
+   *          the salt for the hashed password
+   * @return the user if exists, null otherwise
+   * @throws SQLException
+   *           if there is an error while querying
+   */
+  public User getUser(String username, byte[] expectedHash, byte[] salt)
+      throws SQLException {
+    String query =
+        "SELECT user_name, first_name, last_name, "
+            + "password_hash, salt FROM user WHERE user_name = ? "
+            + "AND password_hash = ? AND salt = ?";
+    PreparedStatement stat = conn.prepareStatement(query);
+    stat.setString(1, username);
+    stat.setString(2, bytetoString(expectedHash));
+    stat.setString(3, bytetoString(salt));
+    ResultSet rs = stat.executeQuery();
+    User toReturn = null;
+    while (rs.next()) {
+      toReturn = new User(rs.getString(1), rs.getString(2), rs.getString(3),
+          rs.getString(4), rs.getString(5));
+    }
+    rs.close();
+    stat.close();
+    return toReturn;
+  }
+
+  /**
    * Gets all the articles submitted by a given user.
    *
    * @param username
@@ -126,9 +161,77 @@ public class QueryManager implements AutoCloseable {
     ResultSet rs = stat.executeQuery();
     List<Article> toReturn = new ArrayList<>();
     while (rs.next()) {
-      toReturn
-          .add(new Article(rs.getString(1), rs.getString(2), rs.getString(3),
-              rs.getDouble(4), rs.getDouble(5)));
+      toReturn.add(new Article(rs.getString(1), rs.getString(2),
+          rs.getString(3), rs.getInt(4), rs.getDouble(5)));
+    }
+    rs.close();
+    stat.close();
+    return toReturn;
+  }
+
+  /**
+   * Gets all the emotions in an article.
+   *
+   * @param artID
+   *          the id of the article
+   * @return a map from emotion to probability
+   * @throws SQLException
+   */
+  public Map<String, Double> getMoods(String artID) throws SQLException {
+    String query = "SELECT mood, probability FROM mood WHERE article == ?";
+    PreparedStatement stat = conn.prepareStatement(query);
+    stat.setString(1, artID);
+    ResultSet rs = stat.executeQuery();
+    Map<String, Double> toReturn = new HashMap<>();
+    while (rs.next()) {
+      toReturn.put(rs.getString(1), rs.getDouble(2));
+    }
+    rs.close();
+    stat.close();
+    return toReturn;
+  }
+
+  /**
+   * Gets all the positive and negative sentiment probabilities in a given
+   * article.
+   *
+   * @param artID
+   *          the id of the article
+   * @return a map from sentiment to probability
+   * @throws SQLException
+   */
+  public Map<Integer, Double> getSentiments(String artID) throws SQLException {
+    String query =
+        "SELECT sentiment, probability FROM sentiment WHERE article == ?";
+    PreparedStatement stat = conn.prepareStatement(query);
+    stat.setString(1, artID);
+    ResultSet rs = stat.executeQuery();
+    Map<Integer, Double> toReturn = new HashMap<>();
+    while (rs.next()) {
+      toReturn.put(rs.getInt(1), rs.getDouble(2));
+    }
+    rs.close();
+    stat.close();
+    return toReturn;
+  }
+
+  /**
+   * Gets all the topics for a given article.
+   *
+   * @param artID
+   *          the id of the article
+   * @return a list of topics in the article
+   * @throws SQLException
+   */
+  public List<String> getTopics(String artID) throws SQLException {
+    String query =
+        "SELECT topic FROM topic WHERE article == ?";
+    PreparedStatement stat = conn.prepareStatement(query);
+    stat.setString(1, artID);
+    ResultSet rs = stat.executeQuery();
+    List<String> toReturn = new ArrayList<>();
+    while (rs.next()) {
+      toReturn.add(rs.getString(1));
     }
     rs.close();
     stat.close();
@@ -225,20 +328,29 @@ public class QueryManager implements AutoCloseable {
    *          the ranking given by the user
    * @param words
    *          the number of words in the article
+   * @return the id of the newly added article
    * @throws SQLException
    *           if there is an error while executing
    */
-  public void addArticle(String name, String username, double rank, int words)
-      throws SQLException {
-    String query = "INSERT INTO article VALUES(?, ?, ?, ?, ?)";
+  public String addArticle(String name, String username, Integer rank,
+      int words)
+          throws SQLException {
+    String query = "INSERT INTO article VALUES(?, ?, ?, "
+        + (rank == null ? "NULL," : "?,") + " ?)";
     PreparedStatement stat = conn.prepareStatement(query);
-    stat.setString(1, "a/" + UUID.randomUUID());
+    String id = "a/" + UUID.randomUUID();
+    stat.setString(1, id);
     stat.setString(2, name);
     stat.setString(3, username);
-    stat.setDouble(4, rank);
-    stat.setInt(5, words);
+    if (rank != null) {
+      stat.setInt(4, rank);
+      stat.setInt(5, words);
+    } else {
+      stat.setInt(4, words);
+    }
     stat.execute();
     stat.close();
+    return id;
   }
 
   /**

@@ -11,6 +11,7 @@ import java.io.OutputStream;
 
 import opennlp.tools.doccat.DoccatModel;
 import opennlp.tools.doccat.DocumentCategorizerME;
+import opennlp.tools.doccat.DocumentSample;
 import opennlp.tools.doccat.DocumentSampleStream;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.PlainTextByLineStream;
@@ -20,20 +21,24 @@ public class SentimentCategorizer {
 
   public static void main(String[] args) {
     SentimentCategorizer twitterCategorizer = new SentimentCategorizer();
-    twitterCategorizer.trainModel();
-    twitterCategorizer.classifyNewTweet("Have a nice day!");
-    twitterCategorizer.classifyNewTweet("I hate life");
-    twitterCategorizer.classifyNewTweet("Trump is the worst person ever");
-    twitterCategorizer.classifyNewTweet("Lets go to the beach");
-    twitterCategorizer.classifyNewTweet("Why is it raining today?");
-    twitterCategorizer.classifyNewTweet("I'm sick with a cold");
-    twitterCategorizer.classifyNewTweet(
+    // twitterCategorizer.trainModel();
+    twitterCategorizer.classify("Have a nice day!");
+    twitterCategorizer.classify("I hate life");
+    twitterCategorizer.classify("Trump is the worst person ever");
+    twitterCategorizer.classify("Lets go to the beach");
+    twitterCategorizer.classify("Why is it raining today?");
+    twitterCategorizer.classify("I'm sick with a cold");
+    twitterCategorizer.classify(
         "Middleton grew up in Chapel Row, a village near Newbury, Berkshire, England.");
-    twitterCategorizer.classifyNewTweet("The man has ebola.");
+    twitterCategorizer.classify("The man has ebola.");
 
   }
 
-  public void trainModel() {
+  public SentimentCategorizer() {
+    trainModel();
+  }
+
+  private void trainModel() {
     InputStream dataIn = null;
     File serializedModel = new File("../readient/sentiment_categorizer.ser");
     if (serializedModel.exists()) {
@@ -45,12 +50,13 @@ public class SentimentCategorizer {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
-
     } else {
       try {
         dataIn = new FileInputStream("../readient/twitter.txt");
-        ObjectStream lineStream = new PlainTextByLineStream(dataIn, "UTF-8");
-        ObjectStream sampleStream = new DocumentSampleStream(lineStream);
+        ObjectStream<String> lineStream =
+            new PlainTextByLineStream(dataIn, "UTF-8");
+        ObjectStream<DocumentSample> sampleStream =
+            new DocumentSampleStream(lineStream);
         // Specifies the minimum number of times a feature must be seen
         model = DocumentCategorizerME.train("en", sampleStream);
       } catch (IOException e) {
@@ -82,16 +88,13 @@ public class SentimentCategorizer {
     }
   }
 
-  public int classifyNewTweet(String tweet) {
+  public int classify(String s) {
     DocumentCategorizerME myCategorizer = new DocumentCategorizerME(model);
-    double[] outcomes = myCategorizer.categorize(tweet);
+    double[] outcomes = myCategorizer.categorize(s);
     String category = myCategorizer.getBestCategory(outcomes);
-
     if (category.equalsIgnoreCase("4")) {
-      System.out.println("positive");
       return 1;
     } else {
-      System.out.println("negative");
       return 0;
     }
   }

@@ -11,6 +11,7 @@ import java.io.OutputStream;
 
 import opennlp.tools.doccat.DoccatModel;
 import opennlp.tools.doccat.DocumentCategorizerME;
+import opennlp.tools.doccat.DocumentSample;
 import opennlp.tools.doccat.DocumentSampleStream;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.PlainTextByLineStream;
@@ -20,7 +21,7 @@ public class TopicCategorizer {
 
   public static void main(String[] args) {
     TopicCategorizer docCategorizer = new TopicCategorizer();
-    docCategorizer.trainModel();
+    // docCategorizer.trainModel();
 
     System.out.println(docCategorizer.classifyNewDoc("The soviets hate me"));
     System.out
@@ -33,8 +34,8 @@ public class TopicCategorizer {
         "I watched the movie the other day. The actors were great. Can't wait to go next year."));
     System.out.println(docCategorizer.classifyNewDoc(
         "I can't afford to go to the doctor. My arm hurts so bad and "
-        + "I think it's broken. I need some medicine. Please help me."
-        + " I need medical right away."));
+            + "I think it's broken. I need some medicine. Please help me."
+            + " I need medical right away."));
     System.out.println(docCategorizer.classifyNewDoc(
         "I wonder what the republicans are going to do next year."));
 
@@ -52,9 +53,9 @@ public class TopicCategorizer {
         "I have kidney disease and I don't know what to do. I eat a ton of veggies but I am still unhealthy."));
     System.out.println(docCategorizer.classifyNewDoc(
         "Light, sweet crude prices for June delivery dropped $1 on the New York market Apr."
-        + " 21 to settle above $43/bbl, down from the session’s intraday high of $44.49/bbl"
-        + " during a volatile trading day, which traders attributed to economic-related"
-        + " comments and statistics by European and US officials."
+            + " 21 to settle above $43/bbl, down from the session’s intraday high of $44.49/bbl"
+            + " during a volatile trading day, which traders attributed to economic-related"
+            + " comments and statistics by European and US officials."
             + "European Central Bank Pres. Mario Draghi said European interest rates"
             + " would remain at current or lower levels for an extended period, and"
             + " analysts said his statement contributed to a strengthening dollar."
@@ -94,7 +95,11 @@ public class TopicCategorizer {
             + "membership."));
   }
 
-  public void trainModel() {
+  public TopicCategorizer() {
+    trainModel();
+  }
+
+  private void trainModel() {
     File serializedModel = new File("../readient/topic_categorizer.ser");
     if (serializedModel.exists()) {
       try {
@@ -112,8 +117,10 @@ public class TopicCategorizer {
       try {
 
         dataIn = new FileInputStream("../readient/topicTrainingFinal.txt");
-        ObjectStream lineStream = new PlainTextByLineStream(dataIn, "UTF-8");
-        ObjectStream sampleStream = new DocumentSampleStream(lineStream);
+        ObjectStream<String> lineStream =
+            new PlainTextByLineStream(dataIn, "UTF-8");
+        ObjectStream<DocumentSample> sampleStream =
+            new DocumentSampleStream(lineStream);
         // Specifies the minimum number of times a feature must be seen
         model = DocumentCategorizerME.train("en", sampleStream);
 
@@ -148,9 +155,7 @@ public class TopicCategorizer {
 
   public String classifyNewDoc(String doc) {
     DocumentCategorizerME myCategorizer = new DocumentCategorizerME(model);
-
     double[] outcomes = myCategorizer.categorize(doc);
-    System.out.println("************");
     String category = myCategorizer.getBestCategory(outcomes);
     return category;
   }

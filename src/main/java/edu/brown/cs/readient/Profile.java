@@ -1,6 +1,7 @@
 package edu.brown.cs.readient;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Profile {
@@ -20,8 +21,12 @@ public class Profile {
     this(u, readLevel, wordsRead, new ArrayList<>());
   }
 
-  public String getUserName() {
-    return user.getUsername();
+  public User getUser() {
+    return user;
+  }
+
+  public List<Article> getArticles() {
+    return Collections.unmodifiableList(articles);
   }
 
   public double getAvgReadLevel() {
@@ -34,6 +39,10 @@ public class Profile {
 
   public void addArticle(Article art) {
     articles.add(art);
+  }
+
+  public void removeArticle(Article art) {
+    articles.remove(art);
   }
 
   public int numArticles() {

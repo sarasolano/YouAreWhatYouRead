@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 public class EmotionDictionary {
-  private Map<String, List<Emotion>> emotionLexicons = new HashMap<String, List<Emotion>>();
+  private Map<String, List<Emotion>> emotionLexicons =
+      new HashMap<String, List<Emotion>>();
 
   public EmotionDictionary(String dict) throws IOException {
     generateDict(dict);
-
   }
 
   private void generateDict(String dict) throws IOException {
@@ -32,9 +32,7 @@ public class EmotionDictionary {
                 .add(new Emotion(splitLine[1], Integer.parseInt(splitLine[2])));
             emotionLexicons.put(word, emotions);
           }
-
         }
-
       } else {
         if (splitLine.length >= 3) {
           if (!splitLine[1].equals("positive")

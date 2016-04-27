@@ -1,78 +1,32 @@
 package edu.brown.cs.readient;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Article {
-  /**
-   * Sentiment POJO.
-   *
-   * @author sarasolano
-   */
-  class Sentiment {
-    private int sentiment;
-    private double probability;
 
-    Sentiment(int sent, double prob) {
-      this.sentiment = sent;
-      this.probability = prob;
-    }
-
-    public int getSentiment() {
-      return sentiment;
-    }
-
-    public double getProbability() {
-      return probability;
-    }
-  }
-
-  /**
-   * Mood POJO.
-   *
-   * @author sarasolano
-   */
-  class Mood {
-    private String tag;
-    private double probability;
-
-    Mood(String mood, double prob) {
-      this.tag = mood;
-      this.probability = prob;
-    }
-
-    public String getTag() {
-      return tag;
-    }
-
-    public double getProbability() {
-      return probability;
-    }
-  }
-
-  /**
-   * The number of possible sentiments.
-   */
-  private static final int NUM_SENT = 2;
   private String id;
   private String title;
   private String user;
   private double ranking;
   private double readLevel;
   private List<String> topics;
-  private Sentiment[] sentiments;
-  private List<Mood> moods;
+  private Map<Integer, Double> sentiments;
+  private Map<String, Double> moods;
 
-  public Article(String artID, String name, String username, double rank,
+  public Article(String artID, String name, String username, Integer rank,
       double readLevel) {
     this.id = artID;
     this.title = name;
     this.user = username;
     this.ranking = rank;
     this.readLevel = readLevel;
+    this.moods = new HashMap<>();
     this.topics = new ArrayList<>();
-    this.moods = new ArrayList<>();
-    this.sentiments = new Sentiment[NUM_SENT];
+    this.sentiments = new HashMap<>();
   }
 
   public String getId() {
@@ -89,7 +43,7 @@ public class Article {
 
   /**
    * Gets the article ranking.
-   * 
+   *
    * @return the ranking
    */
   public double getRanking() {
@@ -104,27 +58,48 @@ public class Article {
     return topics;
   }
 
-  public void addTopic(String topic) {
-    topics.add(topic);
+  public void setTopics(List<String> t) {
+    this.topics = t;
   }
 
-  public List<Mood> getMoods() {
-    return moods;
+  public Map<String, Double> getMoods() {
+    return Collections.unmodifiableMap(moods);
   }
 
-  public void setMoods(List<Mood> moods) {
-    this.moods = moods;
+  public void setMood(Map<String, Double> m) {
+    this.moods = m;
   }
 
-  public Sentiment[] getSentiments() {
-    return sentiments;
+  public Map<Integer, Double> getSentiments() {
+    return Collections.unmodifiableMap(sentiments);
   }
 
-  public void setPosSentiment(double prob) {
-    this.sentiments[1] = new Sentiment(1, prob);
+  public void setSentiments(Map<Integer, Double> s) {
+    this.sentiments = s;
   }
 
-  public void setNegSentiment(double prob) {
-    this.sentiments[0] = new Sentiment(0, prob);
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    Article other = (Article) obj;
+    if (id == null) {
+      if (other.id != null)
+        return false;
+    } else if (!id.equals(other.id))
+      return false;
+    return true;
   }
 }

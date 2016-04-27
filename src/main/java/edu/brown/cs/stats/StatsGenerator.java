@@ -3,6 +3,7 @@ package edu.brown.cs.stats;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collections;
@@ -14,7 +15,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class StatsGenerator {
+import edu.brown.cs.categorizer.Emotion;
+import edu.brown.cs.categorizer.EmotionCategorizer;
+import edu.brown.cs.categorizer.EmotionDictionary;
+import edu.brown.cs.categorizer.SentimentCategorizer;
+import edu.brown.cs.categorizer.TopicCategorizer;
+import edu.brown.cs.parsing.ArticleParser;
+
+public class StatsGenerator {
+  private static final String EMOTION_DICTIONARY = "emotionDiction.txt";
   private static final Pattern WORD = Pattern.compile("\\b([a-z][-'a-z]*)\\b");
   private static final Pattern VOWEL = Pattern.compile("[aeiouy]");
   private static final Pattern HYPHENATION =
@@ -24,8 +33,8 @@ public final class StatsGenerator {
   private static final Pattern END_LINE_SENTENCE =
       Pattern.compile("\\b\\s*[.!?]\\s*$");
   private static final Pattern SYLLABLE =
-      Pattern.compile("[bcdfghjklmnpqrstvwxz]*[aeiouy]"
-          + "+[bcdfghjklmnpqrstvwxz]*");
+      Pattern.compile("[bcdfghjklmnpqrstvwxz]"
+          + "*[aeiouy]+[bcdfghjklmnpqrstvwxz]*");
   private static final String[] ABBREVIATIONS = new String[]{
       // personal titles
       "Mr", "Mrs", "M", "Dr", "Prof", "Det", "Insp",
@@ -33,6 +42,46 @@ public final class StatsGenerator {
       "Pty", "PLC", "Ltd", "Inc",
       // Other abbreviations
       "etc", "vs",};
+
+  private EmotionCategorizer emotion;
+  private SentimentCategorizer sentiment;
+  private TopicCategorizer topic;
+
+  public StatsGenerator() throws IOException {
+    emotion = new EmotionCategorizer(new EmotionDictionary(EMOTION_DICTIONARY));
+    sentiment = new SentimentCategorizer();
+    topic = new TopicCategorizer();
+  }
+
+  public Map<String, Double> moods(ArticleParser p, Stats s) {
+    Map<String, Double> moods = new HashMap<>();
+    for (Emotion e : emotion.getTopEmotions(p.text())) {
+      moods.put(e.getEmotion(),
+          Utils.round((double) e.getPresent() / (double) s.words(),
+              Utils.DECIMAL_PLACE));
+    }
+    return moods;
+  }
+
+  public Map<Integer, Double> sentiment(ArticleParser p, Stats s) {
+    Map<Integer, Double> sent = new HashMap<>();
+    double pos = 0;
+    double neg = 0;
+    for (String sentence : p.sentences()) {
+      if (sentiment.classify(sentence) == 0) {
+        neg++;
+      } else {
+        pos++;
+      }
+    }
+    sent.put(0, neg / s.sentences);
+    sent.put(1, pos / s.sentences);
+    return sent;
+  }
+
+  public String topic(ArticleParser p) {
+    return topic.classifyNewDoc(p.text());
+  }
 
   public static Stats analyze(InputStream stream) {
     Stats stat = new Stats();
