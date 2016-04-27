@@ -57,7 +57,7 @@ public class SQLImporter {
         + "id TEXT NOT NULL,"
         + "name TEXT NOT NULL,"
         + "user TEXT NOT NULL,"
-        + "rank REAL NOT NULL,"
+        + "rank INT,"
         + "words INT NOT NULL,"
         + "PRIMARY KEY(id, user),"
         + "FOREIGN KEY(user) REFERENCES user(user_name)"

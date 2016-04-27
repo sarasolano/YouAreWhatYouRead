@@ -24,8 +24,8 @@ public final class Main {
     (new Main(args)).run();
   }
 
-  private static final int LOGIN_ARGS = 3;
-  private static final int SIGNUP_ARGS = 3;
+  private static final int LOGIN_ARGS = 2;
+  private static final int SIGNUP_ARGS = 4;
   private static final Gson GSON = new Gson();
   private static final String DB = "data.db";
   private QueryManager manager;
@@ -50,19 +50,24 @@ public final class Main {
     try {
       if (options.has("gui")) {
         System.out.println("Sorry... this is invalid :( ");
-      } else if (options.has("login") || options.has("signup")) {
+      } else if (options.has("login")) {
         if (arguments.size() != LOGIN_ARGS) {
           throw new IllegalArgumentException(
               "usage: ./readient <username> <passoword>");
-        } else if (arguments.size() != SIGNUP_ARGS) {
+        }
+        sg = new StatsGenerator();
+        manager = new QueryManager(DB);
+        Profile profile = getProfile(arguments.get(0), arguments.get(1));
+        cmdLine(profile);
+      } else if (options.has("signup")) {
+        if (arguments.size() != SIGNUP_ARGS) {
           throw new IllegalArgumentException("usage: ./readient <username> "
               + "<passoword> <first_name> <last_name>");
         }
+        sg = new StatsGenerator();
         manager = new QueryManager(DB);
-        if (options.has("signup")) {
-          manager.addUser(arguments.get(0), arguments.get(1), arguments.get(2),
-              arguments.get(3));
-        }
+        manager.addUser(arguments.get(0), arguments.get(1), arguments.get(2),
+            arguments.get(3));
         Profile profile = getProfile(arguments.get(0), arguments.get(1));
         cmdLine(profile);
       } else {
@@ -77,8 +82,8 @@ public final class Main {
   private void cmdLine(Profile p) {
     Profile prof = p;
     Scanner s = new Scanner(System.in);
+    System.out.print("redient> ");
     while (s.hasNext()) {
-      System.out.println("redient> ");
       String[] line = s.nextLine().trim().split(" ");
       if (line[0].equals("logout")) {
         break;
@@ -97,7 +102,8 @@ public final class Main {
             prof = res.first();
             System.out.println(GSON.toJson(res.second()));
           } catch (SQLException e) {
-            System.out.println("Article could not be added to the databse :(");
+            System.out.println("Article could not be added to the databse :( "
+                + e.getMessage());
           }
         } else if (line.length == 2) {
           try {
@@ -109,7 +115,8 @@ public final class Main {
             prof = res.first();
             System.out.println(GSON.toJson(res.second()));
           } catch (SQLException e) {
-            System.out.println("Article could not be added to the databse :(");
+            System.out.println("Article could not be added to the databse :( "
+                + e.getMessage());
           } catch (NumberFormatException e) {
             System.out.println("That wasn't a number, was it...");
           }
@@ -134,6 +141,7 @@ public final class Main {
       } else {
         System.err.println(GSON.toJson("Invalid Commnad"));
       }
+      System.out.print("redient> ");
     }
     s.close();
   }
@@ -170,7 +178,7 @@ public final class Main {
       throws SQLException {
     User user = manager.getUser(username, password);
     if (user == null) {
-      throw new IllegalArgumentException("Error: invalid username");
+      throw new IllegalArgumentException("invalid username");
     }
     Profile profile =
         new Profile(user, manager.avgReadLevel(user.getUsername()),
@@ -183,7 +191,7 @@ public final class Main {
       throws SQLException {
     User user = manager.getUser(username, pass, salt);
     if (user == null) {
-      throw new IllegalArgumentException("Error: invalid username");
+      throw new IllegalArgumentException("invalid username");
     }
     Profile profile =
         new Profile(user, manager.avgReadLevel(user.getUsername()),

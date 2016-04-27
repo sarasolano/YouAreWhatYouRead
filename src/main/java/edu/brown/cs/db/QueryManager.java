@@ -35,7 +35,8 @@ public class QueryManager implements AutoCloseable {
       throws Exception {
     QueryManager m = new QueryManager("data.db");
     // m.addUser("ssolano", "apples", "Sara", "Solano");
-    // m.addArticle("test article", "ssolano", 2, 0);
+    System.out.println(m.addArticle("test article", "ssolano", null, 0));
+    System.out.println(m.getArticles("ssolano"));
     m.close();
   }
 
@@ -154,7 +155,7 @@ public class QueryManager implements AutoCloseable {
    */
   public List<Article> getArticles(String username) throws SQLException {
     String query =
-        "SELECT id, name, user, rank, read_level FROM article,read_level "
+        "SELECT id, name, user, rank, read_level FROM article, read_level "
             + "WHERE article.id == read_level.article AND article.user == ?";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, username);
@@ -394,7 +395,7 @@ public class QueryManager implements AutoCloseable {
       stat.setDouble(3, i == 0 ? negProb : posProb);
       stat.addBatch();
     }
-    stat.execute();
+    stat.executeBatch();
     stat.close();
   }
 
@@ -435,7 +436,7 @@ public class QueryManager implements AutoCloseable {
       stat.setString(2, topic);
       stat.addBatch();
     }
-    stat.execute();
+    stat.executeBatch();
     stat.close();
   }
 

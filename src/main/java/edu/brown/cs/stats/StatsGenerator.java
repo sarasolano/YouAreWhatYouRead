@@ -23,7 +23,7 @@ import edu.brown.cs.categorizer.TopicCategorizer;
 import edu.brown.cs.parsing.ArticleParser;
 
 public class StatsGenerator {
-  private static final String EMOTION_DICTIONARY = "emotionDiction.txt";
+  private static final String EMOTION_DICTIONARY = "emotionDictionary.txt";
   private static final Pattern WORD = Pattern.compile("\\b([a-z][-'a-z]*)\\b");
   private static final Pattern VOWEL = Pattern.compile("[aeiouy]");
   private static final Pattern HYPHENATION =
