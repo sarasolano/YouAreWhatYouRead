@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -26,7 +27,8 @@ public final class Main {
 
   private static final int LOGIN_ARGS = 2;
   private static final int SIGNUP_ARGS = 4;
-  private static final Gson GSON = new Gson();
+  private static final Gson GSON =
+      new GsonBuilder().setPrettyPrinting().create();
   private static final String DB = "data.db";
   private QueryManager manager;
   private StatsGenerator sg;
@@ -127,7 +129,7 @@ public final class Main {
         if (line.length == 2) {
           for (Article art : prof.getArticles()) {
             if (art.getId().equals(line[1])) {
-              System.out.println(GSON.toJson(art));
+              System.out.println(GSON.toJsonTree(art));
               break;
             }
           }

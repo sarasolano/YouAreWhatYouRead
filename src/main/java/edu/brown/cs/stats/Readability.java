@@ -8,7 +8,7 @@ import edu.brown.cs.stats.StatsGenerator.Stats;
  * @author sarasolano
  */
 public class Readability {
-  private static final int SCORES = 7;
+  private static final int SCORES = 5;
   private Stats stat;
 
   public Readability(Stats s) {
@@ -72,7 +72,7 @@ public class Readability {
     double sum = smogIndex() + fleschReadingEase() // + fleschGradeLevel() +
                                                    // smog()
         + ari() + gunningFog() + colemanLiau();
-    double avg = sum / 5;
+    double avg = sum / SCORES;
     return Utils.round(avg, Utils.DECIMAL_PLACE);
   }
 }
