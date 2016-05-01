@@ -162,8 +162,13 @@ public class QueryManager implements AutoCloseable {
     ResultSet rs = stat.executeQuery();
     List<Article> toReturn = new ArrayList<>();
     while (rs.next()) {
-      toReturn.add(new Article(rs.getString(1), rs.getString(2),
-          rs.getString(3), rs.getInt(4), rs.getDouble(5)));
+      String id = rs.getString(1);
+      Article art = new Article(id, rs.getString(2),
+          rs.getString(3), rs.getInt(4), rs.getDouble(5));
+      art.setMood(getMoods(id));
+      art.setSentiments(getSentiments(id));
+      art.setTopics(getTopics(id));
+      toReturn.add(art);
     }
     rs.close();
     stat.close();
@@ -335,7 +340,7 @@ public class QueryManager implements AutoCloseable {
    */
   public String addArticle(String name, String username, Integer rank,
       int words)
-          throws SQLException {
+      throws SQLException {
     String query = "INSERT INTO article VALUES(?, ?, ?, "
         + (rank == null ? "NULL," : "?,") + " ?)";
     PreparedStatement stat = conn.prepareStatement(query);

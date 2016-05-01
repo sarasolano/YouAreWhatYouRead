@@ -84,12 +84,13 @@ public final class Main {
   private void cmdLine(Profile p) {
     Profile prof = p;
     Scanner s = new Scanner(System.in);
-    System.out.print("redient> ");
+    System.out.print("readient> ");
     while (s.hasNext()) {
-      String[] line = s.nextLine().trim().split(" ");
+      String in = s.nextLine();
+      String[] line = in.trim().split(" ");
       if (line[0].equals("logout")) {
         break;
-      } else if (line.length == 0) {
+      } else if (in.isEmpty()) {
         continue;
       } else if (line[0].equals("profile")) {
         System.out.println(GSON.toJson(profileJson(prof)));
@@ -143,14 +144,14 @@ public final class Main {
       } else {
         System.err.println(GSON.toJson("Invalid Commnad"));
       }
-      System.out.print("redient> ");
+      System.out.print("readient> ");
     }
     s.close();
   }
 
   private Pair<Profile, Article> addArticle(Profile prof, String url,
       Integer rank)
-          throws SQLException {
+      throws SQLException {
     ArticleParser p = new ArticleParser(url);
     Stats stats = StatsGenerator.analyze(p.iterator());
     String id = manager.addArticle(p.title(), prof.getUser().getUsername(),
@@ -172,7 +173,9 @@ public final class Main {
     topics.add(topic);
     art.setTopics(topics);
     art.setSentiments(sent);
-    return new Pair<>(getProfile(prof.getUser().getUsername(), pass, salt),
+    prof.addArticle(art);
+    return new Pair<>(getProfile(prof.getUser().getUsername(), pass, salt,
+        prof.getArticles()),
         art);
   }
 
@@ -189,7 +192,8 @@ public final class Main {
     return profile;
   }
 
-  private Profile getProfile(String username, byte[] pass, byte[] salt)
+  private Profile getProfile(String username, byte[] pass, byte[] salt,
+      List<Article> arts)
       throws SQLException {
     User user = manager.getUser(username, pass, salt);
     if (user == null) {
@@ -197,8 +201,7 @@ public final class Main {
     }
     Profile profile =
         new Profile(user, manager.avgReadLevel(user.getUsername()),
-            manager.wordsRead(user.getUsername()),
-            manager.getArticles(user.getUsername()));
+            manager.wordsRead(user.getUsername()), arts);
     return profile;
   }
 
