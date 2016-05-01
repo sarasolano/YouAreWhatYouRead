@@ -150,7 +150,7 @@ public final class Main {
 
   private Pair<Profile, Article> addArticle(Profile prof, String url,
       Integer rank)
-          throws SQLException {
+      throws SQLException {
     ArticleParser p = new ArticleParser(url);
     Stats stats = StatsGenerator.analyze(p.iterator());
     String id = manager.addArticle(p.title(), prof.getUser().getUsername(),
@@ -172,7 +172,9 @@ public final class Main {
     topics.add(topic);
     art.setTopics(topics);
     art.setSentiments(sent);
-    return new Pair<>(getProfile(prof.getUser().getUsername(), pass, salt),
+    prof.addArticle(art);
+    return new Pair<>(getProfile(prof.getUser().getUsername(), pass, salt,
+        prof.getArticles()),
         art);
   }
 
@@ -189,7 +191,8 @@ public final class Main {
     return profile;
   }
 
-  private Profile getProfile(String username, byte[] pass, byte[] salt)
+  private Profile getProfile(String username, byte[] pass, byte[] salt,
+      List<Article> arts)
       throws SQLException {
     User user = manager.getUser(username, pass, salt);
     if (user == null) {
@@ -197,8 +200,7 @@ public final class Main {
     }
     Profile profile =
         new Profile(user, manager.avgReadLevel(user.getUsername()),
-            manager.wordsRead(user.getUsername()),
-            manager.getArticles(user.getUsername()));
+            manager.wordsRead(user.getUsername()), arts);
     return profile;
   }
 
