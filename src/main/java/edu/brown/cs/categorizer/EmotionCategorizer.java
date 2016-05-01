@@ -28,7 +28,8 @@ public class EmotionCategorizer {
             for (Emotion e : wordEmotions) {
               Emotion storedEmotion = emotions.get(e.getEmotion());
               if (storedEmotion == null) {
-                emotions.put(e.getEmotion(), e);
+                emotions.put(e.getEmotion(),
+                    new Emotion(e.getEmotion(), e.getPresent()));
               } else {
                 storedEmotion.addEmotion(e);
               }
