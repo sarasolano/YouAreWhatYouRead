@@ -20,7 +20,7 @@ public class Emotion {
 
   protected void addEmotion(Emotion e) {
     if (e.getEmotion().equals(emotion)) {
-      present += e.getPresent();
+      present = present + e.getPresent();
     }
   }
 
