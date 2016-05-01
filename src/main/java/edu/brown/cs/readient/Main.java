@@ -84,12 +84,13 @@ public final class Main {
   private void cmdLine(Profile p) {
     Profile prof = p;
     Scanner s = new Scanner(System.in);
-    System.out.print("redient> ");
+    System.out.print("readient> ");
     while (s.hasNext()) {
-      String[] line = s.nextLine().trim().split(" ");
+      String in = s.nextLine();
+      String[] line = in.trim().split(" ");
       if (line[0].equals("logout")) {
         break;
-      } else if (line.length == 0) {
+      } else if (in.isEmpty()) {
         continue;
       } else if (line[0].equals("profile")) {
         System.out.println(GSON.toJson(profileJson(prof)));
@@ -143,7 +144,7 @@ public final class Main {
       } else {
         System.err.println(GSON.toJson("Invalid Commnad"));
       }
-      System.out.print("redient> ");
+      System.out.print("readient> ");
     }
     s.close();
   }
