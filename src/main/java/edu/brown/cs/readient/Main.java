@@ -84,6 +84,10 @@ public final class Main {
   private void cmdLine(Profile p) {
     Profile prof = p;
     Scanner s = new Scanner(System.in);
+    System.out.println("Welcome to Readient!");
+    System.out.println("Available commands: ");
+    printHelp();
+    System.out.println();
     System.out.print("readient> ");
     while (s.hasNext()) {
       String in = s.nextLine();
@@ -128,21 +132,29 @@ public final class Main {
         }
       } else if (line[0].equals("get")) {
         if (line.length == 2) {
-          for (Article art : prof.getArticles()) {
-            if (art.getId().equals(line[1])) {
-              System.out.println(GSON.toJson(art));
-              break;
-            }
+          if (prof.containsArticle(line[1])) {
+            System.out.println(GSON.toJson(prof.getArticle(line[1])));
+          } else {
+            System.out.println("Article does not exist");
           }
         } else {
           printHelp();
         }
       } else if (line[0].equals("remove")) {
-
+        if (line.length == 2) {
+          if (prof.containsArticle(line[1])) {
+            removeArticle(line[1], prof);
+            System.out.println("Article has been removed!");
+          } else {
+            System.out.println("Article does not exist");
+          }
+        } else {
+          printHelp();
+        }
       } else if (line[0].equals("help")) {
         printHelp();
       } else {
-        System.err.println(GSON.toJson("Invalid Commnad"));
+        System.out.println("command not found :(");
       }
       System.out.print("readient> ");
     }
@@ -164,8 +176,6 @@ public final class Main {
     manager.addTopic(id, topic);
     Readability read = new Readability(stats);
     manager.addReadLevel(id, read.avgRead(), read.avgGrade());
-    byte[] pass = prof.getUser().getPasswordHash();
-    byte[] salt = prof.getUser().getSalt();
     Article art = new Article(id, p.title(), prof.getUser().getUsername(), rank,
         read.avgRead(), read.avgGrade());
     art.setMood(emotions);
@@ -174,9 +184,32 @@ public final class Main {
     art.setTopics(topics);
     art.setSentiments(sent);
     prof.addArticle(art);
-    return new Pair<>(getProfile(prof.getUser().getUsername(), pass, salt,
-        new ArrayList<Article>(prof.getArticles())),
-        art);
+    prof.setAvgReadLevel(
+        manager.avgReadLevel(prof.getUser().getUsername()));
+    prof.setWordsRead(manager.wordsRead(prof.getUser().getUsername()));
+    getAvgs(prof);
+    return new Pair<>(prof, art);
+  }
+
+  private Profile removeArticle(String artID, Profile prof) {
+    try {
+      manager.removeArticle(artID);
+    } catch (SQLException e) {
+      System.out.println("Article could not be removed from the database");
+    }
+    prof.removeArticle(artID);
+    getAvgs(prof);
+    return prof;
+  }
+
+  private void getAvgs(Profile prof) {
+    try {
+      prof.setAvgReadLevel(
+          manager.avgReadLevel(prof.getUser().getUsername()));
+      prof.setWordsRead(manager.wordsRead(prof.getUser().getUsername()));
+    } catch (SQLException e) {
+      System.out.println("Unable to connect to the database");
+    }
   }
 
   private Profile getProfile(String username, String password)
@@ -186,22 +219,7 @@ public final class Main {
       throw new IllegalArgumentException("invalid username");
     }
     Profile profile =
-        new Profile(user, manager.avgReadLevel(user.getUsername()),
-            manager.wordsRead(user.getUsername()),
-            manager.getArticles(user.getUsername()));
-    return profile;
-  }
-
-  private Profile getProfile(String username, byte[] pass, byte[] salt,
-      List<Article> arts)
-      throws SQLException {
-    User user = manager.getUser(username, pass, salt);
-    if (user == null) {
-      throw new IllegalArgumentException("invalid username");
-    }
-    Profile profile =
-        new Profile(user, manager.avgReadLevel(user.getUsername()),
-            manager.wordsRead(user.getUsername()), arts);
+        new Profile(user, manager.getArticles(user.getUsername()));
     return profile;
   }
 
@@ -234,14 +252,14 @@ public final class Main {
 
   private static void printHelp() {
     System.out.println(
-        "help: prints this message\n"
-            + "profile: prints the while user profile\n"
-            + "info: prints the user info\n"
-            + "add <url>: adds an article to the user's profile\n"
-            + "add <url> <rank>: adds an article to the user's profile with "
+        "\thelp: prints this message\n"
+            + "\tprofile: prints the while user profile\n"
+            + "\tinfo: prints the user info\n"
+            + "\tadd <url>: adds an article to the user's profile\n"
+            + "\tadd <url> <rank>: adds an article to the user's profile with "
             + "a rank of 1 for like and 0 for unlike\n"
-            + "remove <art_id>: removes an id form the user's profile\n"
-            + "get <art_id>: gets the info for the given article\n"
-            + "logout: logs out of Readient :(");
+            + "\tremove <art_id>: removes an id form the user's profile\n"
+            + "\tget <art_id>: gets the info for the given article\n"
+            + "\tlogout: logs out of Readient :(");
   }
 }

@@ -1,32 +1,54 @@
 package edu.brown.cs.readient;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Profile {
+  public void setWordsRead(int wordsRead) {
+    this.wordsRead = wordsRead;
+  }
+
+  public void setAvgReadLevel(double avgReadLevel) {
+    this.avgReadLevel = avgReadLevel;
+  }
+
   private User user;
   private int wordsRead;
   private double avgReadLevel;
-  private List<Article> articles;
+  private Map<String, Article> articles;
 
-  public Profile(User u, double readLevel, int wordsRead, List<Article> arts) {
+  public Profile(User u, double readLevel, int wordsRead,
+      Collection<Article> arts) {
     this.user = u;
     this.avgReadLevel = readLevel;
     this.wordsRead = wordsRead;
-    this.articles = arts;
+    articles = new HashMap<>();
+    for (Article art : arts) {
+      articles.put(art.getId(), art);
+    }
   }
 
-  public Profile(User u, int readLevel, int wordsRead) {
-    this(u, readLevel, wordsRead, new ArrayList<>());
+  public Profile(User u, List<Article> arts) {
+    this(u, 0, 0, arts);
   }
 
   public User getUser() {
     return user;
   }
 
-  public List<Article> getArticles() {
-    return Collections.unmodifiableList(articles);
+  public Collection<Article> getArticles() {
+    return Collections.unmodifiableCollection(articles.values());
+  }
+
+  public boolean containsArticle(String artID) {
+    return articles.containsKey(artID);
+  }
+
+  public Article getArticle(String artID) {
+    return articles.get(artID);
   }
 
   public double getAvgReadLevel() {
@@ -38,11 +60,11 @@ public class Profile {
   }
 
   public void addArticle(Article art) {
-    articles.add(art);
+    articles.put(art.getId(), art);
   }
 
-  public void removeArticle(Article art) {
-    articles.remove(art);
+  public void removeArticle(String artID) {
+    articles.remove(artID);
   }
 
   public int numArticles() {

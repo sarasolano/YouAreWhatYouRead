@@ -174,6 +174,22 @@ public class QueryManager implements AutoCloseable {
     return toReturn;
   }
 
+  public void removeArticle(String artID) throws SQLException {
+    String query = "DELETE FROM article WHERE id = ?";
+    PreparedStatement stat = conn.prepareStatement(query);
+    stat.setString(1, artID);
+    stat.execute();
+    query = "DELETE FROM mood WHERE article = ?";
+    stat.setString(1, artID);
+    stat.execute();
+    query = "DELETE FROM sentiment WHERE article = ?";
+    stat.setString(1, artID);
+    stat.execute();
+    query = "DELETE FROM topic WHERE article = ?";
+    stat.setString(1, artID);
+    stat.execute();
+  }
+
   /**
    * Gets all the emotions in an article.
    *
