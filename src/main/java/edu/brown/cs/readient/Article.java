@@ -13,20 +13,22 @@ public class Article {
   private String user;
   private Integer ranking;
   private double readLevel;
+  private double gradeLevel;
   private List<String> topics;
-  private Map<Integer, Double> sentiments;
+  private List<Integer> sentiments;
   private Map<String, Double> moods;
 
   public Article(String artID, String name, String username, Integer rank,
-      double readLevel) {
+      double readLevel, double gradeLevel) {
     this.id = artID;
     this.title = name;
     this.user = username;
     this.ranking = rank;
     this.readLevel = readLevel;
+    this.gradeLevel = gradeLevel;
     this.moods = new HashMap<>();
     this.topics = new ArrayList<>();
-    this.sentiments = new HashMap<>();
+    this.sentiments = new ArrayList<>();
   }
 
   public String getId() {
@@ -54,8 +56,19 @@ public class Article {
     return readLevel;
   }
 
+  /**
+   * @return the gradeLevel
+   */
+  public double getGradeLevel() {
+    return gradeLevel;
+  }
+
   public List<String> getTopics() {
     return topics;
+  }
+
+  public void addTopic(String t) {
+    topics.add(t);
   }
 
   public void setTopics(List<String> t) {
@@ -71,10 +84,22 @@ public class Article {
   }
 
   public Map<Integer, Double> getSentiments() {
-    return Collections.unmodifiableMap(sentiments);
+    HashMap<Integer, Double> sent = new HashMap<>();
+    double pos = 0;
+    double neg = 0;
+    for (int i : sentiments) {
+      if (i == 0) {
+        neg++;
+      } else {
+        pos++;
+      }
+    }
+    sent.put(0, neg);
+    sent.put(1, pos);
+    return Collections.unmodifiableMap(sent);
   }
 
-  public void setSentiments(Map<Integer, Double> s) {
+  public void setSentiments(List<Integer> s) {
     this.sentiments = s;
   }
 

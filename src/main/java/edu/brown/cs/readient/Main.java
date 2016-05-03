@@ -130,7 +130,7 @@ public final class Main {
         if (line.length == 2) {
           for (Article art : prof.getArticles()) {
             if (art.getId().equals(line[1])) {
-              System.out.println(GSON.toJsonTree(art));
+              System.out.println(GSON.toJson(art));
               break;
             }
           }
@@ -158,16 +158,16 @@ public final class Main {
         rank, stats.words());
     Map<String, Double> emotions = sg.moods(p, stats);
     manager.addMoods(id, emotions);
-    Map<Integer, Double> sent = sg.sentiment(p, stats);
-    manager.addSentiment(id, sent.get(1), sent.get(0));
+    List<Integer> sent = sg.sentiment(p, stats);
+    manager.addSentiments(id, sent);
     String topic = sg.topic(p);
     manager.addTopic(id, topic);
-    double readLevel = (new Readability(stats)).avg();
-    manager.addReadLevel(id, readLevel);
+    Readability read = new Readability(stats);
+    manager.addReadLevel(id, read.avgRead(), read.avgGrade());
     byte[] pass = prof.getUser().getPasswordHash();
     byte[] salt = prof.getUser().getSalt();
     Article art = new Article(id, p.title(), prof.getUser().getUsername(), rank,
-        readLevel);
+        read.avgRead(), read.avgGrade());
     art.setMood(emotions);
     List<String> topics = new ArrayList<>();
     topics.add(topic);
@@ -175,7 +175,7 @@ public final class Main {
     art.setSentiments(sent);
     prof.addArticle(art);
     return new Pair<>(getProfile(prof.getUser().getUsername(), pass, salt,
-        prof.getArticles()),
+        new ArrayList<Article>(prof.getArticles())),
         art);
   }
 
