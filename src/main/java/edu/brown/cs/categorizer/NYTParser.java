@@ -25,7 +25,7 @@ import edu.brown.cs.parsing.ArticleParser;
 public class NYTParser {
   public static void main(String[] args)
       throws IOException, InterruptedException, ParseException {
-    NYTParser.getArticles("20070701","7b36d3b640e1bb37fe77f74d921a090d:12:75167618");
+    NYTParser.getArticles("20140901","7b36d3b640e1bb37fe77f74d921a090d:12:75167618");
    // NYTParser.getArticles("20120101","5132d82e4c312ddeae7c0165f36ea3be:0:75165660");
   }
 

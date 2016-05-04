@@ -24,10 +24,10 @@
 			</div>
 		</div>
 		<div class="container input-group">
-			<input type="text" class="form-control" placeholder="Add an article!">
+			<input id ="url-input"type="text" class="form-control" placeholder="Add an article!">
 			<span class="input-group-btn">
 			<button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-thumbs-up"></span></button>
-			<button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-plus"></span></button>
+			<button id = "add-article" onclick = "sendUrl()" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-plus"></span></button>
 			<button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-thumbs-down"></span></button>
 			</span>
 		</div>
