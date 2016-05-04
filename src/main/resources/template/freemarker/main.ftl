@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/html5bp.css">
     <link rel="stylesheet" href="css/bootstrap.css"> <!-- this isn't added yet -->
-    <link rel="stylesheet" href="css/c3.css"> <!-- this is also not yet added -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.1.29/c3.css">
     <link rel="stylesheet" href="css/main.css">
   </head>
   <body>
@@ -17,7 +17,8 @@
      <!-- Again, we're serving up the unminified source for clarity. -->
      <script src="js/jquery-2.1.1.js"></script>
      <script src="js/bootstrap.js"></script> <!-- not yet added -->
-     
+     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.js"></script>
+     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.1.29/c3.js"></script>
 		<script src="js/main.js"></script>
 		<script src="js/signin.js"></script>
 		<script src="js/signup.js"></script>
