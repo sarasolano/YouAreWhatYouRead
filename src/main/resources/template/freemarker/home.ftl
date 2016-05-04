@@ -39,25 +39,32 @@
 				<p> Word Count: 1,567 </p>
 				<p> Pages: 6.3 </p>
 				<div class="row">
+					<div class="col-md-4">
+						<div id="wc"></div>
+					</div>
+					<div class="col-md-4">
+						<div id="topic"></div>
+					</div>
+					<div class="col-md-4">
+						<div id="pages"></div>
+					</div>
+				</div>
+				<div class="row">
 					<div class="col-md-8">
 						<div id="cloud"></div>
 					</div>
 					<div class="col-md-4">
-						<div id="chart1"></div>
+						<div id="mood"></div>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-4">
-						<div id="chart2"></div>
+						<div id="level"></div>
 					</div>
-					<div class="col-md-4">
-						<div id="chart3"></div>
-					</div>
-					<div class="col-md-4">
-						<div id="chart4"></div>
+					<div class="col-md-8">
+						<div id="sentiment"></div>
 					</div>
 				</div>
-
 			</div>
 		</div>
 	</div>
