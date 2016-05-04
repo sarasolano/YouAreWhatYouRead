@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Article {
 
@@ -26,9 +27,9 @@ public class Article {
     this.ranking = rank;
     this.readLevel = readLevel;
     this.gradeLevel = gradeLevel;
-    this.moods = new HashMap<>();
-    this.topics = new ArrayList<>();
-    this.sentiments = new ArrayList<>();
+    this.moods = new ConcurrentHashMap<>();
+    this.topics = Collections.synchronizedList(new ArrayList<>());
+    this.sentiments = Collections.synchronizedList(new ArrayList<>());
   }
 
   public String getId() {
@@ -63,27 +64,27 @@ public class Article {
     return gradeLevel;
   }
 
-  public List<String> getTopics() {
-    return topics;
+  public synchronized List<String> getTopics() {
+    return Collections.unmodifiableList(topics);
   }
 
-  public void addTopic(String t) {
+  public synchronized void addTopic(String t) {
     topics.add(t);
   }
 
-  public void setTopics(List<String> t) {
+  public synchronized void setTopics(List<String> t) {
     this.topics = t;
   }
 
-  public Map<String, Double> getMoods() {
+  public synchronized Map<String, Double> getMoods() {
     return Collections.unmodifiableMap(moods);
   }
 
-  public void setMood(Map<String, Double> m) {
+  public synchronized void setMood(Map<String, Double> m) {
     this.moods = m;
   }
 
-  public Map<Integer, Double> getSentiments() {
+  public synchronized Map<Integer, Double> getSentiments() {
     HashMap<Integer, Double> sent = new HashMap<>();
     double pos = 0;
     double neg = 0;
@@ -99,7 +100,7 @@ public class Article {
     return Collections.unmodifiableMap(sent);
   }
 
-  public void setSentiments(List<Integer> s) {
+  public synchronized void setSentiments(List<Integer> s) {
     this.sentiments = s;
   }
 

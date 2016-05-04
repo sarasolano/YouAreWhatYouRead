@@ -2,18 +2,11 @@ package edu.brown.cs.readient;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Profile {
-  public void setWordsRead(int wordsRead) {
-    this.wordsRead = wordsRead;
-  }
-
-  public void setAvgReadLevel(double avgReadLevel) {
-    this.avgReadLevel = avgReadLevel;
-  }
 
   private User user;
   private int wordsRead;
@@ -25,7 +18,7 @@ public class Profile {
     this.user = u;
     this.avgReadLevel = readLevel;
     this.wordsRead = wordsRead;
-    articles = new HashMap<>();
+    articles = new ConcurrentHashMap<>();
     for (Article art : arts) {
       articles.put(art.getId(), art);
     }
@@ -39,35 +32,43 @@ public class Profile {
     return user;
   }
 
-  public Collection<Article> getArticles() {
+  public synchronized void setWordsRead(int wordsRead) {
+    this.wordsRead = wordsRead;
+  }
+
+  public synchronized void setAvgReadLevel(double avgReadLevel) {
+    this.avgReadLevel = avgReadLevel;
+  }
+
+  public synchronized Collection<Article> getArticles() {
     return Collections.unmodifiableCollection(articles.values());
   }
 
-  public boolean containsArticle(String artID) {
+  public synchronized boolean containsArticle(String artID) {
     return articles.containsKey(artID);
   }
 
-  public Article getArticle(String artID) {
+  public synchronized Article getArticle(String artID) {
     return articles.get(artID);
   }
 
-  public double getAvgReadLevel() {
+  public synchronized double getAvgReadLevel() {
     return avgReadLevel;
   }
 
-  public int wordsRead() {
+  public synchronized int wordsRead() {
     return wordsRead;
   }
 
-  public void addArticle(Article art) {
+  public synchronized void addArticle(Article art) {
     articles.put(art.getId(), art);
   }
 
-  public void removeArticle(String artID) {
+  public synchronized void removeArticle(String artID) {
     articles.remove(artID);
   }
 
-  public int numArticles() {
+  public synchronized int numArticles() {
     return articles.size();
   }
 }
