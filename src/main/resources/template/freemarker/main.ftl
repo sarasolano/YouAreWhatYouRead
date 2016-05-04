@@ -8,12 +8,17 @@
          avoid minification for clarity. -->
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/html5bp.css">
+    <link rel="stylesheet" href="css/bootstrap.css"> <!-- this isn't added yet -->
+    <link rel="stylesheet" href="css/c3.css"> <!-- this is also not yet added -->
     <link rel="stylesheet" href="css/main.css">
   </head>
   <body>
      ${content}
      <!-- Again, we're serving up the unminified source for clarity. -->
      <script src="js/jquery-2.1.1.js"></script>
+     <script src="js/bootstrap.js"></script>
+     <script src="js/d3.js"></script>
+     <script src="js/c3.js"></script>
      <script src="js/main.js"></script>
   </body>
   <!-- See http://html5boilerplate.com/ for a good place to start

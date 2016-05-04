@@ -29,6 +29,7 @@ public class ArticleParser implements Iterable<String> {
       doc = Jsoup.connect(path).get();
       title = doc.select("h1").text();
       String text = doc.select("p").text();
+      // String text = doc.body().text();
       String allText = title + ". " + text;
       this.text = allText;
       Reader r = new StringReader(allText);
@@ -65,15 +66,15 @@ public class ArticleParser implements Iterable<String> {
     return Collections.unmodifiableList(sentences);
   }
 
-  // // example of how to use it
-  // public static void main(String[] args) {
-  // Parser p = new Parser("https://en.wikipedia.org/wiki/Amazon_Reef");
-  // for (String sentence : p) {
-  // // you can use HasWords by doing .word() -> string
-  // // will fix this to use strings at some point
-  // System.out.println(sentence);
-  // }
-  // }
+   // example of how to use it
+   public static void main(String[] args) {
+   ArticleParser p = new ArticleParser("http://www.theonion.com/article/man-who-downloaded-299-meditation-app-prepares-ent-52384");
+   for (String sentence : p) {
+   // you can use HasWords by doing .word() -> string
+   // will fix this to use strings at some point
+   System.out.println(sentence);
+   }
+   }
 
   @Override
   public Iterator<String> iterator() {
