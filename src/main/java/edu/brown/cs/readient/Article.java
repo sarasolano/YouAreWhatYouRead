@@ -12,6 +12,7 @@ public class Article {
   private String id;
   private String title;
   private String user;
+  private String url;
   private Integer ranking;
   private double readLevel;
   private double gradeLevel;
@@ -19,10 +20,12 @@ public class Article {
   private List<Integer> sentiments;
   private Map<String, Double> moods;
 
-  public Article(String artID, String name, String username, Integer rank,
+  public Article(String artID, String name, String url, String username,
+      Integer rank,
       double readLevel, double gradeLevel) {
     this.id = artID;
     this.title = name;
+    this.url = url;
     this.user = username;
     this.ranking = rank;
     this.readLevel = readLevel;
@@ -42,6 +45,10 @@ public class Article {
 
   public String getUser() {
     return user;
+  }
+
+  public String url() {
+    return url;
   }
 
   /**

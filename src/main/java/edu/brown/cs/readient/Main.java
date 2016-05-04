@@ -293,8 +293,9 @@ public final class Main {
       String url, Integer rank) throws SQLException {
     ArticleParser p = new ArticleParser(url);
     Stats stats = StatsGenerator.analyze(p.iterator());
-    String id = manager.addArticle(p.title(), prof.getUser().getUsername(),
-        rank, stats.words());
+    String id =
+        manager.addArticle(p.title(), p.url(), prof.getUser().getUsername(),
+            rank, stats.words());
     Map<String, Double> emotions = sg.moods(p, stats);
     manager.addMoods(id, emotions);
     List<Integer> sent = sg.sentiment(p, stats);
@@ -303,8 +304,8 @@ public final class Main {
     manager.addTopic(id, topic);
     Readability read = new Readability(stats);
     manager.addReadLevel(id, read.avgRead(), read.avgGrade());
-    Article art = new Article(id, p.title(), prof.getUser().getUsername(), rank,
-        read.avgRead(), read.avgGrade());
+    Article art = new Article(id, p.title(), p.url(),
+        prof.getUser().getUsername(), rank, read.avgRead(), read.avgGrade());
     art.setMood(emotions);
     List<String> topics = new ArrayList<>();
     topics.add(topic);

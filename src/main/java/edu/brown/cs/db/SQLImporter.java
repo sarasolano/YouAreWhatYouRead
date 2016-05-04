@@ -56,6 +56,7 @@ public class SQLImporter {
     String query = "CREATE TABLE article("
         + "id TEXT NOT NULL,"
         + "name TEXT NOT NULL,"
+        + "url TEXT NOT NULL,"
         + "user TEXT NOT NULL,"
         + "rank INT,"
         + "words INT NOT NULL,"

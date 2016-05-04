@@ -31,14 +31,15 @@ import edu.brown.cs.readient.User;
  * @author sarasolano
  */
 public class QueryManager implements AutoCloseable {
-  public static void main(String[] args)
-      throws Exception {
-    QueryManager m = new QueryManager("data.db");
-    m.addUser("ssolano", "apples", "Sara", "Solano");
-    System.out.println(m.addArticle("test article", "ssolano", null, 0));
-    System.out.println(m.getArticles("ssolano"));
-    m.close();
-  }
+  // public static void main(String[] args)
+  // throws Exception {
+  // QueryManager m = new QueryManager("data.db");
+  // // m.addUser("ssolano", "apples", "Sara", "Solano");
+  // // System.out.println(m.addArticle("test article", "url", "ssolano", null,
+  // // 0));
+  // System.out.println(m.getArticles("ssolano"));
+  // m.close();
+  // }
 
   /**
    * The secure random number generator for salts.
@@ -154,7 +155,7 @@ public class QueryManager implements AutoCloseable {
    */
   public List<Article> getArticles(String username) throws SQLException {
     String query =
-        "SELECT id, name, user, rank, read_level, grade_level FROM article, read_level "
+        "SELECT id, name, url, user, rank, read_level, grade_level FROM article, read_level "
             + "WHERE article.id == read_level.article AND article.user == ?";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, username);
@@ -163,7 +164,7 @@ public class QueryManager implements AutoCloseable {
     while (rs.next()) {
       String id = rs.getString(1);
       Article art = new Article(id, rs.getString(2), rs.getString(3),
-          rs.getInt(4), rs.getDouble(5), rs.getDouble(6));
+          rs.getString(4), rs.getInt(5), rs.getDouble(6), rs.getDouble(7));
       art.setMood(getMoods(id));
       art.setSentiments(getSentiments(id));
       art.setTopics(getTopics(id));
@@ -355,21 +356,22 @@ public class QueryManager implements AutoCloseable {
    * @throws SQLException
    *           if there is an error while executing
    */
-  public String addArticle(String name, String username, Integer rank,
-      int words)
+  public String addArticle(String name, String url, String username,
+      Integer rank, int words)
       throws SQLException {
-    String query = "INSERT INTO article VALUES(?, ?, ?, "
+    String query = "INSERT INTO article VALUES(?, ?, ?, ?, "
         + (rank == null ? "NULL," : "?,") + " ?)";
     PreparedStatement stat = conn.prepareStatement(query);
     String id = "a/" + UUID.randomUUID();
     stat.setString(1, id);
     stat.setString(2, name);
-    stat.setString(3, username);
+    stat.setString(3, url);
+    stat.setString(4, username);
     if (rank != null) {
-      stat.setInt(4, rank);
-      stat.setInt(5, words);
+      stat.setInt(5, rank);
+      stat.setInt(6, words);
     } else {
-      stat.setInt(4, words);
+      stat.setInt(5, words);
     }
     stat.execute();
     stat.close();
