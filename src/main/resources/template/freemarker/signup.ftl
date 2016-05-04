@@ -11,9 +11,10 @@
 		<span id="pwd-err" style="color: red; display: none">Password must be 8-36 characters long.</span><br>
 		<label for="pwd2">Repeat Password</label><br>
 		<input type="password" id="pwd2" name="pwd2">
+		<span id="pwd2-err" style="color: red; display: none">Passwords don't match</span><br>
 		
 		<label for="pwd:
-		<button type="submit" form="form1" value="Submit">Submit</button>
+		<button id="submit" type="submit" form="form1" value="Submit">Submit</button>
 </form> 
         
 

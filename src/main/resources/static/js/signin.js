@@ -23,14 +23,3 @@ document.onload(function() {
         }
     });
 });
-
-function exists(username) {
-	var isUserName = false;
-	var params = {"username" : username};
-	$.post("/exists", params, function(res) {
-		if (res.isUserName) {
-			isUserName = true;
-		}
-	}
-	return isUserName;
-}

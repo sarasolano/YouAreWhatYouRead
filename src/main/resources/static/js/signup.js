@@ -1,18 +1,48 @@
-document.onload(function() {
-        var form = $('#login');
-    $('submit').on('click', function(e) {
+(function() {
+    var form = $('#login');
+		var pw = $("pwd");
+		var pw2 = $("pwd2");
+		var username = $('username');
+	
+		username.keyup(function(e) {
+			$("#repeat-err").hide();
+			if (exists(username)) {
+				$("#repeat-err").show();
+				username.css("border", "red solid 1px");
+			} else {
+				username.css("border", "green solid 1px");
+			}
+		});
+	
+		username.click(function(e) {
+			username.css("border", "grey solid 1px");
+		});
+		
+		pw.click(function(e) {
+			pw.css("border", "grey solid 1px");
+		});
+	
+		pw2.click(function(e) {
+			pw2.css("border", "grey solid 1px");
+		});
+		
+    $('#submit').on('click', function(e) {
 				$("#username-err").hide();
 				$("#pwd-err").hide();
 				$("sub-err").hide();
-        var pw = $("pwd");
-				var username = $('username');
+				$("#pwd2-err").hide();
+			
         if (username.val().length == 0) {
-            $("#username-err").show();
-         } else if (pw.val().length < 8 || pw.length > 36) {
-            $("#pwd-err").show();
-        } else {
+					$("#username-err").show();
+					username.css("border", "red solid 1px");
+        } else if (pw.val().length < 8 || pw.val().length > 36) {
+					$("#pwd-err").show();
+					pw.css("border", "red solid 1px");
+        } else if (pw.val() != pw2.val()) {
+					$("#pwd2-err").show();
+					pw2.css("border", "red solid 1px");
+				} else {
             var postParameters = {username: username.val(), password: pw.val()};
-						
             $.post("/login", postParameters, function(res) {
 							var response = JSON.parse(res);
 							if (response.length == 0) {
@@ -23,7 +53,7 @@ document.onload(function() {
 						}); 
         }
     });
-});
+})();
 
 function exists(username) {
 	var isUserName = false;
