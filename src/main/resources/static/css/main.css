@@ -1,6 +1,16 @@
+@import url(http://fonts.googleapis.com/css?family=Montserrat:400,700);
+
 body {
   padding-top: 70px;
-  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-family: 'Montserrat', "Palatino Linotype", "Book Antiqua", Palatino, serif;
+}
+
+#logo-container {
+	margin: auto;
+  margin-bottom: 10px;
+  width:271px;
+  height:265px;
+	background-image: url("../img/redient2.gif");
 }
 
 .jumbotron {
@@ -12,6 +22,32 @@ body {
   background-color: #FFBDBD;
 }
 
+div.well{
+  height: 250px;
+} 
+
+.Absolute-Center {
+  margin: auto;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+}
+
+.Absolute-Center.is-Responsive {
+  width: 50%; 
+  height: 70%;
+  min-width: 500px;
+  max-width: 700px;
+  padding: 40px;
+}
+
+.form-control {
+	height: 50px;
+}
+
+#submit {
+	height: 40px;
+}
+
 /*
 #border {
   border: 2px white solid;
@@ -19,6 +55,7 @@ body {
   padding: 5%;
 }
 */
+
 .glyphicon {
   color: #AB2121;
 }

@@ -17,11 +17,10 @@
      <!-- Again, we're serving up the unminified source for clarity. -->
      <script src="js/jquery-2.1.1.js"></script>
      <script src="js/bootstrap.js"></script> <!-- not yet added -->
-     <script src="js/d3.js"></script> <!-- not yet added -->
-     <script src="js/c3.js"></script> <!-- not yet added -->
-     <script src="js/main.js"></script>
-		 <script src="js/signin.js"></script>
-		 <script src="js/signup.js"></script>
+     
+		<script src="js/main.js"></script>
+		<script src="js/signin.js"></script>
+		<script src="js/signup.js"></script>
   </body>
   <!-- See http://html5boilerplate.com/ for a good place to start
        dealing with real world issues like old browsers.  -->

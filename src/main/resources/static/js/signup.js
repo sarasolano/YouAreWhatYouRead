@@ -1,23 +1,20 @@
 (function() {
-		$("#username-err").hide();
-		$("#pwd-err").hide();
-		$("sub-err").hide();
-		$("#pwd2-err").hide();
+    var form = $('#signup');
+		var pw = $("#pwd");
+		var pw2 = $("#pwd2");
+		var username = $('#username');
 	
-    var form = $('#login');
-		var pw = $("pwd");
-		var pw2 = $("pwd2");
-		var username = $('username');
-	
-		username.keyup(function(e) {
-			$("#repeat-err").hide();
-			if (exists(username)) {
-				$("#repeat-err").show();
-				username.css("border", "red solid 1px");
-			} else {
-				username.css("border", "green solid 1px");
-			}
-		});
+		window.setInterval(function() {
+			username.keyup(function(e) {
+				$("#repeat-err").hide();
+				if (exists(username)) {
+					$("#repeat-err").show();
+					username.css("border", "red solid 1px");
+				} else {
+					username.css("border", "green solid 1px");
+				}
+			});
+		}, 500);
 	
 		username.click(function(e) {
 			username.css("border", "grey solid 1px");
@@ -34,7 +31,7 @@
     $('#submit').on('click', function(e) {
 				$("#username-err").hide();
 				$("#pwd-err").hide();
-				$("sub-err").hide();
+				$("#sub-err").hide();
 				$("#pwd2-err").hide();
 			
         if (username.val().length == 0) {
@@ -48,7 +45,7 @@
 					pw2.css("border", "red solid 1px");
 				} else {
             var postParameters = {username: username.val(), password: pw.val()};
-            $.post("/login", postParameters, function(res) {
+            $.post("/signup", postParameters, function(res) {
 							var response = JSON.parse(res);
 							if (response.length == 0) {
 								$("sub-err").show();
@@ -67,6 +64,6 @@ function exists(username) {
 		if (res.isUserName) {
 			isUserName = true;
 		}
-	}
+	});
 	return isUserName;
 }
