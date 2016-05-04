@@ -40,6 +40,7 @@ public class ArticleParser implements Iterable<String> {
   }
 
   private void makeSentences() {
+
     for (List<HasWord> sent : dp) {
       StringBuilder sentence = new StringBuilder();
       for (HasWord word : sent) {

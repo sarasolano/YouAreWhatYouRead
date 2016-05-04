@@ -93,6 +93,29 @@ public class TopicCategorizer {
             + " unrecognized at the United Nations thanks to a Russian veto. But improving "
             + "relations with Kosovo’s government is a prerequisite for Serbia’s European Union "
             + "membership."));
+
+    System.out.println(docCategorizer
+        .classifyNewDoc("ads sweep across America like thunderstorms. One of the latest"
+            + " — selfies — may already be slackening. Colleges in Florida and Rhode"
+            + " Island banned selfies at graduation. Reports that the White House was"
+            + " discussing the fad brought out the selfie loathing. Even tastemaker"
+            + " Katy Perry has tweeted that taking selfies is a disease. No matter."
+            + " We will always remember a time when selfies were cool and everybody"
+            + " was snapping them. Flagpole sitting, marathon dancing, goldfish swallowing"
+            + " – these fads are forever part of the American fabric. Nothing mobilizes"
+            + " the population like a big booming fad, wrote Richard Alan Johnson in his"
+            + " 1985 history American Fads. Johnson listed 40 all-the-rages from our national"
+            + " past, including Hula hoops, waterbeds and Nehru jackets. His book predated the"
+            + " Internet, which has given us even more — like planking and Tebowing. But a"
+            + " nosedive into the news archives turns up a host of other fads that for one reason"
+            + " or another have pretty much been forgotten. Here are five: 1) Hair Lizards."
+            + " The Atlanta Constitution reported in 1920 that — at the behest of the Humane "
+            + "Society — police were cracking down on the sale of live chameleons to young"
+            + " girls who liked to wear them in their hair at dances and soirees. Goodby"
+            + " to our pretty hair ornaments, the reporter wrote. But at least the men "
+            + "will feel safer, for at a recent dance it is stated when the best beau of "
+            + "a Druid Hills girl started to whisper sweet nothings in her ear, the chameleon"
+            + " became loosened from her hair and fell into the man's mouth."));
   }
 
   public TopicCategorizer() {
@@ -116,13 +139,13 @@ public class TopicCategorizer {
       InputStream dataIn = null;
       try {
 
-        dataIn = new FileInputStream("../readient/topicTrainingFinal.txt");
+        dataIn = new FileInputStream("trainingnew.txt");
         ObjectStream<String> lineStream =
             new PlainTextByLineStream(dataIn, "UTF-8");
         ObjectStream<DocumentSample> sampleStream =
             new DocumentSampleStream(lineStream);
         // Specifies the minimum number of times a feature must be seen
-        model = DocumentCategorizerME.train("en", sampleStream);
+        model = DocumentCategorizerME.train("en", sampleStream,5,500);
 
       } catch (IOException e) {
         e.printStackTrace();
