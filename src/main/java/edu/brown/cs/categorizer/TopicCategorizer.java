@@ -145,7 +145,7 @@ public class TopicCategorizer {
         ObjectStream<DocumentSample> sampleStream =
             new DocumentSampleStream(lineStream);
         // Specifies the minimum number of times a feature must be seen
-        model = DocumentCategorizerME.train("en", sampleStream,5,500);
+        model = DocumentCategorizerME.train("en", sampleStream,10,500);
 
       } catch (IOException e) {
         e.printStackTrace();

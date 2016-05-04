@@ -389,21 +389,22 @@ public final class Main {
   }
 
   /**
-   * Creates a @FreeMarkerEngine for the SparkServer.
+   * Creates ftl files.
    *
-   * @return a @FreeMarkerEngine for the SparkServer.
+   * @return a freemarker engine
    */
   private static FreeMarkerEngine createEngine() {
     Configuration config = new Configuration();
-    // get the templates file
-    File temp = new File("src/main/resources/spark/template/freemarker/");
+    File templates = new File("../readient/src/main/resources/template/freemarker");
+    Spark.exception(Exception.class, new ExceptionPrinter());
     try {
-      config.setDirectoryForTemplateLoading(temp);
-    } catch (IOException e) {
-      System.out.printf("ERROR: Unable to load temaplates in %s%n", temp);
+      config.setDirectoryForTemplateLoading(templates);
+    } catch (IOException ioe) {
+      System.out.printf("ERROR: Unable use %s for template loading.%n",
+          templates);
       System.exit(1);
     }
-    return new FreeMarkerEngine();
+    return new FreeMarkerEngine(config);
   }
 
   /**
