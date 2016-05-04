@@ -39,7 +39,6 @@ public class ArticleParser implements Iterable<String> {
 		}
 	}
 
-<<<<<<< HEAD
   private void makeSentences() {
 
     for (List<HasWord> sent : dp) {
@@ -50,17 +49,6 @@ public class ArticleParser implements Iterable<String> {
       sentences.add(sentence.toString());
     }
   }
-=======
-	private void makeSentences() {
-		for (List<HasWord> sent : dp) {
-			StringBuilder sentence = new StringBuilder();
-			for (HasWord word : sent) {
-				sentence.append(word + " ");
-			}
-			sentences.add(sentence.toString());
-		}
-	}
->>>>>>> 7a9da649a7bcc1312b05252dcb416f8b5e29a32c
 
 	public String title() {
 		return title;
