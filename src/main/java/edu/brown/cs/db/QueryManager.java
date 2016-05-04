@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -65,6 +66,24 @@ public class QueryManager implements AutoCloseable {
   public QueryManager(String db) throws SQLException, ClassNotFoundException {
     Class.forName("org.sqlite.JDBC");
     conn = DriverManager.getConnection("jdbc:sqlite:" + db);
+  }
+
+  /**
+   * Gets all the usernames in the database.
+   *
+   * @return the usernames
+   * @throws SQLException
+   */
+  public HashSet<String> getUserNames() throws SQLException {
+    String query = "SELECT user_name FROM user";
+    PreparedStatement stat = conn.prepareStatement(query);
+    ResultSet rs = stat.executeQuery();
+    HashSet<String> toReturn = new HashSet<>();
+    while (rs.next()) {
+      toReturn.add(rs.getString(1));
+    }
+    stat.close();
+    return toReturn;
   }
 
   /**

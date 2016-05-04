@@ -1,23 +1,37 @@
 document.onload(function() {
         var form = $('#login');
     $('submit').on('click', function(e) {
+				$("#username-err").hide();
+				$("#pwd-err").hide();
+				$("sub-err").hide();
         var pw = $("pwd");
 				var username = $('username');
         if (username.val().length == 0) {
-             document.getElementById("username-err").style.display = "block";
+            $("#username-err").show();
          } else if (pw.val().length < 8 || pw.length > 36) {
-            document.getElementById("pwd-err").style.display = "block";
+            $("#pwd-err").show();
         } else {
-            var user = JSON.stringify(username.val());
-            var pass = JSON.stringify(pw.val());
-            var postParameters = {username: user, password: pass};
-
+            var postParameters = {username: username.val(), password: pw.val()};
+						
             $.post("/login", postParameters, function(res) {
 							var response = JSON.parse(res);
 							if (response.length == 0) {
-								document.getElementById("sub-err").style.display = "block";
+								$("sub-err").show();
+							} else {
+								
 							}
 						}); 
         }
     });
 });
+
+function exists(username) {
+	var isUserName = false;
+	var params = {"username" : username};
+	$.post("/exists", params, function(res) {
+		if (res.isUserName) {
+			isUserName = true;
+		}
+	}
+	return isUserName;
+}

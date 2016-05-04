@@ -1,19 +1,36 @@
-document.addEventListener("DOMContentLoaded", function() {
-        var form = document.getElementById('sign-in');
-    form.addEventListener('submit', function(e) {
-         e.preventDefault(); 
-         var pw = this.pwd.value;
-
-        if (this.username.value.length == 0) {
-             document.getElementById("username-err").style.display = "block";
-         } else if (pw.length < 8 || pw.length > 36) {
-            document.getElementById("pwd-err").style.display = "block";
+document.onload(function() {
+        var form = $('#login');
+    $('submit').on('click', function(e) {
+				$("#username-err").hide();
+				$("#pwd-err").hide();
+				$("sub-err").hide();
+        var pw = $("pwd");
+				var username = $('username');
+        if (username.val().length == 0) {
+            $("#username-err").show();
+         } else if (pw.val().length < 8 || pw.length > 36) {
+            $("#pwd-err").show();
         } else {
-            var user = JSON.stringify(this.username.value);
-            var pass = JSON.stringify(pw);
-            var postParameters = {username: user, password: pass};
+            var postParameters = {username: username.val(), password: pw.val()};
+				$.post("/login", postParameters, function(res) {
+					var response = JSON.parse(res);
+					if (response.length == 0) {
+						$("sub-err").show();
+					} else {
 
-            $.post("/signin", postParameters); 
+					}
+				}); 
         }
     });
 });
+
+function exists(username) {
+	var isUserName = false;
+	var params = {"username" : username};
+	$.post("/exists", params, function(res) {
+		if (res.isUserName) {
+			isUserName = true;
+		}
+	}
+	return isUserName;
+}

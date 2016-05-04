@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -50,6 +51,7 @@ public final class Main {
   private static final String DB = "data.db";
   private QueryManager manager;
   private StatsGenerator sg;
+  private HashSet<String> usernames;
   private Profile profile = null; // profile for gui
   private String[] args;
 
@@ -68,6 +70,8 @@ public final class Main {
     @SuppressWarnings("unchecked")
     List<String> arguments = (List<String>) options.nonOptionArguments();
     try {
+      manager = new QueryManager(DB);
+      usernames = manager.getUserNames();
       if (options.has("gui")) {
         if (options.has("port")) { // check if the --port tack was called
           if ((Integer) options.valueOf("port") == null) {
@@ -89,7 +93,7 @@ public final class Main {
               + "--port <number>");
           return;
         }
-        manager = new QueryManager(DB);
+
         runSparkServer();
       } else if (options.has("login")) {
         if (arguments.size() != LOGIN_ARGS) {
@@ -97,7 +101,6 @@ public final class Main {
               "usage: ./readient --login <username> <passoword>");
         }
         sg = new StatsGenerator();
-        manager = new QueryManager(DB);
         Profile profile = getProfile(arguments.get(0), arguments.get(1));
         cmdLine(profile);
       } else if (options.has("signup")) {
@@ -107,7 +110,6 @@ public final class Main {
                   + "<passoword> <first_name> <last_name>");
         }
         sg = new StatsGenerator();
-        manager = new QueryManager(DB);
         manager.addUser(arguments.get(0), arguments.get(1), arguments.get(2),
             arguments.get(3));
         Profile profile = getProfile(arguments.get(0), arguments.get(1));
@@ -132,6 +134,19 @@ public final class Main {
           ImmutableMap.of("title", "Home | Readient");
       return new ModelAndView(variables, "main.ftl");
     }, marker);
+
+    Spark.post("/exists", (req, res) -> {
+      JsonObject obj = new JsonObject();
+      QueryParamsMap qm = req.queryMap();
+      String username = qm.value("username");
+      if (usernames.contains(username)) {
+        obj.addProperty("isUserName", true);
+        return GUI_GSON.toJson(obj);
+      } else {
+        obj.addProperty("isUserName", false);
+        return GUI_GSON.toJson(obj);
+      }
+    });
 
     Spark.post("/login", (req, res) -> {
       QueryParamsMap qm = req.queryMap();
