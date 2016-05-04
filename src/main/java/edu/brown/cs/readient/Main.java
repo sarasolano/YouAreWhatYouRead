@@ -170,7 +170,7 @@ public final class Main {
       return GUI_GSON.toJson(profileJson(p));
     });
 
-    Spark.get("/article/a/:aid", (req, res) -> {
+    Spark.post("/article/a/:aid", (req, res) -> {
       String artID = req.params(":aid").replace('.', '/');
       final Profile p = profile;
       if (p.containsArticle(artID)) {
