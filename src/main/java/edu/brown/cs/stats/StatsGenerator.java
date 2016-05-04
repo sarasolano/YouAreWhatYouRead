@@ -6,9 +6,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -51,19 +53,15 @@ public class StatsGenerator {
     return moods;
   }
 
-  public Map<Integer, Double> sentiment(ArticleParser p, Stats s) {
-    Map<Integer, Double> sent = new HashMap<>();
-    double pos = 0;
-    double neg = 0;
+  public List<Integer> sentiment(ArticleParser p, Stats s) {
+    List<Integer> sent = new ArrayList<>();
     for (String sentence : p.sentences()) {
       if (sentiment.classify(sentence) == 0) {
-        neg++;
+        sent.add(0);
       } else {
-        pos++;
+        sent.add(1);
       }
     }
-    sent.put(0, neg / s.sentences);
-    sent.put(1, pos / s.sentences);
     return sent;
   }
 

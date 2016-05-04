@@ -5,28 +5,34 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Article {
 
   private String id;
   private String title;
   private String user;
+  private String url;
   private Integer ranking;
   private double readLevel;
+  private double gradeLevel;
   private List<String> topics;
-  private Map<Integer, Double> sentiments;
+  private List<Integer> sentiments;
   private Map<String, Double> moods;
 
-  public Article(String artID, String name, String username, Integer rank,
-      double readLevel) {
+  public Article(String artID, String name, String url, String username,
+      Integer rank,
+      double readLevel, double gradeLevel) {
     this.id = artID;
     this.title = name;
+    this.url = url;
     this.user = username;
     this.ranking = rank;
     this.readLevel = readLevel;
-    this.moods = new HashMap<>();
-    this.topics = new ArrayList<>();
-    this.sentiments = new HashMap<>();
+    this.gradeLevel = gradeLevel;
+    this.moods = new ConcurrentHashMap<>();
+    this.topics = Collections.synchronizedList(new ArrayList<>());
+    this.sentiments = Collections.synchronizedList(new ArrayList<>());
   }
 
   public String getId() {
@@ -39,6 +45,10 @@ public class Article {
 
   public String getUser() {
     return user;
+  }
+
+  public String url() {
+    return url;
   }
 
   /**
@@ -54,27 +64,50 @@ public class Article {
     return readLevel;
   }
 
-  public List<String> getTopics() {
-    return topics;
+  /**
+   * @return the gradeLevel
+   */
+  public double getGradeLevel() {
+    return gradeLevel;
   }
 
-  public void setTopics(List<String> t) {
+  public synchronized List<String> getTopics() {
+    return Collections.unmodifiableList(topics);
+  }
+
+  public synchronized void addTopic(String t) {
+    topics.add(t);
+  }
+
+  public synchronized void setTopics(List<String> t) {
     this.topics = t;
   }
 
-  public Map<String, Double> getMoods() {
+  public synchronized Map<String, Double> getMoods() {
     return Collections.unmodifiableMap(moods);
   }
 
-  public void setMood(Map<String, Double> m) {
+  public synchronized void setMood(Map<String, Double> m) {
     this.moods = m;
   }
 
-  public Map<Integer, Double> getSentiments() {
-    return Collections.unmodifiableMap(sentiments);
+  public synchronized Map<Integer, Double> getSentiments() {
+    HashMap<Integer, Double> sent = new HashMap<>();
+    double pos = 0;
+    double neg = 0;
+    for (int i : sentiments) {
+      if (i == 0) {
+        neg++;
+      } else {
+        pos++;
+      }
+    }
+    sent.put(0, neg);
+    sent.put(1, pos);
+    return Collections.unmodifiableMap(sent);
   }
 
-  public void setSentiments(Map<Integer, Double> s) {
+  public synchronized void setSentiments(List<Integer> s) {
     this.sentiments = s;
   }
 

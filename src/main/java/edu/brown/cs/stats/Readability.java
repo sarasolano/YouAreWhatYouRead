@@ -8,7 +8,6 @@ import edu.brown.cs.stats.StatsGenerator.Stats;
  * @author sarasolano
  */
 public class Readability {
-  private static final int SCORES = 5;
   private Stats stat;
 
   public Readability(Stats s) {
@@ -18,34 +17,34 @@ public class Readability {
   // http://en.wikipedia.org/wiki/SMOG_Index
   public double smogIndex() {
     double score =
-        1.043 * Math.sqrt(stat.complex() * (30 / stat.sentences())) + 3.1291;
+        1.043 * Math.sqrt(stat.complex()) + 3.1291;
     return Utils.round(score, Utils.DECIMAL_PLACE);
   }
 
   // // http://en.wikipedia.org/wiki/SMOG
-  // public double smog() {
-  // double score = Math.sqrt(stat.complex() * (30 / stat.sentences())) + 3;
-  // return Utils.round(score, Utils.DECIMAL_PLACE);
-  // }
+  public double smog() {
+    double score = Math.sqrt(stat.complex() * (30 / stat.sentences())) + 3;
+    return Utils.round(score, Utils.DECIMAL_PLACE);
+  }
 
   // http://en.wikipedia.org/wiki/Flesch-Kincaid_Readability_Test
   public double fleschReadingEase() {
-    double score = 206.835 - 1.015 * stat.words() / stat.sentences()
-        - 84.6 * stat.syllables() / stat.words();
+    double score = 206.835 - 1.015 * (stat.words() / stat.sentences())
+        - 84.6 * (stat.syllables() / stat.words());
     return Utils.round(score, Utils.DECIMAL_PLACE);
   }
 
   // // http://en.wikipedia.org/wiki/Flesch-Kincaid_Readability_Test
-  // public double fleschGradeLevel() {
-  // double score = 0.39 * stat.words() / stat.sentences()
-  // + 11.8 * stat.syllables() / stat.words() - 15.59;
-  // return Utils.round(score, Utils.DECIMAL_PLACE);
-  // }
+  public double fleschGradeLevel() {
+    double score = 0.39 * stat.words() / stat.sentences()
+        + 11.8 * stat.syllables() / stat.words() - 15.59;
+    return Utils.round(score, Utils.DECIMAL_PLACE);
+  }
 
   // http://en.wikipedia.org/wiki/Automated_Readability_Index
   public double ari() {
-    double score = 4.71 * stat.characters() / stat.words()
-        + 0.5 * stat.words() / stat.sentences() - 21.43;
+    double score = 4.71 * (stat.characters() / stat.words())
+        + 0.5 * (stat.words() / stat.sentences()) - 21.43;
     return Utils.round(score, Utils.DECIMAL_PLACE);
   }
 
@@ -68,11 +67,16 @@ public class Readability {
    *
    * @return the avg score
    */
-  public double avg() {
-    double sum = smogIndex() + fleschReadingEase() // + fleschGradeLevel() +
-                                                   // smog()
-        + ari() + gunningFog() + colemanLiau();
-    double avg = sum / SCORES;
-    return Utils.round(avg, Utils.DECIMAL_PLACE);
+  public double avgRead() {
+    // double sum = smogIndex() + fleschReadingEase() + ari() + gunningFog()
+    // + colemanLiau();
+    // double avg = sum / INDEX_SCORES;
+    return smogIndex();
+  }
+
+  public double avgGrade() {
+    // double sum = fleschGradeLevel() + smog();
+    // double avg = sum / GRADE_SCORES;
+    return smog();
   }
 }

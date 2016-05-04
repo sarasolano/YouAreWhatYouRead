@@ -1,0 +1,36 @@
+body {
+  padding-top: 70px;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+}
+
+.jumbotron {
+  color: #AB2121;
+  background-color: #FF9494;
+}
+
+#big {
+  background-color: #FFBDBD;
+}
+
+/*
+#border {
+  border: 2px white solid;
+  width: 50%;
+  padding: 5%;
+}
+*/
+.glyphicon {
+  color: #AB2121;
+}
+
+#topics {
+  background-color: blue;
+}
+
+#otheridk {
+  background-color: green;
+}
+
+#article {
+  background-color: #FFBDBD;
+}

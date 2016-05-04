@@ -1,14 +1,20 @@
 package edu.brown.cs.readient;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import edu.brown.cs.db.QueryManager;
@@ -17,8 +23,16 @@ import edu.brown.cs.stats.Readability;
 import edu.brown.cs.stats.StatsGenerator;
 import edu.brown.cs.stats.StatsGenerator.Stats;
 import edu.stanford.nlp.util.Pair;
+import freemarker.template.Configuration;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import spark.ExceptionHandler;
+import spark.ModelAndView;
+import spark.QueryParamsMap;
+import spark.Request;
+import spark.Response;
+import spark.Spark;
+import spark.template.freemarker.FreeMarkerEngine;
 
 public final class Main {
   public static void main(String[] args) {
@@ -27,12 +41,16 @@ public final class Main {
 
   private static final int LOGIN_ARGS = 2;
   private static final int SIGNUP_ARGS = 4;
-  private static final Gson GSON =
+  private static final int GUI_ARGS = 0;
+  private int port = 8080;
+  private static final Gson CMND_GSON =
       new GsonBuilder().setPrettyPrinting().create();
+  private static final Gson GUI_GSON =
+      new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
   private static final String DB = "data.db";
   private QueryManager manager;
   private StatsGenerator sg;
-
+  private Profile profile = null; // profile for gui
   private String[] args;
 
   public Main(String[] a) {
@@ -51,11 +69,32 @@ public final class Main {
     List<String> arguments = (List<String>) options.nonOptionArguments();
     try {
       if (options.has("gui")) {
-        System.out.println("Sorry... this is invalid :( ");
+        if (options.has("port")) { // check if the --port tack was called
+          if ((Integer) options.valueOf("port") == null) {
+            // if there is no integer after the port tag, then it is a super
+            // problem
+            System.out.println("ERROR: must specify port");
+            return;
+          }
+          // set the port
+          port = (Integer) options.valueOf("port");
+        }
+
+        // figure out if the inputs are within the range of the --gui input
+        // arguments
+        if (arguments.size() < GUI_ARGS
+            || (arguments.size() > GUI_ARGS && !options.has("port"))
+            || (arguments.size() > GUI_ARGS + 1 && options.has("port"))) {
+          System.out.println("ERROR: usage: ./readient --gui "
+              + "--port <number>");
+          return;
+        }
+        manager = new QueryManager(DB);
+        runSparkServer();
       } else if (options.has("login")) {
         if (arguments.size() != LOGIN_ARGS) {
           throw new IllegalArgumentException(
-              "usage: ./readient <username> <passoword>");
+              "usage: ./readient --login <username> <passoword>");
         }
         sg = new StatsGenerator();
         manager = new QueryManager(DB);
@@ -63,8 +102,9 @@ public final class Main {
         cmdLine(profile);
       } else if (options.has("signup")) {
         if (arguments.size() != SIGNUP_ARGS) {
-          throw new IllegalArgumentException("usage: ./readient <username> "
-              + "<passoword> <first_name> <last_name>");
+          throw new IllegalArgumentException(
+              "usage: ./readient --signup <username> "
+                  + "<passoword> <first_name> <last_name>");
         }
         sg = new StatsGenerator();
         manager = new QueryManager(DB);
@@ -76,14 +116,106 @@ public final class Main {
         printRunHelp();
       }
     } catch (Exception e) {
-      // catches every the Exception given by the query manager
+      // catches every the Exception given
       System.out.println("ERROR: " + e.getMessage());
     }
+  }
+
+  private void runSparkServer() {
+    Spark.setPort(port);
+    Spark.externalStaticFileLocation("src/main/resources/static");
+    Spark.exception(Exception.class, new ExceptionPrinter());
+    FreeMarkerEngine marker = createEngine();
+
+    Spark.get("/home", (req, res) -> {
+      Map<String, Object> variables =
+          ImmutableMap.of("title", "Home | Readient");
+      return new ModelAndView(variables, "main.ftl");
+    }, marker);
+
+    Spark.post("/login", (req, res) -> {
+      QueryParamsMap qm = req.queryMap();
+      String username = qm.value("username");
+      String password = qm.value("password");
+      try {
+        profile = getProfile(username, password);
+        final Profile p = profile;
+        return GUI_GSON.toJson(profileJson(p));
+      } catch (Exception e) {
+        System.out.println(e.getMessage());
+      }
+      return GUI_GSON.toJson(new JsonObject());
+    });
+
+    Spark.post("/signup", (req, res) -> {
+      QueryParamsMap qm = req.queryMap();
+      String username = qm.value("username");
+      String password = qm.value("password");
+      String fName = qm.value("first_name");
+      String lName = qm.value("last_name");
+      try {
+        sg = new StatsGenerator();
+        manager.addUser(username, password, fName, lName);
+        profile = getProfile(username, password);
+        final Profile p = profile;
+        return GUI_GSON.toJson(profileJson(p));
+      } catch (Exception e) {
+        System.out.println(e.getMessage());
+      }
+      return GUI_GSON.toJson(new JsonObject());
+    });
+
+    Spark.post("/profile", (req, res) -> {
+      final Profile p = profile;
+      return GUI_GSON.toJson(profileJson(p));
+    });
+
+    Spark.post("/article/a/:aid", (req, res) -> {
+      String artID = req.params(":aid").replace('.', '/');
+      final Profile p = profile;
+      if (p.containsArticle(artID)) {
+        return GUI_GSON.toJson(p.getArticle(artID));
+      } else {
+        return GUI_GSON.toJson(new JsonObject());
+      }
+    });
+
+    Spark.post("/add", (req, res) -> {
+      QueryParamsMap qm = req.queryMap();
+      String url = qm.value("url");
+      Integer rank =
+          qm.value("rank") == null ? null : Integer.parseInt(qm.value("rank"));
+      try {
+        Pair<Profile, Article> result = addArticle(profile, url, rank);
+        profile = result.first();
+        return GUI_GSON.toJson(result.second());
+      } catch (SQLException e) {
+        System.out.println("Article could not be added to the databse :( "
+            + e.getMessage());
+      }
+      return GUI_GSON.toJson(new JsonObject());
+    });
+
+    Spark.post("/remove", (req, res) -> {
+      QueryParamsMap qm = req.queryMap();
+      String in = qm.value("articles");
+      JsonArray arts = GUI_GSON.fromJson(in, JsonArray.class);
+      for (JsonElement obj : arts) {
+        if (profile.containsArticle(obj.getAsString())) {
+          removeArticle(obj.getAsString(), profile);
+        }
+      }
+      return GUI_GSON.toJson(profileJson(profile));
+    });
   }
 
   private void cmdLine(Profile p) {
     Profile prof = p;
     Scanner s = new Scanner(System.in);
+    System.out.println("Welcome to Readient!");
+    System.out.println("Available commands: ");
+    printHelp();
+    System.out.println();
     System.out.print("readient> ");
     while (s.hasNext()) {
       String in = s.nextLine();
@@ -93,9 +225,9 @@ public final class Main {
       } else if (in.isEmpty()) {
         continue;
       } else if (line[0].equals("profile")) {
-        System.out.println(GSON.toJson(profileJson(prof)));
+        System.out.println(CMND_GSON.toJson(profileJson(prof)));
       } else if (line[0].equals("info")) {
-        System.out.println(GSON.toJson(userJson(prof.getUser())));
+        System.out.println(CMND_GSON.toJson(userJson(prof.getUser())));
       } else if (line[0].equals("add")) {
         if (line.length < 2) {
           printHelp();
@@ -103,20 +235,22 @@ public final class Main {
           try {
             Pair<Profile, Article> res = addArticle(prof, line[1], null);
             prof = res.first();
-            System.out.println(GSON.toJson(res.second()));
+            System.out.println(CMND_GSON.toJson(res.second()));
           } catch (SQLException e) {
             System.out.println("Article could not be added to the databse :( "
                 + e.getMessage());
           }
-        } else if (line.length == 2) {
+        } else if (line.length == 3) {
           try {
             int rank = Integer.parseInt(line[2]);
             if (rank != 0 || rank != 1) {
-              printHelp();
+              System.out.println("Rank should be 1 for like "
+                  + "and 0 for not like");
+            } else {
+              Pair<Profile, Article> res = addArticle(prof, line[1], rank);
+              prof = res.first();
+              System.out.println(CMND_GSON.toJson(res.second()));
             }
-            Pair<Profile, Article> res = addArticle(prof, line[1], rank);
-            prof = res.first();
-            System.out.println(GSON.toJson(res.second()));
           } catch (SQLException e) {
             System.out.println("Article could not be added to the databse :( "
                 + e.getMessage());
@@ -128,80 +262,94 @@ public final class Main {
         }
       } else if (line[0].equals("get")) {
         if (line.length == 2) {
-          for (Article art : prof.getArticles()) {
-            if (art.getId().equals(line[1])) {
-              System.out.println(GSON.toJsonTree(art));
-              break;
-            }
+          if (prof.containsArticle(line[1])) {
+            System.out.println(CMND_GSON.toJson(prof.getArticle(line[1])));
+          } else {
+            System.out.println("Article does not exist");
           }
         } else {
           printHelp();
         }
       } else if (line[0].equals("remove")) {
-
+        if (line.length == 2) {
+          if (prof.containsArticle(line[1])) {
+            removeArticle(line[1], prof);
+            System.out.println("Article has been removed!");
+          } else {
+            System.out.println("Article does not exist");
+          }
+        } else {
+          printHelp();
+        }
       } else if (line[0].equals("help")) {
         printHelp();
       } else {
-        System.err.println(GSON.toJson("Invalid Commnad"));
+        System.out.println("command not found :(");
       }
       System.out.print("readient> ");
     }
     s.close();
   }
 
-  private Pair<Profile, Article> addArticle(Profile prof, String url,
-      Integer rank)
-      throws SQLException {
+  private synchronized Pair<Profile, Article> addArticle(Profile prof,
+      String url, Integer rank) throws SQLException {
     ArticleParser p = new ArticleParser(url);
     Stats stats = StatsGenerator.analyze(p.iterator());
-    String id = manager.addArticle(p.title(), prof.getUser().getUsername(),
-        rank, stats.words());
+    String id =
+        manager.addArticle(p.title(), p.url(), prof.getUser().getUsername(),
+            rank, stats.words());
     Map<String, Double> emotions = sg.moods(p, stats);
     manager.addMoods(id, emotions);
-    Map<Integer, Double> sent = sg.sentiment(p, stats);
-    manager.addSentiment(id, sent.get(1), sent.get(0));
+    List<Integer> sent = sg.sentiment(p, stats);
+    manager.addSentiments(id, sent);
     String topic = sg.topic(p);
     manager.addTopic(id, topic);
-    double readLevel = (new Readability(stats)).avg();
-    manager.addReadLevel(id, readLevel);
-    byte[] pass = prof.getUser().getPasswordHash();
-    byte[] salt = prof.getUser().getSalt();
-    Article art = new Article(id, p.title(), prof.getUser().getUsername(), rank,
-        readLevel);
+    Readability read = new Readability(stats);
+    manager.addReadLevel(id, read.avgRead(), read.avgGrade());
+    Article art = new Article(id, p.title(), p.url(),
+        prof.getUser().getUsername(), rank, read.avgRead(), read.avgGrade());
     art.setMood(emotions);
     List<String> topics = new ArrayList<>();
     topics.add(topic);
     art.setTopics(topics);
     art.setSentiments(sent);
     prof.addArticle(art);
-    return new Pair<>(getProfile(prof.getUser().getUsername(), pass, salt,
-        prof.getArticles()),
-        art);
+    prof.setAvgReadLevel(
+        manager.avgReadLevel(prof.getUser().getUsername()));
+    prof.setWordsRead(manager.wordsRead(prof.getUser().getUsername()));
+    getAvgs(prof);
+    return new Pair<>(prof, art);
   }
 
-  private Profile getProfile(String username, String password)
+  private synchronized Profile removeArticle(String artID, Profile prof) {
+    try {
+      manager.removeArticle(artID);
+    } catch (SQLException e) {
+      System.out.println("Article could not be removed from the database");
+    }
+    prof.removeArticle(artID);
+    getAvgs(prof);
+    return prof;
+  }
+
+  private synchronized void getAvgs(Profile prof) {
+    try {
+      prof.setAvgReadLevel(
+          manager.avgReadLevel(prof.getUser().getUsername()));
+      prof.setWordsRead(manager.wordsRead(prof.getUser().getUsername()));
+    } catch (SQLException e) {
+      System.out.println("Unable to connect to the database");
+    }
+  }
+
+  private synchronized Profile getProfile(String username, String password)
       throws SQLException {
     User user = manager.getUser(username, password);
     if (user == null) {
       throw new IllegalArgumentException("invalid username");
     }
     Profile profile =
-        new Profile(user, manager.avgReadLevel(user.getUsername()),
-            manager.wordsRead(user.getUsername()),
-            manager.getArticles(user.getUsername()));
-    return profile;
-  }
-
-  private Profile getProfile(String username, byte[] pass, byte[] salt,
-      List<Article> arts)
-      throws SQLException {
-    User user = manager.getUser(username, pass, salt);
-    if (user == null) {
-      throw new IllegalArgumentException("invalid username");
-    }
-    Profile profile =
-        new Profile(user, manager.avgReadLevel(user.getUsername()),
-            manager.wordsRead(user.getUsername()), arts);
+        new Profile(user, manager.getArticles(user.getUsername()));
     return profile;
   }
 
@@ -225,6 +373,43 @@ public final class Main {
     return json;
   }
 
+  /**
+   * Creates a @FreeMarkerEngine for the SparkServer.
+   *
+   * @return a @FreeMarkerEngine for the SparkServer.
+   */
+  private static FreeMarkerEngine createEngine() {
+    Configuration config = new Configuration();
+    // get the templates file
+    File temp = new File("src/main/resources/spark/template/freemarker/");
+    try {
+      config.setDirectoryForTemplateLoading(temp);
+    } catch (IOException e) {
+      System.out.printf("ERROR: Unable to load temaplates in %s%n", temp);
+      System.exit(1);
+    }
+    return new FreeMarkerEngine();
+  }
+
+  /**
+   * The printer class for the Exceptions in the bacon GUI.
+   *
+   * @author sarasolano
+   */
+  private static class ExceptionPrinter implements ExceptionHandler {
+    @Override
+    public void handle(Exception e, Request req, Response res) {
+      res.status(500);
+      StringWriter stacktrace = new StringWriter();
+      try (PrintWriter pw = new PrintWriter(stacktrace)) {
+        pw.println("<pre>");
+        e.printStackTrace(pw);
+        pw.println("</pre>");
+      }
+      res.body(stacktrace.toString());
+    }
+  }
+
   private static void printRunHelp() {
     System.out.println(
         "--help: prints this message\n"
@@ -234,14 +419,14 @@ public final class Main {
 
   private static void printHelp() {
     System.out.println(
-        "help: prints this message\n"
-            + "profile: prints the while user profile\n"
-            + "info: prints the user info\n"
-            + "add <url>: adds an article to the user's profile\n"
-            + "add <url> <rank>: adds an article to the user's profile with "
+        "\thelp: prints this message\n"
+            + "\tprofile: prints the while user profile\n"
+            + "\tinfo: prints the user info\n"
+            + "\tadd <url>: adds an article to the user's profile\n"
+            + "\tadd <url> <rank>: adds an article to the user's profile with "
             + "a rank of 1 for like and 0 for unlike\n"
-            + "remove <art_id>: removes an id form the user's profile\n"
-            + "get <art_id>: gets the info for the given article\n"
-            + "logout: logs out of Readient :(");
+            + "\tremove <art_id>: removes an id form the user's profile\n"
+            + "\tget <art_id>: gets the info for the given article\n"
+            + "\tlogout: logs out of Readient :(");
   }
 }

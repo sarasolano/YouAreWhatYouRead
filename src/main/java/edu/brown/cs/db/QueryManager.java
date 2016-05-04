@@ -31,15 +31,6 @@ import edu.brown.cs.readient.User;
  * @author sarasolano
  */
 public class QueryManager implements AutoCloseable {
-  public static void main(String[] args)
-      throws Exception {
-    QueryManager m = new QueryManager("data.db");
-    // m.addUser("ssolano", "apples", "Sara", "Solano");
-    System.out.println(m.addArticle("test article", "ssolano", null, 0));
-    System.out.println(m.getArticles("ssolano"));
-    m.close();
-  }
-
   /**
    * The secure random number generator for salts.
    */
@@ -108,7 +99,6 @@ public class QueryManager implements AutoCloseable {
     rs.close();
     stat.close();
     return toReturn;
-
   }
 
   /**
@@ -155,7 +145,7 @@ public class QueryManager implements AutoCloseable {
    */
   public List<Article> getArticles(String username) throws SQLException {
     String query =
-        "SELECT id, name, user, rank, read_level FROM article, read_level "
+        "SELECT id, name, url, user, rank, read_level, grade_level FROM article, read_level "
             + "WHERE article.id == read_level.article AND article.user == ?";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, username);
@@ -163,8 +153,8 @@ public class QueryManager implements AutoCloseable {
     List<Article> toReturn = new ArrayList<>();
     while (rs.next()) {
       String id = rs.getString(1);
-      Article art = new Article(id, rs.getString(2),
-          rs.getString(3), rs.getInt(4), rs.getDouble(5));
+      Article art = new Article(id, rs.getString(2), rs.getString(3),
+          rs.getString(4), rs.getInt(5), rs.getDouble(6), rs.getDouble(7));
       art.setMood(getMoods(id));
       art.setSentiments(getSentiments(id));
       art.setTopics(getTopics(id));
@@ -173,6 +163,22 @@ public class QueryManager implements AutoCloseable {
     rs.close();
     stat.close();
     return toReturn;
+  }
+
+  public void removeArticle(String artID) throws SQLException {
+    String query = "DELETE FROM article WHERE id = ?";
+    PreparedStatement stat = conn.prepareStatement(query);
+    stat.setString(1, artID);
+    stat.execute();
+    query = "DELETE FROM mood WHERE article = ?";
+    stat.setString(1, artID);
+    stat.execute();
+    query = "DELETE FROM sentiment WHERE article = ?";
+    stat.setString(1, artID);
+    stat.execute();
+    query = "DELETE FROM topic WHERE article = ?";
+    stat.setString(1, artID);
+    stat.execute();
   }
 
   /**
@@ -184,7 +190,8 @@ public class QueryManager implements AutoCloseable {
    * @throws SQLException
    */
   public Map<String, Double> getMoods(String artID) throws SQLException {
-    String query = "SELECT mood, probability FROM mood WHERE article == ?";
+    String query =
+        "SELECT mood, probability FROM mood WHERE article == ?";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, artID);
     ResultSet rs = stat.executeQuery();
@@ -203,18 +210,19 @@ public class QueryManager implements AutoCloseable {
    *
    * @param artID
    *          the id of the article
-   * @return a map from sentiment to probability
+   * @return a map from sentiment to probability for each sentence
    * @throws SQLException
    */
-  public Map<Integer, Double> getSentiments(String artID) throws SQLException {
-    String query =
-        "SELECT sentiment, probability FROM sentiment WHERE article == ?";
+  public List<Integer> getSentiments(String artID)
+      throws SQLException {
+    String query = "SELECT sentence, sentiment FROM sentiment"
+        + " WHERE article = ?";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, artID);
     ResultSet rs = stat.executeQuery();
-    Map<Integer, Double> toReturn = new HashMap<>();
+    List<Integer> toReturn = new ArrayList<>();
     while (rs.next()) {
-      toReturn.put(rs.getInt(1), rs.getDouble(2));
+      toReturn.add(rs.getInt(1), rs.getInt(2));
     }
     rs.close();
     stat.close();
@@ -338,21 +346,22 @@ public class QueryManager implements AutoCloseable {
    * @throws SQLException
    *           if there is an error while executing
    */
-  public String addArticle(String name, String username, Integer rank,
-      int words)
+  public String addArticle(String name, String url, String username,
+      Integer rank, int words)
       throws SQLException {
-    String query = "INSERT INTO article VALUES(?, ?, ?, "
+    String query = "INSERT INTO article VALUES(?, ?, ?, ?, "
         + (rank == null ? "NULL," : "?,") + " ?)";
     PreparedStatement stat = conn.prepareStatement(query);
     String id = "a/" + UUID.randomUUID();
     stat.setString(1, id);
     stat.setString(2, name);
-    stat.setString(3, username);
+    stat.setString(3, url);
+    stat.setString(4, username);
     if (rank != null) {
-      stat.setInt(4, rank);
-      stat.setInt(5, words);
+      stat.setInt(5, rank);
+      stat.setInt(6, words);
     } else {
-      stat.setInt(4, words);
+      stat.setInt(5, words);
     }
     stat.execute();
     stat.close();
@@ -366,14 +375,18 @@ public class QueryManager implements AutoCloseable {
    *          the id of the article
    * @param readLevel
    *          the reading level of the article
+   * @param gradeLevel
+   *          the grade level of the article
    * @throws SQLException
    *           if there is an error while executing
    */
-  public void addReadLevel(String artID, double readLevel) throws SQLException {
-    String query = "INSERT INTO read_level VALUES(?, ?)";
+  public void addReadLevel(String artID, double readLevel, double gradeLevel)
+      throws SQLException {
+    String query = "INSERT INTO read_level VALUES(?, ?, ?)";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, artID);
     stat.setDouble(2, readLevel);
+    stat.setDouble(3, gradeLevel);
     stat.execute();
     stat.close();
   }
@@ -383,21 +396,19 @@ public class QueryManager implements AutoCloseable {
    *
    * @param artID
    *          the id of the article
-   * @param posProb
-   *          the positive probability
-   * @param negProb
-   *          the negative probability
+   * @param sent
+   *          the sentiment for each sentence in the article
    * @throws SQLException
    *           if there is a problem while executing
    */
-  public void addSentiment(String artID, double posProb, double negProb)
+  public void addSentiments(String artID, List<Integer> sent)
       throws SQLException {
     String query = "INSERT INTO sentiment VALUES(?, ?, ?)";
     PreparedStatement stat = conn.prepareStatement(query);
-    for (int i = 0; i < 2; i++) {
-      stat.setInt(1, i);
+    for (int i = 0; i < sent.size(); i++) {
+      stat.setDouble(1, sent.get(i));
       stat.setString(2, artID);
-      stat.setDouble(3, i == 0 ? negProb : posProb);
+      stat.setInt(3, i);
       stat.addBatch();
     }
     stat.executeBatch();

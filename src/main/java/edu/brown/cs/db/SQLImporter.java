@@ -56,6 +56,7 @@ public class SQLImporter {
     String query = "CREATE TABLE article("
         + "id TEXT NOT NULL,"
         + "name TEXT NOT NULL,"
+        + "url TEXT NOT NULL,"
         + "user TEXT NOT NULL,"
         + "rank INT,"
         + "words INT NOT NULL,"
@@ -77,7 +78,8 @@ public class SQLImporter {
     String query = "CREATE TABLE read_level("
         + "article TEXT NOT NULL,"
         + "read_level REAL NOT NULL,"
-        + "PRIMARY KEY(article, read_level)"
+        + "grade_level REAL NOT NULL,"
+        + "PRIMARY KEY(article)"
         + "FOREIGN KEY(article) REFERENCES article(id)"
         + ")";
     PreparedStatement statement = CONN.prepareStatement(query);
@@ -109,8 +111,6 @@ public class SQLImporter {
    *
    * @throws SQLException
    *           if there is an error while executing SQL query
-   * @throws IOException
-   *           if the program is unable to read the csv file
    */
   private static void createSentimentTable()
       throws SQLException, IOException {
@@ -118,8 +118,8 @@ public class SQLImporter {
         + "sentiment INT NOT NULL," // sentiment is 0 for negative and 1 for
                                     // positive
         + "article TEXT NOT NULL,"
-        + "probability REAL NOT NULL,"
-        + "PRIMARY KEY(sentiment, article),"
+        + "sentence INT NOT NULL,"
+        + "PRIMARY KEY(sentiment, article, sentence),"
         + "CONSTRAINT sentiment CHECK(sentiment == 0 || sentiment == 1)"
         + "FOREIGN KEY(article) REFERENCES article(id)"
         + ")";
@@ -133,8 +133,6 @@ public class SQLImporter {
    *
    * @throws SQLException
    *           if there is an error while executing SQL query
-   * @throws IOException
-   *           if the program is unable to read the csv file
    */
   private static void createMoodTable()
       throws SQLException, IOException {
