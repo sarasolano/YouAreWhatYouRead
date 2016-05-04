@@ -1,4 +1,9 @@
 (function() {
+		$("#username-err").hide();
+		$("#pwd-err").hide();
+		$("sub-err").hide();
+		$("#pwd2-err").hide();
+	
     var form = $('#login');
 		var pw = $("pwd");
 		var pw2 = $("pwd2");

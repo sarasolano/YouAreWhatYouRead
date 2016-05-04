@@ -1,5 +1,4 @@
 <#assign content>
-<form method="GET" action="/home">
 	<nav class="navbar navbar-default navbar-fixed-top">
 		<div class="container">
 			<a class="navbar-brand" href="#">Readient</a>
@@ -62,7 +61,6 @@
 			</div>
 		</div>
 	</div>
-</form>
 
 </#assign>
 <#include "main.ftl">

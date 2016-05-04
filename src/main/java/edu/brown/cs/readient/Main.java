@@ -132,7 +132,7 @@ public final class Main {
     Spark.get("/home", (req, res) -> {
       Map<String, Object> variables =
           ImmutableMap.of("title", "Home | Readient");
-      return new ModelAndView(variables, "main.ftl");
+      return new ModelAndView(variables, "signin.ftl");
     }, marker);
 
     Spark.post("/exists", (req, res) -> {
@@ -395,7 +395,8 @@ public final class Main {
    */
   private static FreeMarkerEngine createEngine() {
     Configuration config = new Configuration();
-    File templates = new File("../readient/src/main/resources/template/freemarker");
+    File templates =
+        new File("../readient/src/main/resources/template/freemarker");
     Spark.exception(Exception.class, new ExceptionPrinter());
     try {
       config.setDirectoryForTemplateLoading(templates);
