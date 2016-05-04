@@ -43,9 +43,9 @@
 
 						<div class="form-group input-group">
 							<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-							<input id="pwd2" class="form-control" type="password" name='password' placeholder="repeat password"/>
-							<span id="pwd2-err" style="color: red; display: none">Passwords don't match</span><br>
+							<input id="pwd2" class="form-control" type="password" name='password' placeholder="repeat password"/>	
 						</div>
+						<span id="pwd2-err" style="color: red; display: none">Passwords don't match</span>
 
 						<div class="form-group">
 							<button id="submit" type="button" class="btn btn-def btn-block">Signup</button>

@@ -4,17 +4,16 @@
 		var pw2 = $("#pwd2");
 		var username = $('#username');
 	
-		window.setInterval(function() {
-			username.keyup(function(e) {
-				$("#repeat-err").hide();
-				if (exists(username)) {
-					$("#repeat-err").show();
-					username.css("border", "red solid 1px");
-				} else {
-					username.css("border", "green solid 1px");
-				}
-			});
-		}, 500);
+//		username.bind("keyup", function(e) {
+//			$("#repeat-err").hide();
+//				if (exists(username)) {
+//					$("#repeat-err").show();
+//					username.css("border", "red solid 1px");
+//				} else {
+//					username.css("border", "green solid 1px");
+//				}
+//			});
+//		});
 	
 		username.click(function(e) {
 			username.css("border", "grey solid 1px");
