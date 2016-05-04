@@ -31,16 +31,6 @@ import edu.brown.cs.readient.User;
  * @author sarasolano
  */
 public class QueryManager implements AutoCloseable {
-  // public static void main(String[] args)
-  // throws Exception {
-  // QueryManager m = new QueryManager("data.db");
-  // // m.addUser("ssolano", "apples", "Sara", "Solano");
-  // // System.out.println(m.addArticle("test article", "url", "ssolano", null,
-  // // 0));
-  // System.out.println(m.getArticles("ssolano"));
-  // m.close();
-  // }
-
   /**
    * The secure random number generator for salts.
    */

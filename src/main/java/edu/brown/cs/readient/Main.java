@@ -244,11 +244,13 @@ public final class Main {
           try {
             int rank = Integer.parseInt(line[2]);
             if (rank != 0 || rank != 1) {
-              printHelp();
+              System.out.println("Rank should be 1 for like "
+                  + "and 0 for not like");
+            } else {
+              Pair<Profile, Article> res = addArticle(prof, line[1], rank);
+              prof = res.first();
+              System.out.println(CMND_GSON.toJson(res.second()));
             }
-            Pair<Profile, Article> res = addArticle(prof, line[1], rank);
-            prof = res.first();
-            System.out.println(CMND_GSON.toJson(res.second()));
           } catch (SQLException e) {
             System.out.println("Article could not be added to the databse :( "
                 + e.getMessage());
