@@ -162,7 +162,7 @@ public class QueryManager implements AutoCloseable {
    * @return a list of articles submitted by the user
    * @throws SQLException
    */
-  public List<Article> getArticles(String username) throws SQLException  {
+  public List<Article> getArticles(String username) throws SQLException {
     String query =
         "SELECT id, name, url, user, rank, read_level, grade_level FROM article, read_level "
             + "WHERE article.id == read_level.article AND article.user == ?";
@@ -321,6 +321,10 @@ public class QueryManager implements AutoCloseable {
     results.close();
     return toReturn;
   }
+
+  // public Map<String, Double> avgMoods(String username) {
+  // String query = "S";
+  // }
 
   /**
    * Adds a user to the database.

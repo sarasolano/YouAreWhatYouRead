@@ -72,6 +72,7 @@ public final class Main {
     List<String> arguments = (List<String>) options.nonOptionArguments();
     try {
       manager = new QueryManager(DB);
+      sg = new StatsGenerator();
       usernames = manager.getUserNames();
       if (options.has("gui")) {
         if (options.has("port")) { // check if the --port tack was called
@@ -214,7 +215,6 @@ public final class Main {
       String password = qm.value("password");
       String[] name = qm.value("name").split(" ");
       try {
-        sg = new StatsGenerator();
         manager.addUser(username, password, name[0],
             name.length == 1 ? "" : name[1]);
         profile = getProfile(username, password);
