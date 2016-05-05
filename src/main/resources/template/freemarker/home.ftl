@@ -49,7 +49,7 @@
 						<div id="pages"></div>
 					</div>
 				</div>
-				<div class="row">
+				<div class="row" id="row2" >
 					<div class="col-md-8">
 						<div id="cloud"></div>
 					</div>

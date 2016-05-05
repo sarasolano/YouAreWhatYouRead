@@ -132,7 +132,7 @@ public final class Main {
     Spark.get("/signin", (req, res) -> {
       Map<String, Object> variables =
           ImmutableMap.of("title", "Home | Readient");
-      return new ModelAndView(variables, "signin.ftl");
+      return new ModelAndView(variables, "home.ftl");
     }, marker);
 
     Spark.get("/signup", (req, res) -> {
