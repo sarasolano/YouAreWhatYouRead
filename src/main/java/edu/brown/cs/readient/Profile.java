@@ -11,6 +11,7 @@ public class Profile {
   private User user;
   private int wordsRead;
   private double avgReadLevel;
+  private Map<String, Double> avgMoods;
   private Map<String, Article> articles;
 
   public Profile(User u, double readLevel, int wordsRead,
@@ -19,6 +20,7 @@ public class Profile {
     this.avgReadLevel = readLevel;
     this.wordsRead = wordsRead;
     articles = new ConcurrentHashMap<>();
+    avgMoods = new ConcurrentHashMap<>();
     for (Article art : arts) {
       articles.put(art.getId(), art);
     }
@@ -40,6 +42,10 @@ public class Profile {
     this.avgReadLevel = avgReadLevel;
   }
 
+  public synchronized void setAvgMoods(Map<String, Double> avgMoods) {
+    this.avgMoods = avgMoods;
+  }
+
   public synchronized Collection<Article> getArticles() {
     return Collections.unmodifiableCollection(articles.values());
   }
@@ -54,6 +60,10 @@ public class Profile {
 
   public synchronized double getAvgReadLevel() {
     return avgReadLevel;
+  }
+
+  public synchronized Map<String, Double> getAvgMoods() {
+    return avgMoods;
   }
 
   public synchronized int wordsRead() {
