@@ -32,6 +32,7 @@ import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
+import spark.Session;
 import spark.Spark;
 import spark.template.freemarker.FreeMarkerEngine;
 
@@ -44,10 +45,10 @@ public final class Main {
   private static final int SIGNUP_ARGS = 4;
   private static final int GUI_ARGS = 0;
   private int port = 8080;
-  private static final Gson CMND_GSON =
-      new GsonBuilder().setPrettyPrinting().create();
-  private static final Gson GUI_GSON =
-      new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+  private static final Gson CMND_GSON = new GsonBuilder().setPrettyPrinting()
+      .create();
+  private static final Gson GUI_GSON = new GsonBuilder()
+      .excludeFieldsWithoutExposeAnnotation().create();
   private static final String DB = "data.db";
   private QueryManager manager;
   private StatsGenerator sg;
@@ -89,8 +90,8 @@ public final class Main {
         if (arguments.size() < GUI_ARGS
             || (arguments.size() > GUI_ARGS && !options.has("port"))
             || (arguments.size() > GUI_ARGS + 1 && options.has("port"))) {
-          System.out.println("ERROR: usage: ./readient --gui "
-              + "--port <number>");
+          System.out
+              .println("ERROR: usage: ./readient --gui " + "--port <number>");
           return;
         }
 
@@ -130,16 +131,33 @@ public final class Main {
     FreeMarkerEngine marker = createEngine();
 
     Spark.get("/signin", (req, res) -> {
-      Map<String, Object> variables =
-          ImmutableMap.of("title", "Home | Readient");
+      Map<String, Object> variables = ImmutableMap.of("title",
+          "Home | Readient");
+      res.cookie("username", "Harry", 1000000);
       return new ModelAndView(variables, "signin.ftl");
-    }, marker);
+    } , marker);
+
+
+    Spark.get("/home", (req, res) -> {
+
+      String s = req.session().attribute("username");
+
+      System.out.println(req.session().id());
+      System.out.println(s);
+      if (s == null) {
+        res.redirect("/signin");
+      }
+      Map<String, Object> variables = ImmutableMap.of("title",
+          "Home | Readient","username",s);
+      System.out.println("/home");
+      return new ModelAndView(variables, "home.ftl");
+    },marker);
 
     Spark.get("/signup", (req, res) -> {
-      Map<String, Object> variables =
-          ImmutableMap.of("title", "Home | Readient");
+      Map<String, Object> variables = ImmutableMap.of("title",
+          "Home | Readient");
       return new ModelAndView(variables, "signup.ftl");
-    }, marker);
+    } , marker);
 
     Spark.post("/exists", (req, res) -> {
       JsonObject obj = new JsonObject();
@@ -158,19 +176,35 @@ public final class Main {
       QueryParamsMap qm = req.queryMap();
       String username = qm.value("username");
       String password = qm.value("password");
+      System.out.println(password);
       try {
         profile = getProfile(username, password);
-        final Profile p = profile;
-        return GUI_GSON.toJson(profileJson(p));
+        if (profile == null) {
+          JsonObject obj = new JsonObject();
+          System.out.println("mmee");
+          obj.addProperty("error", "profile doesn't exist");
+          return GUI_GSON.toJson(obj);
+
+
+        } else {
+
+          final Profile p = profile;
+          Session s = req.session();
+          s.attribute("username", username);
+          System.out.println(req.session().id());
+          return GUI_GSON.toJson(GUI_GSON.toJson(profileJson(p)));
+        }
       } catch (Exception e) {
         System.out.println(e.getMessage());
       }
       return GUI_GSON.toJson(new JsonObject());
+
     });
 
     Spark.post("/signup", (req, res) -> {
       QueryParamsMap qm = req.queryMap();
       String username = qm.value("username");
+      System.out.println(username);
       String password = qm.value("password");
       String fName = qm.value("first_name");
       String lName = qm.value("last_name");
@@ -179,6 +213,7 @@ public final class Main {
         manager.addUser(username, password, fName, lName);
         profile = getProfile(username, password);
         final Profile p = profile;
+        System.out.println(username);
         return GUI_GSON.toJson(profileJson(p));
       } catch (Exception e) {
         System.out.println(e.getMessage());
@@ -204,15 +239,15 @@ public final class Main {
     Spark.post("/add", (req, res) -> {
       QueryParamsMap qm = req.queryMap();
       String url = qm.value("url");
-      Integer rank =
-          qm.value("rank") == null ? null : Integer.parseInt(qm.value("rank"));
+      Integer rank = qm.value("rank") == null ? null
+          : Integer.parseInt(qm.value("rank"));
       try {
         Pair<Profile, Article> result = addArticle(profile, url, rank);
         profile = result.first();
         return GUI_GSON.toJson(result.second());
       } catch (SQLException e) {
-        System.out.println("Article could not be added to the databse :( "
-            + e.getMessage());
+        System.out.println(
+            "Article could not be added to the databse :( " + e.getMessage());
       }
       return GUI_GSON.toJson(new JsonObject());
     });
@@ -265,8 +300,8 @@ public final class Main {
           try {
             int rank = Integer.parseInt(line[2]);
             if (rank != 0 || rank != 1) {
-              System.out.println("Rank should be 1 for like "
-                  + "and 0 for not like");
+              System.out
+                  .println("Rank should be 1 for like " + "and 0 for not like");
             } else {
               Pair<Profile, Article> res = addArticle(prof, line[1], rank);
               prof = res.first();
@@ -316,9 +351,8 @@ public final class Main {
       String url, Integer rank) throws SQLException {
     ArticleParser p = new ArticleParser(url);
     Stats stats = StatsGenerator.analyze(p.iterator());
-    String id =
-        manager.addArticle(p.title(), p.url(), prof.getUser().getUsername(),
-            rank, stats.words());
+    String id = manager.addArticle(p.title(), p.url(),
+        prof.getUser().getUsername(), rank, stats.words());
     Map<String, Double> emotions = sg.moods(p, stats);
     manager.addMoods(id, emotions);
     List<Integer> sent = sg.sentiment(p, stats);
@@ -335,8 +369,7 @@ public final class Main {
     art.setTopics(topics);
     art.setSentiments(sent);
     prof.addArticle(art);
-    prof.setAvgReadLevel(
-        manager.avgReadLevel(prof.getUser().getUsername()));
+    prof.setAvgReadLevel(manager.avgReadLevel(prof.getUser().getUsername()));
     prof.setWordsRead(manager.wordsRead(prof.getUser().getUsername()));
     getAvgs(prof);
     return new Pair<>(prof, art);
@@ -355,22 +388,31 @@ public final class Main {
 
   private synchronized void getAvgs(Profile prof) {
     try {
-      prof.setAvgReadLevel(
-          manager.avgReadLevel(prof.getUser().getUsername()));
+      prof.setAvgReadLevel(manager.avgReadLevel(prof.getUser().getUsername()));
       prof.setWordsRead(manager.wordsRead(prof.getUser().getUsername()));
     } catch (SQLException e) {
       System.out.println("Unable to connect to the database");
     }
   }
 
-  private synchronized Profile getProfile(String username, String password)
-      throws SQLException {
-    User user = manager.getUser(username, password);
-    if (user == null) {
-      throw new IllegalArgumentException("invalid username");
+  private synchronized Profile getProfile(String username, String password) {
+    System.out.println("hi" + username);
+    System.out.println("hi" + password);
+    User user;
+    try {
+      user = manager.getUser(username, password);
+    } catch (SQLException e) {
+      System.out.println("llllll");
+      return null;
     }
-    Profile profile =
-        new Profile(user, manager.getArticles(user.getUsername()));
+    System.out.println("bbbbb");
+    Profile profile;
+    try {
+      profile = new Profile(user,
+          manager.getArticles(user.getUsername()));
+    } catch (SQLException e) {
+      return null;
+    }
     return profile;
   }
 
@@ -401,8 +443,8 @@ public final class Main {
    */
   private static FreeMarkerEngine createEngine() {
     Configuration config = new Configuration();
-    File templates =
-        new File("../readient/src/main/resources/template/freemarker");
+    File templates = new File(
+        "../readient/src/main/resources/template/freemarker");
     Spark.exception(Exception.class, new ExceptionPrinter());
     try {
       config.setDirectoryForTemplateLoading(templates);
@@ -434,22 +476,20 @@ public final class Main {
   }
 
   private static void printRunHelp() {
-    System.out.println(
-        "--help: prints this message\n"
-            + "--login: logs in a user into Readient\n"
-            + "--signup: signs a user into Readient and logs them in\n");
+    System.out.println("--help: prints this message\n"
+        + "--login: logs in a user into Readient\n"
+        + "--signup: signs a user into Readient and logs them in\n");
   }
 
   private static void printHelp() {
-    System.out.println(
-        "\thelp: prints this message\n"
-            + "\tprofile: prints the while user profile\n"
-            + "\tinfo: prints the user info\n"
-            + "\tadd <url>: adds an article to the user's profile\n"
-            + "\tadd <url> <rank>: adds an article to the user's profile with "
-            + "a rank of 1 for like and 0 for unlike\n"
-            + "\tremove <art_id>: removes an id form the user's profile\n"
-            + "\tget <art_id>: gets the info for the given article\n"
-            + "\tlogout: logs out of Readient :(");
+    System.out.println("\thelp: prints this message\n"
+        + "\tprofile: prints the while user profile\n"
+        + "\tinfo: prints the user info\n"
+        + "\tadd <url>: adds an article to the user's profile\n"
+        + "\tadd <url> <rank>: adds an article to the user's profile with "
+        + "a rank of 1 for like and 0 for unlike\n"
+        + "\tremove <art_id>: removes an id form the user's profile\n"
+        + "\tget <art_id>: gets the info for the given article\n"
+        + "\tlogout: logs out of Readient :(");
   }
 }

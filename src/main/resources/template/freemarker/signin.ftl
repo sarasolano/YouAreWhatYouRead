@@ -12,7 +12,7 @@
 
 					<div class="form-group input-group">
 						<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-						<input id="passoword" class="form-control" type="password" name='password' placeholder="password"/>
+						<input id="password" class="form-control" type="password" name='password' placeholder="password"/>
 					</div>
 
 					<div class="form-group">
