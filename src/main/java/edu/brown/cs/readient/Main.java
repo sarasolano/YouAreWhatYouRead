@@ -132,6 +132,10 @@ public final class Main {
     FreeMarkerEngine marker = createEngine();
 
     Spark.get("/signin", (req, res) -> {
+      String s = req.session().attribute("username");
+      if (s != null) {
+        res.redirect("/home");
+      }
       Map<String, Object> variables = ImmutableMap.of("title",
           "Home | Readient");
       res.cookie("username", "Harry", 1000000);
@@ -149,9 +153,6 @@ public final class Main {
     Spark.get("/home", (req, res) -> {
 
       String s = req.session().attribute("username");
-
-      System.out.println(req.session().id());
-      System.out.println(s);
       if (s == null) {
         res.redirect("/signin");
       }
@@ -161,7 +162,19 @@ public final class Main {
       return new ModelAndView(variables, "home.ftl");
     }, marker);
 
+    Spark.get("/", (req, res) -> {
+
+      res.redirect("/home");
+      Map<String, Object> variables = ImmutableMap.of("title",
+          "Home | Readient");
+      return new ModelAndView(variables, "home.ftl");
+    }, marker);
+
     Spark.get("/signup", (req, res) -> {
+      String s = req.session().attribute("username");
+      if (s != null) {
+        res.redirect("/home");
+      }
       Map<String, Object> variables = ImmutableMap.of("title",
           "Home | Readient");
       return new ModelAndView(variables, "signup.ftl");

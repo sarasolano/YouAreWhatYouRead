@@ -40,7 +40,7 @@ public class SentimentCategorizer {
 
   private void trainModel() {
     InputStream dataIn = null;
-    File serializedModel = new File("sentiment_categorizer.ser");
+    File serializedModel = new File("../readient/sentiment_categorizer.ser");
     if (serializedModel.exists()) {
       try {
         InputStream modelIn = new BufferedInputStream(

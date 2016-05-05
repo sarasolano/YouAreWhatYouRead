@@ -11,13 +11,13 @@
 						</div>
 						<div class="form-group input-group">
 							<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-							<input id="username" class="form-control" type="text" name='username' placeholder="username"/>
+							<input id="username-signup" class="form-control" type="text" name='username' placeholder="username"/>
 						</div>
 						<span id="username-err" style="color: red; display: none">Required field.</span>
 
 						<div class="form-group input-group">
 							<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-							<input id="pwd" class="form-control" type="password" name='password' placeholder="password"/>
+							<input id="pwd-signup" class="form-control" type="password" name='password' placeholder="password"/>
 						</div>
 						<span id="pwd-err" style="color: red; display: none">Password must be 8-36 characters long.</span>
 
