@@ -40,8 +40,19 @@ $( document ).ready(function() {
 //		}
 });
 
+  $('#logout').click(function(e) {
+  	e.preventDefault();
+  	console.log("jdsafjsdaklflj");
+				
+		$.post("/logout", function() {
+			window.location = "/signin";
+		}); 
+    });
+
+
+/*
 (function() {
-	function(json) {
+	function json() {
 		var obj = JSON.parse(json);
 		var username = obj.username;
 		
@@ -64,7 +75,8 @@ $( document ).ready(function() {
 			  }
 		});
 	}
-})();
+});
+*/
 
 //var words = [{
 //  text: "Lorem",

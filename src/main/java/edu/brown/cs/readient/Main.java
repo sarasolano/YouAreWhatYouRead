@@ -137,6 +137,14 @@ public final class Main {
       return new ModelAndView(variables, "signin.ftl");
     } , marker);
 
+    Spark.post("/logout", (req, res) -> {
+      JsonObject obj = new JsonObject();
+      obj.addProperty("logout", false);
+      Session s = req.session();
+      s.removeAttribute("username");
+      return GUI_GSON.toJson(obj);
+    });
+
 
     Spark.get("/home", (req, res) -> {
 

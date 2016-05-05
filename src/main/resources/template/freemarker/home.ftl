@@ -7,7 +7,7 @@
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">${username}<span class="caret"></span></a>
 					<ul class="dropdown-menu">
 						<li><a href="#">View Profile</a></li>
-						<li><a href="#">Log Out</a></li>
+						<li><a id="logout" href="#">Log Out</a></li>
 					</ul>
 				</li>
 			</ul>
