@@ -46,7 +46,7 @@
             var postParameters = {username: username.val(), password: pw.val()};
             $.post("/signup", postParameters, function(res) {
 							var response = JSON.parse(res);
-							if (response.length == 0) {
+							if (jQuery.isEmptyObject(response)) {
 								$("sub-err").show();
 							} else {
 								
