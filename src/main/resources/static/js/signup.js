@@ -43,11 +43,12 @@
 					$("#pwd2-err").show();
 					pw2.css("border", "red solid 1px");
 				} else {
-            var postParameters = {username: username.val(), password: pw.val()};
-            $.post("/signup", postParameters, function(res) {
+						var name = $("#first").val();
+            var postParameters = {"username" : username.val(), "password" : pw.val(), "name" : name};
+            $.post("/create", postParameters, function(res) {
 							var response = JSON.parse(res);
 							if (jQuery.isEmptyObject(response)) {
-								$("sub-err").show();
+								$("#sub-err").show();
 							} else {
 								
 							}

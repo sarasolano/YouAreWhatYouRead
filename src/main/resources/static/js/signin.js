@@ -17,7 +17,6 @@
 						console.log("here")
 						window.location = "/home";
 						$.post("/home");
-
 					}
 				}); 
     });

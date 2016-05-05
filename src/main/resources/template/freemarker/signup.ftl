@@ -30,7 +30,7 @@
 						<div class="form-group">
 							<button id="submit" type="button" class="btn btn-def btn-block">Signup</button>
 						</div>
-						<span id="sub-err" style="color: red; display: none">Invalid username or passowrd</span>
+						<span id="sub-err" style="color: red; display: none">Username already exists</span>
 					</form>        
 				</div>  
 			</div>    
