@@ -1,8 +1,10 @@
 (function() {
+		$("#success").hide();
     var form = $('#signup');
 		var pw = $("#pwd-signup");
 		var pw2 = $("#pwd2");
 		var username = $('#username-signup');
+		var name = $('#first');
 	
 //		username.bind("keyup", function(e) {
 //			$("#repeat-err").hide();
@@ -16,33 +18,53 @@
 //		});
 	
 		username.click(function(e) {
-			username.css("border", "grey solid 1px");
+			$("#success").hide();
+			$("#username-err").hide();
+			username.removeClass("err");
+		});
+
+		$("#first").click(function(e) {
+			$("#success").hide();
+			$("#first").removeClass("err");
+			$("#name-err").hide();
 		});
 		
 		pw.click(function(e) {
-			pw.css("border", "grey solid 1px");
+			$("#success").hide();
+			$("#pwd-err").hide();
+			pw.removeClass("err");
 		});
 	
 		pw2.click(function(e) {
-			pw2.css("border", "grey solid 1px");
+			$("#success").hide();
+			$("#pwd2-err").hide();
+			pw2.removeClass("err");
 		});
 		
     $('#submit').on('click', function(e) {
 				$("#username-err").hide();
+				$("#name-err").hide();
 				$("#pwd-err").hide();
 				$("#sub-err").hide();
 				$("#pwd2-err").hide();
 			
         if (username.val().length == 0) {
 					$("#username-err").show();
-					username.css("border", "red solid 1px");
-        } else if (pw.val().length < 8 || pw.val().length > 36) {
+					username.addClass("err");;
+				}
+        if (pw.val().length < 8 || pw.val().length > 36) {
 					$("#pwd-err").show();
-					pw.css("border", "red solid 1px");
-        } else if (pw.val() != pw2.val()) {
+					pw.addClass("err");;
+        } 
+        if (pw.val() != pw2.val()) {
 					$("#pwd2-err").show();
-					pw2.css("border", "red solid 1px");
-				} else {
+					pw2.addClass("err");
+				}
+		if ($("#first").val().length == 0) {
+			$("#name-err").show();
+				$("#first").addClass("err");
+		} 
+		if (username.val().length != 0  && !(pw.val().length < 8) && !(pw.val().length > 36) && (pw.val() == pw2.val()) && ($("#first").val().length != 0)) {
 						var name = $("#first").val();
             var postParameters = {"username" : username.val(), "password" : pw.val(), "name" : name};
             $.post("/create", postParameters, function(res) {
@@ -50,6 +72,11 @@
 							if (jQuery.isEmptyObject(response)) {
 								$("#sub-err").show();
 							} else {
+								$("#first").val('');
+								pw.val('');
+								pw2.val('');
+								username.val('');
+								$("#success").show();
 								
 							}
 						}); 

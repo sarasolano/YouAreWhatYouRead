@@ -9,6 +9,7 @@
 							<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
 							<input id="first" class="form-control" type="text" name='first' placeholder="full name"/>
 						</div>
+						<span id="name-err" style="color: red; display: none">Required field.</span>
 						<div class="form-group input-group">
 							<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
 							<input id="username-signup" class="form-control" type="text" name='username' placeholder="username"/>
@@ -31,6 +32,12 @@
 							<button id="submit" type="button" class="btn btn-def btn-block">Signup</button>
 						</div>
 						<span id="sub-err" style="color: red; display: none">Username already exists</span>
+						<div id = "success" class="alert alert-success" role="alert">Your account has been created</div>
+						<form method="GET" action="/signup">
+							<div class="form-group text-center">
+								<span>Already have an account? <a href="/signin">Sign in</a>
+							</div>
+						</form>	
 					</form>        
 				</div>  
 			</div>    

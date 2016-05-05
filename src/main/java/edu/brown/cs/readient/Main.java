@@ -162,6 +162,18 @@ public final class Main {
       return new ModelAndView(variables, "home.ftl");
     }, marker);
 
+    Spark.get("/confirmation", (req, res) -> {
+
+      String s = req.session().attribute("username");
+      if (s != null) {
+        res.redirect("/home");
+      }
+      System.out.println("djadfds");
+      Map<String, Object> variables = ImmutableMap.of("title",
+          "Confirmation");
+      return new ModelAndView(variables, "confirmation.ftl");
+    }, marker);
+
     Spark.get("/", (req, res) -> {
 
       res.redirect("/home");
