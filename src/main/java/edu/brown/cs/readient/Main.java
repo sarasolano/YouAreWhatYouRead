@@ -135,7 +135,7 @@ public final class Main {
           "Home | Readient");
       res.cookie("username", "Harry", 1000000);
       return new ModelAndView(variables, "signin.ftl");
-    } , marker);
+    }, marker);
 
     Spark.post("/logout", (req, res) -> {
       JsonObject obj = new JsonObject();
@@ -144,7 +144,6 @@ public final class Main {
       s.removeAttribute("username");
       return GUI_GSON.toJson(obj);
     });
-
 
     Spark.get("/home", (req, res) -> {
 
@@ -156,16 +155,16 @@ public final class Main {
         res.redirect("/signin");
       }
       Map<String, Object> variables = ImmutableMap.of("title",
-          "Home | Readient","username",s);
+          "Home | Readient", "username", s);
       System.out.println("/home");
       return new ModelAndView(variables, "home.ftl");
-    },marker);
+    }, marker);
 
     Spark.get("/signup", (req, res) -> {
       Map<String, Object> variables = ImmutableMap.of("title",
           "Home | Readient");
       return new ModelAndView(variables, "signup.ftl");
-    } , marker);
+    }, marker);
 
     Spark.post("/exists", (req, res) -> {
       JsonObject obj = new JsonObject();
@@ -193,7 +192,6 @@ public final class Main {
           obj.addProperty("error", "profile doesn't exist");
           return GUI_GSON.toJson(obj);
 
-
         } else {
 
           final Profile p = profile;
@@ -209,16 +207,16 @@ public final class Main {
 
     });
 
-    Spark.post("/signup", (req, res) -> {
+    Spark.post("/create", (req, res) -> {
       QueryParamsMap qm = req.queryMap();
       String username = qm.value("username");
       System.out.println(username);
       String password = qm.value("password");
-      String fName = qm.value("first_name");
-      String lName = qm.value("last_name");
+      String[] name = qm.value("name").split(" ");
       try {
         sg = new StatsGenerator();
-        manager.addUser(username, password, fName, lName);
+        manager.addUser(username, password, name[0],
+            name.length == 1 ? "" : name[1]);
         profile = getProfile(username, password);
         final Profile p = profile;
         System.out.println(username);
