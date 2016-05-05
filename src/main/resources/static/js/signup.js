@@ -1,8 +1,8 @@
 (function() {
     var form = $('#signup');
-		var pw = $("#pwd");
+		var pw = $("#pwd-signup");
 		var pw2 = $("#pwd2");
-		var username = $('#username');
+		var username = $('#username-signup');
 	
 //		username.bind("keyup", function(e) {
 //			$("#repeat-err").hide();

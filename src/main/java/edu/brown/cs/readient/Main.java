@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Scanner;
 
 import com.google.common.collect.ImmutableMap;
@@ -133,6 +132,10 @@ public final class Main {
     FreeMarkerEngine marker = createEngine();
 
     Spark.get("/signin", (req, res) -> {
+      String s = req.session().attribute("username");
+      if (s != null) {
+        res.redirect("/home");
+      }
       Map<String, Object> variables = ImmutableMap.of("title",
           "Home | Readient");
       res.cookie("username", "Harry", 1000000);
@@ -150,9 +153,6 @@ public final class Main {
     Spark.get("/home", (req, res) -> {
 
       String s = req.session().attribute("username");
-
-      System.out.println(req.session().id());
-      System.out.println(s);
       if (s == null) {
         res.redirect("/signin");
       }
@@ -162,7 +162,19 @@ public final class Main {
       return new ModelAndView(variables, "home.ftl");
     }, marker);
 
+    Spark.get("/", (req, res) -> {
+
+      res.redirect("/home");
+      Map<String, Object> variables = ImmutableMap.of("title",
+          "Home | Readient");
+      return new ModelAndView(variables, "home.ftl");
+    }, marker);
+
     Spark.get("/signup", (req, res) -> {
+      String s = req.session().attribute("username");
+      if (s != null) {
+        res.redirect("/home");
+      }
       Map<String, Object> variables = ImmutableMap.of("title",
           "Home | Readient");
       return new ModelAndView(variables, "signup.ftl");
@@ -376,6 +388,8 @@ public final class Main {
     art.setTopics(topics);
     art.setSentiments(sent);
     prof.addArticle(art);
+    prof.setAvgReadLevel(manager.avgReadLevel(prof.getUser().getUsername()));
+    prof.setWordsRead(manager.wordsRead(prof.getUser().getUsername()));
     getAvgs(prof);
     return new Pair<>(prof, art);
   }
@@ -395,7 +409,6 @@ public final class Main {
     try {
       prof.setAvgReadLevel(manager.avgReadLevel(prof.getUser().getUsername()));
       prof.setWordsRead(manager.wordsRead(prof.getUser().getUsername()));
-      prof.setAvgMoods(manager.avgMoods(prof.getUser().getUsername()));
     } catch (SQLException e) {
       System.out.println("Unable to connect to the database");
     }
@@ -424,24 +437,13 @@ public final class Main {
 
   private static JsonObject profileJson(Profile p) {
     JsonObject json = userJson(p.getUser());
-    json.addProperty("avg_read", p.getAvgReadLevel());
-    json.addProperty("words_read", p.wordsRead());
-    JsonArray moods = new JsonArray();
-    for (Entry<String, Double> e : p.getAvgMoods().entrySet()) {
-      JsonObject obj = new JsonObject();
-      obj.addProperty("mood", e.getKey());
-      obj.addProperty("value", e.getValue());
-      moods.add(obj);
-    }
     JsonArray art = new JsonArray();
     for (Article a : p.getArticles()) {
       JsonObject obj = new JsonObject();
       obj.addProperty("id", a.getId());
       obj.addProperty("title", a.getTitle());
-      obj.addProperty("url", a.url());
       art.add(obj);
     }
-    json.add("moods", moods);
     json.add("articles", art);
     return json;
   }
