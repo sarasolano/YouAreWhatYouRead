@@ -1,8 +1,8 @@
 (function() {
     var form = $('#signup');
-		var pw = $("#pwd");
+		var pw = $("#pwd-signup");
 		var pw2 = $("#pwd2");
-		var username = $('#username');
+		var username = $('#username-signup');
 	
 //		username.bind("keyup", function(e) {
 //			$("#repeat-err").hide();
@@ -43,11 +43,12 @@
 					$("#pwd2-err").show();
 					pw2.css("border", "red solid 1px");
 				} else {
-            var postParameters = {username: username.val(), password: pw.val()};
-            $.post("/signup", postParameters, function(res) {
+						var name = $("#first").val();
+            var postParameters = {"username" : username.val(), "password" : pw.val(), "name" : name};
+            $.post("/create", postParameters, function(res) {
 							var response = JSON.parse(res);
-							if (response.length == 0) {
-								$("sub-err").show();
+							if (jQuery.isEmptyObject(response)) {
+								$("#sub-err").show();
 							} else {
 								
 							}

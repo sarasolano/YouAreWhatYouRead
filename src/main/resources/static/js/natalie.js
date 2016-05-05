@@ -80,31 +80,14 @@ $( document ).ready(function() {
 //		}
 //});
 
-//(function() {
-//	function(json) {
-//		var obj = JSON.parse(json);
-//		var username = obj.username;
-//		
-//		for (int i = 0; ) {
-//			obj.articles[i];
-//			obj.articles[i].id;
-//		}
-//		var chart = c3.generate({
-//			  bindto: '#mood',
-//			  data: {
-//			    columns: [
-//			      ['Angry', 60],
-//			      ['Whatever', 50],
-//			      ['Happy', 50],
-//			    ],
-//			    type: 'donut'
-//			  },
-//			  donut: {
-//			    title: "Dogs love:",
-//			  }
-//		});
-//	}
-//})();
+  $('#logout').click(function(e) {
+  	e.preventDefault();
+  	console.log("jdsafjsdaklflj");
+				
+		$.post("/logout", function() {
+			window.location = "/signin";
+		}); 
+    });
 
 //var words = [{
 //  text: "Lorem",

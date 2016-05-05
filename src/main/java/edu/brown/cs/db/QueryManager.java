@@ -322,6 +322,10 @@ public class QueryManager implements AutoCloseable {
     return toReturn;
   }
 
+  // public Map<String, Double> avgMoods(String username) {
+  // String query = "S";
+  // }
+
   /**
    * Adds a user to the database.
    *
