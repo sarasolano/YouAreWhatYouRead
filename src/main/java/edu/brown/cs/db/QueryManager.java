@@ -322,21 +322,9 @@ public class QueryManager implements AutoCloseable {
     return toReturn;
   }
 
-  public Map<String, Double> avgMoods(String username) throws SQLException {
-    String query = "SELECT mood, SUM(probability) FROM mood, article WHERE "
-        + "article.id = mood.article AND article.user = ? "
-        + "GROUP BY ariticle.user ORDER BY mood.mood ASC";
-    PreparedStatement stat = conn.prepareStatement(query);
-    stat.setString(1, username);
-    ResultSet rs = stat.executeQuery();
-    HashMap<String, Double> toReturn = new HashMap<>();
-    while (rs.next()) {
-      toReturn.put(rs.getString(1), rs.getDouble(2));
-    }
-    stat.close();
-    rs.close();
-    return toReturn;
-  }
+  // public Map<String, Double> avgMoods(String username) {
+  // String query = "S";
+  // }
 
   /**
    * Adds a user to the database.
