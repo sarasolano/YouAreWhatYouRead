@@ -1,5 +1,7 @@
 package edu.brown.cs.db;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -98,9 +100,8 @@ public class QueryManager implements AutoCloseable {
    *           if there is an error while querying
    */
   public User getUser(String username, String password) throws SQLException {
-    String query =
-        "SELECT user_name, first_name, last_name, "
-            + "password_hash, salt FROM user WHERE user_name = ?;";
+    String query = "SELECT user_name, first_name, last_name, "
+        + "password_hash, salt FROM user WHERE user_name = ?;";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, username);
     ResultSet rs = stat.executeQuery();
@@ -135,10 +136,9 @@ public class QueryManager implements AutoCloseable {
    */
   public User getUser(String username, byte[] expectedHash, byte[] salt)
       throws SQLException {
-    String query =
-        "SELECT user_name, first_name, last_name, "
-            + "password_hash, salt FROM user WHERE user_name = ? "
-            + "AND password_hash = ? AND salt = ?;";
+    String query = "SELECT user_name, first_name, last_name, "
+        + "password_hash, salt FROM user WHERE user_name = ? "
+        + "AND password_hash = ? AND salt = ?;";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, username);
     stat.setString(2, bytetoString(expectedHash));
@@ -154,11 +154,9 @@ public class QueryManager implements AutoCloseable {
     return toReturn;
   }
 
-  public User getUserByUsername(String username)
-      throws SQLException {
-    String query =
-        "SELECT user_name, first_name, last_name, "
-            + "password_hash, salt FROM user WHERE user_name = ?;";
+  public User getUserByUsername(String username) throws SQLException {
+    String query = "SELECT user_name, first_name, last_name, "
+        + "password_hash, salt FROM user WHERE user_name = ?;";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, username);
     ResultSet rs = stat.executeQuery();
@@ -172,7 +170,6 @@ public class QueryManager implements AutoCloseable {
     return toReturn;
   }
 
-
   /**
    * Gets all the articles submitted by a given user.
    *
@@ -182,9 +179,8 @@ public class QueryManager implements AutoCloseable {
    * @throws SQLException
    */
   public List<Article> getArticles(String username) throws SQLException {
-    String query =
-        "SELECT id, name, url, user, rank, read_level, grade_level, words FROM article, read_level "
-            + "WHERE article.id == read_level.article AND article.user == ?;";
+    String query = "SELECT id, name, url, user, rank, read_level, grade_level, words FROM article, read_level "
+        + "WHERE article.id == read_level.article AND article.user == ?;";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, username);
     ResultSet rs = stat.executeQuery();
@@ -192,7 +188,8 @@ public class QueryManager implements AutoCloseable {
     while (rs.next()) {
       String id = rs.getString(1);
       Article art = new Article(id, rs.getString(2), rs.getString(3),
-          rs.getString(4), rs.getInt(5), rs.getDouble(6), rs.getDouble(7), rs.getInt(8));
+          rs.getString(4), rs.getInt(5), rs.getDouble(6), rs.getDouble(7),
+          rs.getInt(8));
       art.setMood(getMoods(id));
       art.setSentiments(getSentiments(id));
       art.setTopics(getTopics(id));
@@ -228,8 +225,7 @@ public class QueryManager implements AutoCloseable {
    * @throws SQLException
    */
   public Map<String, Double> getMoods(String artID) throws SQLException {
-    String query =
-        "SELECT mood, probability FROM mood WHERE article == ?;";
+    String query = "SELECT mood, probability FROM mood WHERE article == ?;";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, artID);
     ResultSet rs = stat.executeQuery();
@@ -251,8 +247,7 @@ public class QueryManager implements AutoCloseable {
    * @return a map from sentiment to probability for each sentence
    * @throws SQLException
    */
-  public List<Integer> getSentiments(String artID)
-      throws SQLException {
+  public List<Integer> getSentiments(String artID) throws SQLException {
     String query = "SELECT sentence, sentiment FROM sentiment"
         + " WHERE article = ?;";
     PreparedStatement stat = conn.prepareStatement(query);
@@ -276,8 +271,7 @@ public class QueryManager implements AutoCloseable {
    * @throws SQLException
    */
   public List<String> getTopics(String artID) throws SQLException {
-    String query =
-        "SELECT topic FROM topic WHERE article == ?;";
+    String query = "SELECT topic FROM topic WHERE article == ?;";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, artID);
     ResultSet rs = stat.executeQuery();
@@ -325,7 +319,7 @@ public class QueryManager implements AutoCloseable {
    *           if there is an error while querying
    */
   public double avgReadLevel(String username) throws SQLException {
-    String query = "SELECT SUM(read_level)*100/COUNT(*) FROM "
+    String query = "SELECT SUM(read_level)/COUNT(*) FROM "
         + "read_level, article WHERE article.id == read_level.article "
         + "AND article.user == ?;";
     PreparedStatement stat = conn.prepareStatement(query);
@@ -334,10 +328,30 @@ public class QueryManager implements AutoCloseable {
     // only add if results isn't empty
     double toReturn = 0;
     if (results.next()) {
-      toReturn = results.getDouble(1);
+      BigDecimal bd = new BigDecimal(results.getDouble(1));
+      bd = bd.round(new MathContext(3));
+      toReturn = bd.doubleValue();
     }
     stat.close();
     results.close();
+    return toReturn;
+  }
+
+  public Map<String, Double> avgMoods(String username) throws SQLException {
+    String query = "SELECT mood, SUM(probability) FROM mood, article WHERE "
+        + "article.id = mood.article AND article.user = ? "
+        + "GROUP BY mood";
+    PreparedStatement stat = conn.prepareStatement(query);
+    stat.setString(1, username);
+    ResultSet rs = stat.executeQuery();
+    HashMap<String, Double> toReturn = new HashMap<>();
+    while (rs.next()) {
+      System.out.println(rs.getString(1));
+      System.out.println(rs.getDouble(2));
+      toReturn.put(rs.getString(1), rs.getDouble(2));
+    }
+    stat.close();
+    rs.close();
     return toReturn;
   }
 
@@ -389,8 +403,7 @@ public class QueryManager implements AutoCloseable {
    *           if there is an error while executing
    */
   public String addArticle(String name, String url, String username,
-      Integer rank, int words)
-      throws SQLException {
+      Integer rank, int words) throws SQLException {
     String query = "INSERT INTO article VALUES(?, ?, ?, ?, "
         + (rank == null ? "NULL," : "?,") + " ?);";
     PreparedStatement stat = conn.prepareStatement(query);

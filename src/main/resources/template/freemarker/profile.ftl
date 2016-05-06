@@ -19,21 +19,30 @@
 	</nav>
 	
 	<div class="prof-stats">
+	
 		<div class="container">
-				<ul class="list-group" id = "articlelist"> article list!
-				</ul>
+		<div class="jumbotron" id="profile">
+				<h2>Profile</h2>
+				<p id ="totalwords"></p>
+				<p id ="numArticles"></p>
 				</div>
-				<div class="row">
+				<div class="container">
+					<div class="row">
 					<div class="col-md-4">
 						<div id="avg-rl"></div>
 					</div>
 					<div class="col-md-4">
-						<div id="totalwords-"></div>
+						<div id="avgMoods"></div>
+					</div
 					</div>
 			
 				
 			
 		</div>
+				<ul class="list-group" id = "articlelist"> 
+				</ul>
+				</div>
+			
 	</div>
 	
 

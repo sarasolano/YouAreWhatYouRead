@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -177,7 +178,6 @@ public final class Main {
       if (s != null) {
         res.redirect("/home");
       }
-      System.out.println("djadfds");
       Map<String, Object> variables = ImmutableMap.of("title", "Confirmation");
       return new ModelAndView(variables, "confirmation.ftl");
     } , marker);
@@ -284,7 +284,7 @@ public final class Main {
       String s = req.session().attribute("username");
       final Profile p = getProfileByUsername(s);
       if (p.containsArticle(artID)) {
-        return GUI_GSON.toJson(articleJson(p.getArticle(artID)));
+        return GUI_GSON.toJson(articleJson(p.getArticle(artID),true));
       } else {
         return GUI_GSON.toJson(new JsonObject());
       }
@@ -304,7 +304,7 @@ public final class Main {
         Article a = addArticleByUsername(user, url, rank);
         System.out.println(a.getId());
         Map<String, Object> variables = ImmutableMap.of("article",
-            articleJson(a));
+            articleJson(a,true));
         System.out.println(GUI_GSON.toJson(variables));
         return GUI_GSON.toJson(variables);
       } catch (SQLException e) {
@@ -479,11 +479,11 @@ public final class Main {
     try {
       prof.setAvgReadLevel(manager.avgReadLevel(prof.getUser().getUsername()));
       prof.setWordsRead(manager.wordsRead(prof.getUser().getUsername()));
+      prof.setAvgMoods(manager.avgMoods(prof.getUser().getUsername()));
     } catch (SQLException e) {
       System.out.println("Unable to connect to the database");
     }
   }
-
   private synchronized Profile getProfile(String username, String password) {
     System.out.println("hi" + username);
     System.out.println("hi" + password);
@@ -523,18 +523,31 @@ public final class Main {
     return profile;
   }
 
-  private static JsonObject profileJson(Profile p) {
+  private JsonObject profileJson(Profile p) {
+    getAvgs(p);
     JsonObject json = userJson(p.getUser());
     JsonArray art = new JsonArray();
+    JsonArray moods = new JsonArray();
     for (Article a : p.getArticles()) {
-      JsonObject obj = new JsonObject();
-      art.add(articleJson(a));
+      art.add(articleJson(a,false));
     }
     json.add("articles", art);
+    json.add("avgReadLevel", GUI_GSON.toJsonTree(p.getAvgReadLevel()));
+    //json.add("avgMoods", GUI_GSON.toJsonTree(p.getAvgMoods()));
+    json.add("numArticles", GUI_GSON.toJsonTree(p.numArticles()));
+    json.add("wordsRead", GUI_GSON.toJsonTree(p.wordsRead()));
+
+    for (Entry<String, Double> e : p.getAvgMoods().entrySet()) {
+      JsonObject obj = new JsonObject();
+      obj.addProperty("mood", e.getKey());
+      obj.addProperty("value", e.getValue());
+      moods.add(obj);
+    }
+    json.add("avgMoods", GUI_GSON.toJsonTree(p.getAvgMoods()));
     return json;
   }
 
-  private static JsonObject articleJson(Article a) {
+  private static JsonObject articleJson(Article a, boolean wordCloud) {
     JsonObject json = new JsonObject();
     Map<String, Double> moods = a.getMoods();
     Set<String> moodKeys = moods.keySet();
@@ -551,11 +564,15 @@ public final class Main {
     json.add("readlevel", GUI_GSON.toJsonTree(a.getReadLevel()));
     json.add("title", GUI_GSON.toJsonTree(a.getTitle()));
     json.add("word-count", GUI_GSON.toJsonTree(a.getWords()));
-    json.add("pages", GUI_GSON.toJsonTree(a.getWords() / 250));
+    json.add("pages", GUI_GSON.toJsonTree(a.getWords() / 250.0));
     json.add("url", GUI_GSON.toJsonTree(a.url()));
     json.add("topic", GUI_GSON.toJsonTree(a.getTopics().get(0)));
     json.add("link", GUI_GSON.toJsonTree("/article/" + encode(a.getId())));
-    json.add("wordCloud", GUI_GSON.toJsonTree(new ArticleParser(a.url()).jsonCounts()));
+    if (wordCloud) {
+      json.add("wordCloud", GUI_GSON.toJsonTree(new ArticleParser(a.url()).jsonCounts()));
+
+    }
+
     return json;
   }
 
@@ -569,6 +586,8 @@ public final class Main {
   private static String encode(String id) {
     return id.replaceAll("/", "+");
   }
+
+
 
   /**
    * Decodes the string id.

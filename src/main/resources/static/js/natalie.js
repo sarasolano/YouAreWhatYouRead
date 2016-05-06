@@ -24,6 +24,7 @@ $( document ).ready(function() {
 					title = article["title"];
 					link = article["url"];
 					topic = article["topic"];
+					words = JSON.parse(article["wordCloud"]);
 					console.log(readlevel);
 					loadGraphs();
 
@@ -44,6 +45,7 @@ $( document ).ready(function() {
 			console.log(response);
 			var articles = response["articles"];
 			var ul = document.getElementById("articlelist");
+			loadProfGraphs(response["avgReadLevel"],response["wordsRead"],response["numArticles"],response["avgMoods"]);
 				
 			for (var i = 0; i <articles.length; i++){
 				var a = articles[i];
@@ -54,6 +56,7 @@ $( document ).ready(function() {
 					li.innerHTML = '<a class="list-group-item" href =' + '"' +link + '"' + ">" + title + "</a>";
 					console.log(li.innerHTML);
 					ul.insertBefore(li,ul.childNodes[0]);
+
 				
 			}
 
@@ -74,6 +77,8 @@ $( document ).ready(function() {
 	var link;
 	var topic;
 	var words;
+
+	if (window.location.pathname == "/home") {
 	$("#plus").click(function(e) {
 			plus = true;
 			sendUrl();
@@ -86,6 +91,7 @@ $( document ).ready(function() {
 	$("#add-article").click(function(e) {
 			sendUrl();
 		});
+}
 
 	function sendUrl() {
 		err.hide();
@@ -139,6 +145,49 @@ $( document ).ready(function() {
 
 	}
 
+
+		
+	}
+
+	function loadProfGraphs(rl,tw,na,am) {
+
+		var chart3 = c3.generate({
+		bindto: '#avg-rl',
+	    data: {
+	        columns: [
+	            ['Reading Level', rl]
+	        ],
+	        type: 'gauge'
+	    },
+	    gauge: {
+	        label: {
+	            format: function(value, ratio) {
+	                return value;
+	            },
+	            show: true
+	        },
+	      min: 3,
+	      max: 7
+	    }
+	});
+		$("#totalwords").text("You have read " + tw + " total words" );
+		$("#numArticles").text("You have read " + na + " articles");
+
+		console.log(am);
+
+		var chart = c3.generate({
+		  bindto: '#avgMoods',
+		  data: {
+		        json: [am],
+		        keys: {
+		            value: ['trust', 'surprise', 'joy', 'anticipation', 'sadness', 'disgust', 'anger', 'fear']
+		        },
+		        type: 'donut'
+		   },
+		  donut: {
+		    title: "Mood",
+		  }
+	});
 
 		
 	}
