@@ -4,29 +4,20 @@ $( document ).ready(function() {
 	var article;
 	var moods;
 	var sentiments;
+	var readlevel;
+	var title;
+	var wordcount;
+	var pages;
+	var link;
+	var topic;
 	$("#plus").click(function(e) {
-			if (plus) {
-				plus = false;
-				$("#plus").removeClass("selected");
-			} else {
-				$("#plus").focus();
-				plus = true;
-				minus = false;
-				$("#plus").addClass("selected");
-				$("#minus").removeClass("selected");
-			}
+			plus = true;
+			sendUrl();
 		});
 
 	$("#minus").click(function(e) {
-			if (minus) {
-				minus = false;
-				$("#minus").removeClass("selected");
-			} else {
-				minus = true;
-				plus = false;
-				$("#plus").removeClass("selected");
-				$("#minus").addClass("selected");
-			}
+			minus = true;
+			sendUrl();
 		});
 	$("#add-article").click(function(e) {
 			sendUrl();
@@ -50,7 +41,7 @@ $( document ).ready(function() {
 		} else {
 			postParameters = {
 				url : url,
-				rank : JSON.stringify(null)
+				rank : null
 			};
 		}
 		console.log(postParameters);
@@ -64,6 +55,13 @@ $( document ).ready(function() {
 					sentiments = [article["sentiment"]];
 					console.log(sentiments);
 					console.log(moods["object"]);
+					readlevel = article["readlevel"];
+					wordcount = article["word-count"];
+					pages = article["pages"];
+					title = article["title"];
+					link = article["url"];
+					topic = article["topic"];
+					console.log(readlevel);
 					loadGraphs();
 				
 				}); 
@@ -73,7 +71,12 @@ $( document ).ready(function() {
 	}
 
 	function loadGraphs(){
-		console.log(moods);
+		$("#title").text(title);
+		$("#word-count").text("Word Count: " + wordcount);
+		$("#pages").text("Pages: " + pages);
+		$("a").attr("href", link);
+
+		
 
 		var chart = c3.generate({
 		  bindto: '#mood',
@@ -111,7 +114,7 @@ $( document ).ready(function() {
 		bindto: '#level',
 	    data: {
 	        columns: [
-	            ['data', 12]
+	            ['Reading Level', readlevel]
 	        ],
 	        type: 'gauge'
 	    },

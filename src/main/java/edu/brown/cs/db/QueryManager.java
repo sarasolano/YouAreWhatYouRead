@@ -183,7 +183,7 @@ public class QueryManager implements AutoCloseable {
    */
   public List<Article> getArticles(String username) throws SQLException {
     String query =
-        "SELECT id, name, url, user, rank, read_level, grade_level FROM article, read_level "
+        "SELECT id, name, url, user, rank, read_level, grade_level, words FROM article, read_level "
             + "WHERE article.id == read_level.article AND article.user == ?;";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, username);
@@ -192,7 +192,7 @@ public class QueryManager implements AutoCloseable {
     while (rs.next()) {
       String id = rs.getString(1);
       Article art = new Article(id, rs.getString(2), rs.getString(3),
-          rs.getString(4), rs.getInt(5), rs.getDouble(6), rs.getDouble(7));
+          rs.getString(4), rs.getInt(5), rs.getDouble(6), rs.getDouble(7), rs.getInt(8));
       art.setMood(getMoods(id));
       art.setSentiments(getSentiments(id));
       art.setTopics(getTopics(id));

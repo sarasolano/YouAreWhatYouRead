@@ -138,9 +138,8 @@ public final class Main {
       }
       Map<String, Object> variables = ImmutableMap.of("title",
           "Home | Readient");
-      res.cookie("username", "Harry", 1000000);
       return new ModelAndView(variables, "signin.ftl");
-    }, marker);
+    } , marker);
 
     Spark.post("/logout", (req, res) -> {
       JsonObject obj = new JsonObject();
@@ -152,7 +151,7 @@ public final class Main {
 
     Spark.get("/home", (req, res) -> {
 
-      String s = req.session().attribute("username");
+      String s = req.session().attribute("name");
       if (s == null) {
         res.redirect("/signin");
       }
@@ -160,7 +159,7 @@ public final class Main {
           "Home | Readient", "username", s);
       System.out.println("/home");
       return new ModelAndView(variables, "home.ftl");
-    }, marker);
+    } , marker);
 
     Spark.get("/confirmation", (req, res) -> {
 
@@ -169,10 +168,9 @@ public final class Main {
         res.redirect("/home");
       }
       System.out.println("djadfds");
-      Map<String, Object> variables = ImmutableMap.of("title",
-          "Confirmation");
+      Map<String, Object> variables = ImmutableMap.of("title", "Confirmation");
       return new ModelAndView(variables, "confirmation.ftl");
-    }, marker);
+    } , marker);
 
     Spark.get("/", (req, res) -> {
 
@@ -180,7 +178,7 @@ public final class Main {
       Map<String, Object> variables = ImmutableMap.of("title",
           "Home | Readient");
       return new ModelAndView(variables, "home.ftl");
-    }, marker);
+    } , marker);
 
     Spark.get("/signup", (req, res) -> {
       String s = req.session().attribute("username");
@@ -190,7 +188,7 @@ public final class Main {
       Map<String, Object> variables = ImmutableMap.of("title",
           "Home | Readient");
       return new ModelAndView(variables, "signup.ftl");
-    }, marker);
+    } , marker);
 
     Spark.post("/exists", (req, res) -> {
       JsonObject obj = new JsonObject();
@@ -214,7 +212,6 @@ public final class Main {
         profile = getProfile(username, password);
         if (profile == null) {
           JsonObject obj = new JsonObject();
-          System.out.println("mmee");
           obj.addProperty("error", "profile doesn't exist");
           return GUI_GSON.toJson(obj);
 
@@ -223,6 +220,7 @@ public final class Main {
           final Profile p = profile;
           Session s = req.session();
           s.attribute("username", username);
+          s.attribute("name", profile.getUser().getName());
           System.out.println(req.session().id());
           return GUI_GSON.toJson(GUI_GSON.toJson(profileJson(p)));
         }
@@ -280,7 +278,8 @@ public final class Main {
         String user = req.session().attribute("username");
         Article a = addArticleByUsername(user, url, rank);
         System.out.println(a.getId());
-        Map<String, Object> variables = ImmutableMap.of("article", articleJson(a));
+        Map<String, Object> variables = ImmutableMap.of("article",
+            articleJson(a));
         System.out.println(GUI_GSON.toJson(variables));
         return GUI_GSON.toJson(variables);
       } catch (SQLException e) {
@@ -385,11 +384,12 @@ public final class Main {
     s.close();
   }
 
-  private synchronized Article addArticleByUsername(String username,
-      String url, Integer rank) throws SQLException {
+  private synchronized Article addArticleByUsername(String username, String url,
+      Integer rank) throws SQLException {
     ArticleParser p = new ArticleParser(url);
     Stats stats = StatsGenerator.analyze(p.iterator());
-    String id = manager.addArticle(p.title(), p.url(),username, rank, stats.words());
+    String id = manager.addArticle(p.title(), p.url(), username, rank,
+        stats.words());
     Map<String, Double> emotions = sg.moods(p, stats);
     manager.addMoods(id, emotions);
     List<Integer> sent = sg.sentiment(p, stats);
@@ -398,7 +398,8 @@ public final class Main {
     manager.addTopic(id, topic);
     Readability read = new Readability(stats);
     manager.addReadLevel(id, read.avgRead(), read.avgGrade());
-    Article art = new Article(id, p.title(), p.url(), username, rank, read.avgRead(), read.avgGrade());
+    Article art = new Article(id, p.title(), p.url(), username, rank,
+        read.avgRead(), read.avgGrade(), stats.words());
     art.setMood(emotions);
     List<String> topics = new ArrayList<>();
     topics.add(topic);
@@ -424,7 +425,8 @@ public final class Main {
     Readability read = new Readability(stats);
     manager.addReadLevel(id, read.avgRead(), read.avgGrade());
     Article art = new Article(id, p.title(), p.url(),
-        prof.getUser().getUsername(), rank, read.avgRead(), read.avgGrade());
+        prof.getUser().getUsername(), rank, read.avgRead(), read.avgGrade(),
+        stats.words());
     art.setMood(emotions);
     List<String> topics = new ArrayList<>();
     topics.add(topic);
@@ -470,8 +472,7 @@ public final class Main {
     System.out.println("bbbbb");
     Profile profile;
     try {
-      profile = new Profile(user,
-          manager.getArticles(user.getUsername()));
+      profile = new Profile(user, manager.getArticles(user.getUsername()));
     } catch (SQLException e) {
       return null;
     }
@@ -490,8 +491,7 @@ public final class Main {
     System.out.println("bbbbb");
     Profile profile;
     try {
-      profile = new Profile(user,
-          manager.getArticles(user.getUsername()));
+      profile = new Profile(user, manager.getArticles(user.getUsername()));
     } catch (SQLException e) {
       return null;
     }
@@ -510,22 +510,30 @@ public final class Main {
     json.add("articles", art);
     return json;
   }
+
   private static JsonObject articleJson(Article a) {
     JsonObject json = new JsonObject();
-    Map<String,Double> moods = a.getMoods();
+    Map<String, Double> moods = a.getMoods();
     Set<String> moodKeys = moods.keySet();
     JsonArray m = new JsonArray();
     for (String key : moodKeys) {
       JsonObject obj = new JsonObject();
-      obj.addProperty(key,moods.get(key).toString());
+      obj.addProperty(key, moods.get(key).toString());
       m.add(obj);
     }
     JsonArray s = new JsonArray();
 
     json.add("moods", m);
     json.add("sentiment", GUI_GSON.toJsonTree((a.getListSentiment())));
+    json.add("readlevel", GUI_GSON.toJsonTree(a.getReadLevel()));
+    json.add("title", GUI_GSON.toJsonTree(a.getTitle()));
+    json.add("word-count", GUI_GSON.toJsonTree(a.getWords()));
+    json.add("pages", GUI_GSON.toJsonTree(a.getWords() / 250));
+    json.add("url", GUI_GSON.toJsonTree(a.url()));
+    json.add("topic", GUI_GSON.toJsonTree(a.getTopics().get(0)));
     return json;
   }
+
   private static JsonObject userJson(User user) {
     JsonObject json = new JsonObject();
     json.addProperty("username", user.getUsername());

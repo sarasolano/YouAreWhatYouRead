@@ -14,13 +14,21 @@ body {
 	background-image: url("../img/redient2.gif");
 }
 
+.navbar-brand>img {
+  max-height: 50px;
+ max-width: 50px;
+  margin-top: -13px;
+
+}
+
+
 .jumbotron {
   color: #AB2121;
   background-color: #FF9494;
 }
 
 #big {
-  background-color: #FFBDBD;
+  background-color: white;
 }
 
 div.well{
@@ -34,6 +42,10 @@ div.well{
   box-shadow: 0 0 10px blue;
 
 
+}
+
+#des {
+  font-style: italic;
 }
 
 .Absolute-Center {
@@ -54,6 +66,9 @@ div.well{
 	height: 50px;
 }
 
+a:hover{
+  text-decoration: none;
+}
 #submit {
 	height: 40px;
 }
@@ -83,7 +98,7 @@ h3 {
 }
 
 #article {
-  background-color: #FFBDBD;
+  background-color: white;
 }
 
 #cloud {

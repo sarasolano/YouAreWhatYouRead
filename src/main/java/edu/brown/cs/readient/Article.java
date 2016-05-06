@@ -19,10 +19,11 @@ public class Article {
   private List<String> topics;
   private List<Integer> sentiments;
   private Map<String, Double> moods;
+  private int words;
 
   public Article(String artID, String name, String url, String username,
       Integer rank,
-      double readLevel, double gradeLevel) {
+      double readLevel, double gradeLevel, int words) {
     this.id = artID;
     this.title = name;
     this.url = url;
@@ -33,10 +34,14 @@ public class Article {
     this.moods = new ConcurrentHashMap<>();
     this.topics = Collections.synchronizedList(new ArrayList<>());
     this.sentiments = Collections.synchronizedList(new ArrayList<>());
+    this.words = words;
   }
 
   public String getId() {
     return id;
+  }
+  public int getWords() {
+    return words;
   }
 
   public String getTitle() {

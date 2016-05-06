@@ -1,7 +1,8 @@
 <#assign content>
 	<nav class="navbar navbar-default navbar-fixed-top">
 		<div class="container">
-			<a class="navbar-brand" href="#">Readient</a>
+			<a class="navbar-brand" href="#"><img
+             src="../img/redient2.gif"></a>
 			<ul class="nav navbar-nav navbar-right">
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">${username}<span class="caret"></span></a>
@@ -13,13 +14,14 @@
 			</ul>
 		</div>
 		</div>
+		
 	</nav>
 	<div class="jumbotron" id="big">
 		<div class="container">
 			<div class="jumbotron">
 				<div id="border">
 					<h1>Readient</h1>
-					<p>You are what you read.</p>
+					<p id="des">You are what you read.</p>
 				</div>
 			</div>
 		</div>
@@ -35,9 +37,9 @@
 	<div class="article-stats">
 		<div class="container">
 			<div class="jumbotron" id="article">
-				<h2> Article Title </h2>
-				<p> Word Count: 1,567 </p>
-				<p> Pages: 6.3 </p>
+				<h2> Article: <a id="title" href ='#'>Title</a> </h2>
+				<p id ="word-count"> Word Count: 1,567 </p>
+				<p id ="pages"> Pages: 6.3 </p>
 				<div class="row">
 					<div class="col-md-4">
 						<div id="wc"></div>
