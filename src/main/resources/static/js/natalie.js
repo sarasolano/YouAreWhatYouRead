@@ -1,16 +1,78 @@
 $( document ).ready(function() {
-	var moods = [{
-		    "trust": 0.02822085889570552,
-		    "surprise": 0.015950920245398775,
-		    "joy": 0.029447852760736196,
-		    "anticipation": 0.024539877300613498,
-		    "sadness": 0.0098159509202454,
-		    "disgust": 0.0049079754601227,
-		    "anger": 0.0049079754601227,
-		    "fear": 0.012269938650306749
-		},];
-	
-	var chart = c3.generate({
+	var plus = false;
+	var minus = false;
+	var article;
+	var moods;
+	var sentiments;
+	$("#plus").click(function(e) {
+			if (plus) {
+				plus = false;
+				$("#plus").removeClass("selected");
+			} else {
+				$("#plus").focus();
+				plus = true;
+				minus = false;
+				$("#plus").addClass("selected");
+				$("#minus").removeClass("selected");
+			}
+		});
+
+	$("#minus").click(function(e) {
+			if (minus) {
+				minus = false;
+				$("#minus").removeClass("selected");
+			} else {
+				minus = true;
+				plus = false;
+				$("#plus").removeClass("selected");
+				$("#minus").addClass("selected");
+			}
+		});
+	$("#add-article").click(function(e) {
+			sendUrl();
+		});
+
+	function sendUrl() {
+		var url = $("#url-input").val();
+		var rank;
+		var postParameters;
+		if (plus) {
+			postParameters = {
+				url : url,
+				rank : JSON.stringify(1)
+			};
+
+		} else if (minus) {
+			postParameters = {
+				url : url,
+				rank : JSON.stringify(0)
+			};
+		} else {
+			postParameters = {
+				url : url,
+				rank : JSON.stringify(null)
+			};
+		}
+		console.log(postParameters);
+		
+		$.post("/add", postParameters, function(res) {
+						console.log(res);
+					var response = JSON.parse(res);
+					article = response["article"];
+					console.log(article);
+					moods = article["moods"];
+					//console.log(moods);
+					loadGraphs();
+				
+				}); 
+
+
+		
+	}
+
+	function loadGraphs(){
+		console.log(moods);
+		var chart = c3.generate({
 		  bindto: '#mood',
 		  data: {
 		        json: moods,
@@ -52,8 +114,13 @@ $( document ).ready(function() {
 		  autoResize: true
 	});
 
+	}
+
+
 
 });
+
+	
 //		function(json) {
 //			console.log("herel lol");
 //			var obj = JSON.parse(json);

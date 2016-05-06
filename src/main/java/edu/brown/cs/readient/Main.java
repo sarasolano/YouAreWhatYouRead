@@ -47,8 +47,7 @@ public final class Main {
   private int port = 8080;
   private static final Gson CMND_GSON = new GsonBuilder().setPrettyPrinting()
       .create();
-  private static final Gson GUI_GSON = new GsonBuilder()
-      .excludeFieldsWithoutExposeAnnotation().create();
+  private static final Gson GUI_GSON = new GsonBuilder().create();
   private static final String DB = "data.db";
   private QueryManager manager;
   private StatsGenerator sg;
@@ -268,14 +267,21 @@ public final class Main {
     });
 
     Spark.post("/add", (req, res) -> {
+      System.out.println("add");
       QueryParamsMap qm = req.queryMap();
       String url = qm.value("url");
+      System.out.println(url);
+      System.out.println(qm.value("rank"));
       Integer rank = qm.value("rank") == null ? null
           : Integer.parseInt(qm.value("rank"));
+
       try {
-        Pair<Profile, Article> result = addArticle(profile, url, rank);
-        profile = result.first();
-        return GUI_GSON.toJson(result.second());
+        String user = req.session().attribute("username");
+        Article a = addArticleByUsername(user, url, rank);
+        System.out.println(a.getId());
+        Map<String, Object> variables = ImmutableMap.of("article", a);
+        System.out.println(GUI_GSON.toJson(variables));
+        return GUI_GSON.toJson(variables);
       } catch (SQLException e) {
         System.out.println(
             "Article could not be added to the databse :( " + e.getMessage());
@@ -378,6 +384,30 @@ public final class Main {
     s.close();
   }
 
+  private synchronized Article addArticleByUsername(String username,
+      String url, Integer rank) throws SQLException {
+    ArticleParser p = new ArticleParser(url);
+    Stats stats = StatsGenerator.analyze(p.iterator());
+    String id = manager.addArticle(p.title(), p.url(),username, rank, stats.words());
+    Map<String, Double> emotions = sg.moods(p, stats);
+    manager.addMoods(id, emotions);
+    List<Integer> sent = sg.sentiment(p, stats);
+    manager.addSentiments(id, sent);
+    String topic = sg.topic(p);
+    manager.addTopic(id, topic);
+    Readability read = new Readability(stats);
+    manager.addReadLevel(id, read.avgRead(), read.avgGrade());
+    Article art = new Article(id, p.title(), p.url(), username, rank, read.avgRead(), read.avgGrade());
+    art.setMood(emotions);
+    List<String> topics = new ArrayList<>();
+    topics.add(topic);
+    art.setTopics(topics);
+    art.setSentiments(sent);
+    manager.avgReadLevel(username);
+    manager.wordsRead(username);
+    return art;
+  }
+
   private synchronized Pair<Profile, Article> addArticle(Profile prof,
       String url, Integer rank) throws SQLException {
     ArticleParser p = new ArticleParser(url);
@@ -447,6 +477,26 @@ public final class Main {
     return profile;
   }
 
+  private synchronized Profile getProfileByUsername(String username) {
+    System.out.println("hi" + username);
+    User user;
+    try {
+      user = manager.getUserByUsername(username);
+    } catch (SQLException e) {
+      System.out.println("llllll");
+      return null;
+    }
+    System.out.println("bbbbb");
+    Profile profile;
+    try {
+      profile = new Profile(user,
+          manager.getArticles(user.getUsername()));
+    } catch (SQLException e) {
+      return null;
+    }
+    return profile;
+  }
+
   private static JsonObject profileJson(Profile p) {
     JsonObject json = userJson(p.getUser());
     JsonArray art = new JsonArray();
@@ -459,7 +509,19 @@ public final class Main {
     json.add("articles", art);
     return json;
   }
-
+/*
+  private static JsonObject articleJson(Article a) {
+    JsonObject json = new JsonObject();
+    Map<String,Double> moods = a.getMoods();
+    Set<String> moodKeys = moods.keySet();
+    JsonArray
+    for (String key : moodKeys) {
+      key
+    }
+    json.add("articles", a.getMoods());
+    return json;
+  }
+*/
   private static JsonObject userJson(User user) {
     JsonObject json = new JsonObject();
     json.addProperty("username", user.getUsername());

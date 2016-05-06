@@ -30,6 +30,12 @@ div.well{
     border: red solid 1px;
   }
 
+.selected {
+  box-shadow: 0 0 10px blue;
+
+
+}
+
 .Absolute-Center {
   margin: auto;
   position: absolute;
