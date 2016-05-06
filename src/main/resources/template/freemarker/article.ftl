@@ -1,7 +1,7 @@
 <#assign content>
 	<nav class="navbar navbar-default navbar-fixed-top">
 		<div class="container">
-			<a class="navbar-brand" href="/"><img
+			<a class="navbar-brand" href="/home"><img
              src="../img/redient2.gif"></a>
 			<ul class="nav navbar-nav navbar-right">
 				<li class="dropdown">
@@ -21,10 +21,10 @@
 	<div class="article-stats">
 		<div class="container">
 			<div class="jumbotron" id="article">
-				<h2> Article: <a id="title" href ='#'>Title</a> </h2>
+				<h2> Article: <a id="title" href ='#'></a> </h2>
 				<p id ="topic"> topic</p>
-				<p id ="word-count"> Word Count: 1,567 </p>
-				<p id ="pages"> Pages: 6.3 </p>
+				<p id ="word-count"> </p>
+				<p id ="pages"></p>
 				</div>
 				<div class="row">
 					<div class="col-md-4">

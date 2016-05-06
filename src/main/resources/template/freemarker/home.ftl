@@ -33,14 +33,17 @@
 			<button id ="minus" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-thumbs-down"></span></button>
 			</span> 
 		</div>
+		<div class="container input-group">
+		<div id="alert"class="alert alert-danger" role="alert">Must give a valid url</div>
+		</div>
 	</div>
 	<div class="article-stats">
 		<div class="container">
 			<div class="jumbotron" id="article">
-				<h2> Article: <a id="title" href ='#'>Title</a> </h2>
+				<h2> Article: <a id="title" href ='#'></a> </h2>
 				<p id ="topic"> topic</p>
-				<p id ="word-count"> Word Count: 1,567 </p>
-				<p id ="pages"> Pages: 6.3 </p>
+				<p id ="word-count">  </p>
+				<p id ="pages"> </p>
 				</div>
 				<div class="row">
 					<div class="col-md-4">
@@ -54,20 +57,24 @@
 					</div>
 				</div>
 				<div class="row" id="row2" >
+				<div class="col-md-4">
+						<div id="level"></div>
+					</div>
 					<div class="col-md-8">
 						<div id="cloud"></div>
 					</div>
 					<div class="col-md-4">
 						<div id="mood"></div>
+						
 					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-4">
-						<div id="level"></div>
-					</div>
+					
 					<div class="col-md-8">
 						<div id="sentiment"></div>
 					</div>
+				</div>
+				<div class="row">
+					
+					
 				</div>
 			
 		</div>

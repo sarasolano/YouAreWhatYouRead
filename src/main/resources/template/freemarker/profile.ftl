@@ -20,7 +20,7 @@
 	
 	<div class="prof-stats">
 		<div class="container">
-				<ul id = "articlelist"> article list!
+				<ul class="list-group" id = "articlelist"> article list!
 				</ul>
 				</div>
 				<div class="row">

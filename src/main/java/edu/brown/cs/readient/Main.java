@@ -555,6 +555,7 @@ public final class Main {
     json.add("url", GUI_GSON.toJsonTree(a.url()));
     json.add("topic", GUI_GSON.toJsonTree(a.getTopics().get(0)));
     json.add("link", GUI_GSON.toJsonTree("/article/" + encode(a.getId())));
+    json.add("wordCloud", GUI_GSON.toJsonTree(new ArticleParser(a.url()).jsonCounts()));
     return json;
   }
 

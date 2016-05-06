@@ -48,6 +48,10 @@ div.well{
   font-style: italic;
 }
 
+li {
+  list-style: none;
+}
+
 .Absolute-Center {
   margin: auto;
   position: absolute;

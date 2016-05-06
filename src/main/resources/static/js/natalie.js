@@ -1,4 +1,6 @@
 $( document ).ready(function() {
+	var err = $("#alert");
+	err.hide();
 	var pathArray = window.location.pathname.split( '/' );
 	console.log(pathArray[1]);
 
@@ -49,7 +51,7 @@ $( document ).ready(function() {
 					var li = document.createElement('li');
 					var link = a["link"];
 					var title = a["title"];
-					li.innerHTML = '<a href =' + '"' +link + '"' + ">" + title + "</a>";
+					li.innerHTML = '<a class="list-group-item" href =' + '"' +link + '"' + ">" + title + "</a>";
 					console.log(li.innerHTML);
 					ul.insertBefore(li,ul.childNodes[0]);
 				
@@ -71,6 +73,7 @@ $( document ).ready(function() {
 	var pages;
 	var link;
 	var topic;
+	var words;
 	$("#plus").click(function(e) {
 			plus = true;
 			sendUrl();
@@ -85,7 +88,9 @@ $( document ).ready(function() {
 		});
 
 	function sendUrl() {
+		err.hide();
 		var url = $("#url-input").val();
+		if (url.length != 0) {
 		var rank;
 		var postParameters;
 		if (plus) {
@@ -122,12 +127,17 @@ $( document ).ready(function() {
 					title = article["title"];
 					link = article["url"];
 					topic = article["topic"];
-					console.log(readlevel);
+					words = JSON.parse(article["wordCloud"]);
+					console.log(words);
 					loadGraphs();
 					 $('#article').animate({
   					scrollTop: $('#article').get(0).scrollHeight +10000});
 				
 				}); 
+	} else {
+		err.show();
+
+	}
 
 
 		
@@ -139,7 +149,7 @@ $( document ).ready(function() {
 		$("#word-count").text("Word Count: " + wordcount);
 		$("#pages").text("Pages: " + pages);
 		$("#topic").text("Topic: " + topic);
-		$("a").attr("href", link);
+		$("#title").attr("href", link);
 
 		
 
@@ -190,12 +200,12 @@ $( document ).ready(function() {
 	            },
 	            show: true
 	        },
-	      max: 8
+	      min: 3,
+	      max: 7
 	    }
 	});
 	
-	/*
-	var words = [
+	/*var words = [
 	             {text: "Lorem", weight: 13},
 	             {text: "Ipsum", weight: 10.5},
 	             {text: "Dolor", weight: 9.4},
@@ -205,6 +215,7 @@ $( document ).ready(function() {
 	             {text: "Adipiscing", weight: 5}
 	          
 	           ];
+	           */
 
 	$("#cloud").jQCloud(words, {
 		  width: $("#cloud").width(),
@@ -212,7 +223,7 @@ $( document ).ready(function() {
 		  shape: 'rectangular',
 		  autoResize: true
 	});
-*/
+
 
 	}
 
