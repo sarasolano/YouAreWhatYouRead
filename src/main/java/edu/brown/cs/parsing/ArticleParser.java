@@ -20,11 +20,13 @@ public class ArticleParser implements Iterable<String> {
 	private String title;
 	private DocumentPreprocessor dp;
 	private List<String> sentences;
+	private WordCounter wc;
 
 	public ArticleParser(String path) {
 		Document doc;
 		this.url = path;
 		this.sentences = new ArrayList<>();
+		this.wc = new WordCounter();
 		try {
 			doc = Jsoup.connect(path).get();
 			title = doc.select("h1").text();
@@ -45,6 +47,7 @@ public class ArticleParser implements Iterable<String> {
       StringBuilder sentence = new StringBuilder();
       for (HasWord word : sent) {
         sentence.append(word + " ");
+        wc.increment(word.word());
       }
       sentences.add(sentence.toString());
     }
@@ -65,17 +68,22 @@ public class ArticleParser implements Iterable<String> {
 	public List<String> sentences() {
 		return Collections.unmodifiableList(sentences);
 	}
+	
+	public String jsonCounts() {
+		return wc.getJSON();
+	}
 
 	// example of how to use it
 	public static void main(String[] args) {
-		ArticleParser p = new ArticleParser("http://www.economist.com/blogs/democracyinamerica/2016/05/pivotal-primary");
+		// ArticleParser p = new ArticleParser("http://www.economist.com/blogs/democracyinamerica/2016/05/pivotal-primary");
 		// ArticleParser p = new ArticleParser("http://blogs.scientificamerican.com/cross-check/psychedelic-therapy-and-bad-trips/");
-		//ArticleParser p = new ArticleParser("http://www.nytimes.com/2016/05/04/us/politics/indiana-republican-democratic.html?hp&action=click&pgtype=Homepage&clickSource=story-heading&module=span-ab-top-region&region=top-news&WT.nav=top-news");
+		ArticleParser p = new ArticleParser("http://www.nytimes.com/2016/05/04/us/politics/indiana-republican-democratic.html?hp&action=click&pgtype=Homepage&clickSource=story-heading&module=span-ab-top-region&region=top-news&WT.nav=top-news");
 		for (String sentence : p) {
 			// you can use HasWords by doing .word() -> string
 			// will fix this to use strings at some point
 			System.out.println(sentence);
 		}
+		System.out.println(p.jsonCounts());
 	}
 
 	@Override
