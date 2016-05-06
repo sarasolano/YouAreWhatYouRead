@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
@@ -279,7 +280,7 @@ public final class Main {
         String user = req.session().attribute("username");
         Article a = addArticleByUsername(user, url, rank);
         System.out.println(a.getId());
-        Map<String, Object> variables = ImmutableMap.of("article", a);
+        Map<String, Object> variables = ImmutableMap.of("article", articleJson(a));
         System.out.println(GUI_GSON.toJson(variables));
         return GUI_GSON.toJson(variables);
       } catch (SQLException e) {
@@ -509,19 +510,19 @@ public final class Main {
     json.add("articles", art);
     return json;
   }
-/*
   private static JsonObject articleJson(Article a) {
     JsonObject json = new JsonObject();
     Map<String,Double> moods = a.getMoods();
     Set<String> moodKeys = moods.keySet();
-    JsonArray
+    JsonArray m = new JsonArray();
     for (String key : moodKeys) {
-      key
+      JsonObject obj = new JsonObject();
+      obj.addProperty(key,moods.get(key).toString());
+      m.add(obj);
     }
-    json.add("articles", a.getMoods());
+    json.add("moods", m);
     return json;
   }
-*/
   private static JsonObject userJson(User user) {
     JsonObject json = new JsonObject();
     json.addProperty("username", user.getUsername());

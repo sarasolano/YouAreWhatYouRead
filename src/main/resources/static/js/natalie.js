@@ -61,7 +61,7 @@ $( document ).ready(function() {
 					article = response["article"];
 					console.log(article);
 					moods = article["moods"];
-					//console.log(moods);
+					console.log(moods["object"]);
 					loadGraphs();
 				
 				}); 
