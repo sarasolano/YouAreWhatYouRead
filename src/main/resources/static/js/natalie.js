@@ -1,4 +1,5 @@
 $( document ).ready(function() {
+	$("#article").hide();
 	var plus = false;
 	var minus = false;
 	var article;
@@ -63,6 +64,8 @@ $( document ).ready(function() {
 					topic = article["topic"];
 					console.log(readlevel);
 					loadGraphs();
+					 $('#article').animate({
+  					scrollTop: $('#article').get(0).scrollHeight +10000});
 				
 				}); 
 
@@ -71,9 +74,11 @@ $( document ).ready(function() {
 	}
 
 	function loadGraphs(){
+		$("#article").show();
 		$("#title").text(title);
 		$("#word-count").text("Word Count: " + wordcount);
 		$("#pages").text("Pages: " + pages);
+		$("#topic").text("Topic: " + topic);
 		$("a").attr("href", link);
 
 		
@@ -125,10 +130,11 @@ $( document ).ready(function() {
 	            },
 	            show: true
 	        },
-	      max: 14
+	      max: 8
 	    }
 	});
 	
+	/*
 	var words = [
 	             {text: "Lorem", weight: 13},
 	             {text: "Ipsum", weight: 10.5},
@@ -137,7 +143,7 @@ $( document ).ready(function() {
 	             {text: "Amet", weight: 6.2},
 	             {text: "Consectetur", weight: 5},
 	             {text: "Adipiscing", weight: 5}
-	             /* ... */
+	          
 	           ];
 
 	$("#cloud").jQCloud(words, {
@@ -146,6 +152,7 @@ $( document ).ready(function() {
 		  shape: 'rectangular',
 		  autoResize: true
 	});
+*/
 
 	}
 

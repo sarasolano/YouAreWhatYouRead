@@ -38,8 +38,10 @@
 		<div class="container">
 			<div class="jumbotron" id="article">
 				<h2> Article: <a id="title" href ='#'>Title</a> </h2>
+				<p id ="topic"> topic</p>
 				<p id ="word-count"> Word Count: 1,567 </p>
 				<p id ="pages"> Pages: 6.3 </p>
+				</div>
 				<div class="row">
 					<div class="col-md-4">
 						<div id="wc"></div>
@@ -67,7 +69,7 @@
 						<div id="sentiment"></div>
 					</div>
 				</div>
-			</div>
+			
 		</div>
 	</div>
 

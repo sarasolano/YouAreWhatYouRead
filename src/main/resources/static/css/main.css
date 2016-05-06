@@ -84,6 +84,9 @@ a:hover{
 h3 {
   text-align: center;
 }
+#url-input {
+  height: 34px;
+}
 
 .glyphicon {
   color: #AB2121;
@@ -98,7 +101,7 @@ h3 {
 }
 
 #article {
-  background-color: white;
+   background-color: #FFB9B9;
 }
 
 #cloud {
