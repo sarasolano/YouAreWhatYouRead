@@ -1,4 +1,5 @@
 (function() {
+
 		var pw = $('#password');
 		var username = $('#uname');
 

@@ -26,10 +26,10 @@
 		<div class="container input-group">
 			<input id ="url-input"type="text" class="form-control" placeholder="Add an article!">
 			<span class="input-group-btn">
-			<button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-thumbs-up"></span></button>
-			<button id = "add-article" onclick = "sendUrl()" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-plus"></span></button>
-			<button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-thumbs-down"></span></button>
-			</span>
+			<button id="plus" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+			<button id = "add-article" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-plus"></span></button>
+			<button id ="minus" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-thumbs-down"></span></button>
+			</span> 
 		</div>
 	</div>
 	<div class="article-stats">
