@@ -25,7 +25,7 @@ import edu.brown.cs.parsing.ArticleParser;
 public class NYTParser {
   public static void main(String[] args)
       throws IOException, InterruptedException, ParseException {
-    NYTParser.getArticles("20140125","7b36d3b640e1bb37fe77f74d921a090d:12:75167618");
+    NYTParser.getArticles("20140128","7b36d3b640e1bb37fe77f74d921a090d:12:75167618");
    // NYTParser.getArticles("20120101","5132d82e4c312ddeae7c0165f36ea3be:0:75165660");
   }
 
@@ -68,7 +68,7 @@ public class NYTParser {
           responseStrBuilder.append(line);
 
           // System.out.println(line);
-
+          TimeUnit.MILLISECONDS.sleep(50);
           JsonElement jelement = new JsonParser().parse(line);
           JsonObject jobject = jelement.getAsJsonObject();
           if (jobject != null) {
@@ -97,7 +97,7 @@ public class NYTParser {
 
           // System.out.println(result);
         }
-        TimeUnit.MILLISECONDS.sleep(50);
+
         input.close();
         rd.close();
 

@@ -1,7 +1,7 @@
 <#assign content>
 	<nav class="navbar navbar-default navbar-fixed-top">
 		<div class="container">
-			<a class="navbar-brand" href="#"><img
+			<a class="navbar-brand" href="/"><img
              src="../img/redient2.gif"></a>
 			<ul class="nav navbar-nav navbar-right">
 				<li class="dropdown">
@@ -15,25 +15,9 @@
 		</div>
 		</div>
 		
+		
 	</nav>
-	<div class="jumbotron" id="big">
-		<div class="container">
-			<div class="jumbotron">
-				<div id="border">
-					<h1>Readient</h1>
-					<p id="des">You are what you read.</p>
-				</div>
-			</div>
-		</div>
-		<div class="container input-group">
-			<input id ="url-input"type="text" class="form-control" placeholder="Add an article!">
-			<span class="input-group-btn">
-			<button id="plus" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-thumbs-up"></span></button>
-			<button id = "add-article" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-plus"></span></button>
-			<button id ="minus" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-thumbs-down"></span></button>
-			</span> 
-		</div>
-	</div>
+	
 	<div class="article-stats">
 		<div class="container">
 			<div class="jumbotron" id="article">
@@ -72,6 +56,7 @@
 			
 		</div>
 	</div>
+	
 
 </#assign>
 <#include "main.ftl">

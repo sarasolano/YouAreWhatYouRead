@@ -1,4 +1,64 @@
 $( document ).ready(function() {
+	var pathArray = window.location.pathname.split( '/' );
+	console.log(pathArray[1]);
+
+	if (pathArray[1] == "article") {
+		postParameters = { 
+			id : pathArray[2]
+		};
+
+
+		$.post("/article/a", postParameters, function(res) {
+			var response = JSON.parse(res);
+			console.log(response);
+			article = response;
+					moods = article["moods"];
+					sentiments = [article["sentiment"]];
+					console.log(sentiments);
+					console.log(moods["object"]);
+					readlevel = article["readlevel"];
+					wordcount = article["word-count"];
+					pages = article["pages"];
+					title = article["title"];
+					link = article["url"];
+					topic = article["topic"];
+					console.log(readlevel);
+					loadGraphs();
+
+			   //window.location = "/profile";
+			
+	});
+
+	}
+
+	if (window.location.pathname == "/profile") {
+
+	 postParameters = {
+				
+			};
+				
+	$.post("/getprof", postParameters, function(res) {
+			var response = JSON.parse(res);
+			console.log(response);
+			var articles = response["articles"];
+			var ul = document.getElementById("articlelist");
+				
+			for (var i = 0; i <articles.length; i++){
+				var a = articles[i];
+				console.log(a);
+					var li = document.createElement('li');
+					var link = a["link"];
+					var title = a["title"];
+					li.innerHTML = '<a href =' + '"' +link + '"' + ">" + title + "</a>";
+					console.log(li.innerHTML);
+					ul.insertBefore(li,ul.childNodes[0]);
+				
+			}
+
+			   //window.location = "/profile";
+			
+	}); 
+}
 	$("#article").hide();
 	var plus = false;
 	var minus = false;
@@ -194,6 +254,13 @@ $( document ).ready(function() {
 		$.post("/logout", function() {
 			window.location = "/signin";
 		}); 
+    });
+
+    $('#profile').click(function(e) {
+  	    e.preventDefault();
+  	    window.location = "/profile";
+  	 
+
     });
 
 //var words = [{

@@ -161,6 +161,16 @@ public final class Main {
       return new ModelAndView(variables, "home.ftl");
     } , marker);
 
+    Spark.get("/article/:aid", (req, res) -> {
+      String s = req.session().attribute("name");
+      if (s == null) {
+        res.redirect("/signin");
+      }
+      Map<String, Object> variables = ImmutableMap.of("title",
+          "Home | Readient", "username", s);
+      return new ModelAndView(variables, "article.ftl");
+    } , marker);
+
     Spark.get("/confirmation", (req, res) -> {
 
       String s = req.session().attribute("username");
@@ -180,13 +190,24 @@ public final class Main {
       return new ModelAndView(variables, "home.ftl");
     } , marker);
 
+    Spark.get("/profile", (req, res) -> {
+      String s = req.session().attribute("name");
+      if (s == null) {
+        res.redirect("/signin");
+      }
+
+      Map<String, Object> variables = ImmutableMap.of("title",
+          "Profile | Readient","username",s);
+      return new ModelAndView(variables, "profile.ftl");
+    } , marker);
+
     Spark.get("/signup", (req, res) -> {
       String s = req.session().attribute("username");
       if (s != null) {
         res.redirect("/home");
       }
       Map<String, Object> variables = ImmutableMap.of("title",
-          "Home | Readient");
+          "Signup | Readient");
       return new ModelAndView(variables, "signup.ftl");
     } , marker);
 
@@ -250,16 +271,20 @@ public final class Main {
       return GUI_GSON.toJson(new JsonObject());
     });
 
-    Spark.post("/profile", (req, res) -> {
-      final Profile p = profile;
+    Spark.post("/getprof", (req, res) -> {
+      System.out.println("WEHERE");
+      String s = req.session().attribute("username");
+      final Profile p = getProfileByUsername(s);
       return GUI_GSON.toJson(profileJson(p));
     });
 
-    Spark.post("/article/a/:aid", (req, res) -> {
-      String artID = req.params(":aid").replace('.', '/');
-      final Profile p = profile;
+    Spark.post("/article/a", (req, res) -> {
+      QueryParamsMap qm = req.queryMap();
+      String artID = decode(qm.value("id"));
+      String s = req.session().attribute("username");
+      final Profile p = getProfileByUsername(s);
       if (p.containsArticle(artID)) {
-        return GUI_GSON.toJson(p.getArticle(artID));
+        return GUI_GSON.toJson(articleJson(p.getArticle(artID)));
       } else {
         return GUI_GSON.toJson(new JsonObject());
       }
@@ -503,9 +528,7 @@ public final class Main {
     JsonArray art = new JsonArray();
     for (Article a : p.getArticles()) {
       JsonObject obj = new JsonObject();
-      obj.addProperty("id", a.getId());
-      obj.addProperty("title", a.getTitle());
-      art.add(obj);
+      art.add(articleJson(a));
     }
     json.add("articles", art);
     return json;
@@ -531,7 +554,30 @@ public final class Main {
     json.add("pages", GUI_GSON.toJsonTree(a.getWords() / 250));
     json.add("url", GUI_GSON.toJsonTree(a.url()));
     json.add("topic", GUI_GSON.toJsonTree(a.getTopics().get(0)));
+    json.add("link", GUI_GSON.toJsonTree("/article/" + encode(a.getId())));
     return json;
+  }
+
+  /**
+   * Encodes the string id.
+   *
+   * @param id
+   *          the id
+   * @return encoded id
+   */
+  private static String encode(String id) {
+    return id.replaceAll("/", "+");
+  }
+
+  /**
+   * Decodes the string id.
+   *
+   * @param id
+   *          the id
+   * @return decoded id
+   */
+  private static String decode(String id) {
+    return id.replaceAll("\\+", "/");
   }
 
   private static JsonObject userJson(User user) {
