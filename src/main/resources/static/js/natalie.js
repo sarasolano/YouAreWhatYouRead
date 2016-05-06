@@ -107,6 +107,25 @@ $( document ).ready(function() {
     	}
 	});
 	
+	var chart3 = c3.generate({
+		bindto: '#level',
+	    data: {
+	        columns: [
+	            ['data', 12]
+	        ],
+	        type: 'gauge'
+	    },
+	    gauge: {
+	        label: {
+	            format: function(value, ratio) {
+	                return value;
+	            },
+	            show: true
+	        },
+	      max: 14
+	    }
+	});
+	
 	var words = [
 	             {text: "Lorem", weight: 13},
 	             {text: "Ipsum", weight: 10.5},
