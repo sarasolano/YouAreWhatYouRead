@@ -158,7 +158,6 @@ public final class Main {
       }
       Map<String, Object> variables = ImmutableMap.of("title",
           "Home | Readient", "username", s);
-      System.out.println("/home");
       return new ModelAndView(variables, "home.ftl");
     } , marker);
 
@@ -228,7 +227,6 @@ public final class Main {
       QueryParamsMap qm = req.queryMap();
       String username = qm.value("username");
       String password = qm.value("password");
-      System.out.println(password);
       try {
         profile = getProfile(username, password);
         if (profile == null) {
@@ -242,7 +240,6 @@ public final class Main {
           Session s = req.session();
           s.attribute("username", username);
           s.attribute("name", profile.getUser().getName());
-          System.out.println(req.session().id());
           return GUI_GSON.toJson(GUI_GSON.toJson(profileJson(p)));
         }
       } catch (Exception e) {
@@ -255,7 +252,6 @@ public final class Main {
     Spark.post("/create", (req, res) -> {
       QueryParamsMap qm = req.queryMap();
       String username = qm.value("username");
-      System.out.println(username);
       String password = qm.value("password");
       String[] name = qm.value("name").split(" ");
       try {
@@ -263,7 +259,6 @@ public final class Main {
             name.length == 1 ? "" : name[1]);
         profile = getProfile(username, password);
         final Profile p = profile;
-        System.out.println(username);
         return GUI_GSON.toJson(profileJson(p));
       } catch (Exception e) {
         System.out.println(e.getMessage());
@@ -272,7 +267,6 @@ public final class Main {
     });
 
     Spark.post("/getprof", (req, res) -> {
-      System.out.println("WEHERE");
       String s = req.session().attribute("username");
       final Profile p = getProfileByUsername(s);
       return GUI_GSON.toJson(profileJson(p));
@@ -291,21 +285,16 @@ public final class Main {
     });
 
     Spark.post("/add", (req, res) -> {
-      System.out.println("add");
       QueryParamsMap qm = req.queryMap();
       String url = qm.value("url");
-      System.out.println(url);
-      System.out.println(qm.value("rank"));
       Integer rank = qm.value("rank") == null ? null
           : Integer.parseInt(qm.value("rank"));
 
       try {
         String user = req.session().attribute("username");
         Article a = addArticleByUsername(user, url, rank);
-        System.out.println(a.getId());
         Map<String, Object> variables = ImmutableMap.of("article",
             articleJson(a,true));
-        System.out.println(GUI_GSON.toJson(variables));
         return GUI_GSON.toJson(variables);
       } catch (SQLException e) {
         System.out.println(
@@ -485,16 +474,12 @@ public final class Main {
     }
   }
   private synchronized Profile getProfile(String username, String password) {
-    System.out.println("hi" + username);
-    System.out.println("hi" + password);
     User user;
     try {
       user = manager.getUser(username, password);
     } catch (SQLException e) {
-      System.out.println("llllll");
       return null;
     }
-    System.out.println("bbbbb");
     Profile profile;
     try {
       profile = new Profile(user, manager.getArticles(user.getUsername()));
@@ -505,15 +490,12 @@ public final class Main {
   }
 
   private synchronized Profile getProfileByUsername(String username) {
-    System.out.println("hi" + username);
     User user;
     try {
       user = manager.getUserByUsername(username);
     } catch (SQLException e) {
-      System.out.println("llllll");
       return null;
     }
-    System.out.println("bbbbb");
     Profile profile;
     try {
       profile = new Profile(user, manager.getArticles(user.getUsername()));

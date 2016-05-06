@@ -2,7 +2,6 @@ $( document ).ready(function() {
 	var err = $("#alert");
 	err.hide();
 	var pathArray = window.location.pathname.split( '/' );
-	console.log(pathArray[1]);
 
 	if (pathArray[1] == "article") {
 		postParameters = { 
@@ -12,12 +11,9 @@ $( document ).ready(function() {
 
 		$.post("/article/a", postParameters, function(res) {
 			var response = JSON.parse(res);
-			console.log(response);
 			article = response;
 					moods = article["moods"];
 					sentiments = [article["sentiment"]];
-					console.log(sentiments);
-					console.log(moods["object"]);
 					readlevel = article["readlevel"];
 					wordcount = article["word-count"];
 					pages = article["pages"];
@@ -25,7 +21,6 @@ $( document ).ready(function() {
 					link = article["url"];
 					topic = article["topic"];
 					words = JSON.parse(article["wordCloud"]);
-					console.log(readlevel);
 					loadGraphs();
 
 			   //window.location = "/profile";
@@ -42,19 +37,16 @@ $( document ).ready(function() {
 				
 	$.post("/getprof", postParameters, function(res) {
 			var response = JSON.parse(res);
-			console.log(response);
 			var articles = response["articles"];
 			var ul = document.getElementById("articlelist");
 			loadProfGraphs(response["avgReadLevel"],response["wordsRead"],response["numArticles"],response["avgMoods"]);
 				
 			for (var i = 0; i <articles.length; i++){
 				var a = articles[i];
-				console.log(a);
 					var li = document.createElement('li');
 					var link = a["link"];
 					var title = a["title"];
 					li.innerHTML = '<a class="list-group-item" href =' + '"' +link + '"' + ">" + title + "</a>";
-					console.log(li.innerHTML);
 					ul.insertBefore(li,ul.childNodes[0]);
 
 				
@@ -116,17 +108,12 @@ $( document ).ready(function() {
 				rank : null
 			};
 		}
-		console.log(postParameters);
 		
 		$.post("/add", postParameters, function(res) {
-						console.log(res);
 					var response = JSON.parse(res);
 					article = response["article"];
-					console.log(article);
 					moods = article["moods"];
 					sentiments = [article["sentiment"]];
-					console.log(sentiments);
-					console.log(moods["object"]);
 					readlevel = article["readlevel"];
 					wordcount = article["word-count"];
 					pages = article["pages"];
@@ -134,7 +121,6 @@ $( document ).ready(function() {
 					link = article["url"];
 					topic = article["topic"];
 					words = JSON.parse(article["wordCloud"]);
-					console.log(words);
 					loadGraphs();
 					 $('#article').animate({
   					scrollTop: $('#article').get(0).scrollHeight +10000});
@@ -173,7 +159,6 @@ $( document ).ready(function() {
 		$("#totalwords").text("You have read " + tw + " total words" );
 		$("#numArticles").text("You have read " + na + " articles");
 
-		console.log(am);
 
 		var chart = c3.generate({
 		  bindto: '#avgMoods',
@@ -309,7 +294,6 @@ $( document ).ready(function() {
 
   $('#logout').click(function(e) {
   	e.preventDefault();
-  	console.log("jdsafjsdaklflj");
 				
 		$.post("/logout", function() {
 			window.location = "/signin";

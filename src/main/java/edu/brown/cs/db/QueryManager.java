@@ -346,8 +346,6 @@ public class QueryManager implements AutoCloseable {
     ResultSet rs = stat.executeQuery();
     HashMap<String, Double> toReturn = new HashMap<>();
     while (rs.next()) {
-      System.out.println(rs.getString(1));
-      System.out.println(rs.getDouble(2));
       toReturn.put(rs.getString(1), rs.getDouble(2));
     }
     stat.close();
