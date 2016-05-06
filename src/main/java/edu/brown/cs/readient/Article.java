@@ -91,12 +91,16 @@ public class Article {
     this.moods = m;
   }
 
+  public List<Integer> getListSentiment() {
+    return sentiments;
+  }
+
   public synchronized Map<Integer, Double> getSentiments() {
     HashMap<Integer, Double> sent = new HashMap<>();
     double pos = 0;
     double neg = 0;
     for (int i : sentiments) {
-      if (i == 0) {
+      if (i == -1) {
         neg++;
       } else {
         pos++;

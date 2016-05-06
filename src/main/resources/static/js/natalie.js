@@ -61,6 +61,8 @@ $( document ).ready(function() {
 					article = response["article"];
 					console.log(article);
 					moods = article["moods"];
+					sentiments = [article["sentiment"]];
+					console.log(sentiments);
 					console.log(moods["object"]);
 					loadGraphs();
 				
@@ -72,6 +74,7 @@ $( document ).ready(function() {
 
 	function loadGraphs(){
 		console.log(moods);
+
 		var chart = c3.generate({
 		  bindto: '#mood',
 		  data: {
@@ -86,14 +89,22 @@ $( document ).ready(function() {
 		  }
 	});
 	
-	var sentiments = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1]];;
 	
 	var chart2 = c3.generate({
 		bindto: '#sentiment',
 	    data: {
 	        columns: sentiments,
-	        type: 'area'
-	    }
+	        type: 'area-step'
+	    },
+
+	    axis: {
+        	y: {
+            	max: 2,
+            	min: -2,
+            // Range includes padding, set 0 if no padding needed
+            // padding: {top:0, bottom:0}
+        	}
+    	}
 	});
 	
 	var words = [

@@ -520,7 +520,10 @@ public final class Main {
       obj.addProperty(key,moods.get(key).toString());
       m.add(obj);
     }
+    JsonArray s = new JsonArray();
+
     json.add("moods", m);
+    json.add("sentiment", GUI_GSON.toJsonTree((a.getListSentiment())));
     return json;
   }
   private static JsonObject userJson(User user) {

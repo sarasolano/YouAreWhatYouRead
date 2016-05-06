@@ -115,12 +115,12 @@ public class SQLImporter {
   private static void createSentimentTable()
       throws SQLException, IOException {
     String query = "CREATE TABLE sentiment("
-        + "sentiment INT NOT NULL," // sentiment is 0 for negative and 1 for
+        + "sentiment INT NOT NULL," // sentiment is -1 for negative and 1 for
                                     // positive
         + "article TEXT NOT NULL,"
         + "sentence INT NOT NULL,"
         + "PRIMARY KEY(sentiment, article, sentence),"
-        + "CONSTRAINT sentiment CHECK(sentiment == 0 || sentiment == 1)"
+//        + "CONSTRAINT sentiment CHECK(sentiment == (-1) || sentiment == 1)"
         + "FOREIGN KEY(article) REFERENCES article(id)"
         + ")";
     PreparedStatement statement = CONN.prepareStatement(query);

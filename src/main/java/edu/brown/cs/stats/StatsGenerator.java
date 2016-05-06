@@ -56,8 +56,8 @@ public class StatsGenerator {
   public List<Integer> sentiment(ArticleParser p, Stats s) {
     List<Integer> sent = new ArrayList<>();
     for (String sentence : p.sentences()) {
-      if (sentiment.classify(sentence) == 0) {
-        sent.add(0);
+      if (sentiment.classify(sentence) == -1) {
+        sent.add(-1);
       } else {
         sent.add(1);
       }
