@@ -437,6 +437,7 @@ public final class Main {
     Readability read = new Readability(stats);
     manager.addReadLevel(id, read.avgRead(), read.avgGrade());
     Article art = manager.getArticle(id);
+    prof.addArticle(art);
     return new Pair<>(prof, art);
   }
 

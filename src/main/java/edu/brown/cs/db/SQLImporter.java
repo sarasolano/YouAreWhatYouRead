@@ -58,7 +58,7 @@ public class SQLImporter {
         + "name TEXT NOT NULL,"
         + "url TEXT NOT NULL,"
         + "user TEXT NOT NULL,"
-        + "added TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,"
+        + "added TIME NOT NULL,"
         + "rank INT,"
         + "words INT NOT NULL,"
         + "PRIMARY KEY(id, user),"
