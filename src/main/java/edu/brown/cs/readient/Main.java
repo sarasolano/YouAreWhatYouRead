@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.text.ParseException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -103,8 +103,10 @@ public final class Main {
           throw new IllegalArgumentException(
               "usage: ./readient --login <username> <passoword>");
         }
-        sg = new StatsGenerator();
         Profile profile = getProfile(arguments.get(0), arguments.get(1));
+        if (profile == null) {
+          System.out.println("Invalid username or password");
+        }
         cmdLine(profile);
       } else if (options.has("signup")) {
         if (arguments.size() != SIGNUP_ARGS) {
@@ -112,9 +114,9 @@ public final class Main {
               "usage: ./readient --signup <username> "
                   + "<passoword> <first_name> <last_name>");
         }
-        sg = new StatsGenerator();
         manager.addUser(arguments.get(0), arguments.get(1), arguments.get(2),
             arguments.get(3));
+        usernames = manager.getUserNames();
         Profile profile = getProfile(arguments.get(0), arguments.get(1));
         cmdLine(profile);
       } else {
@@ -140,7 +142,7 @@ public final class Main {
       Map<String, Object> variables = ImmutableMap.of("title",
           "Home | Readient");
       return new ModelAndView(variables, "signin.ftl");
-    } , marker);
+    }, marker);
 
     Spark.post("/logout", (req, res) -> {
       JsonObject obj = new JsonObject();
@@ -159,7 +161,7 @@ public final class Main {
       Map<String, Object> variables = ImmutableMap.of("title",
           "Home | Readient", "username", s);
       return new ModelAndView(variables, "home.ftl");
-    } , marker);
+    }, marker);
 
     Spark.get("/article/:aid", (req, res) -> {
       String s = req.session().attribute("name");
@@ -169,7 +171,7 @@ public final class Main {
       Map<String, Object> variables = ImmutableMap.of("title",
           "Home | Readient", "username", s);
       return new ModelAndView(variables, "article.ftl");
-    } , marker);
+    }, marker);
 
     Spark.get("/confirmation", (req, res) -> {
 
@@ -179,7 +181,7 @@ public final class Main {
       }
       Map<String, Object> variables = ImmutableMap.of("title", "Confirmation");
       return new ModelAndView(variables, "confirmation.ftl");
-    } , marker);
+    }, marker);
 
     Spark.get("/", (req, res) -> {
 
@@ -187,7 +189,7 @@ public final class Main {
       Map<String, Object> variables = ImmutableMap.of("title",
           "Home | Readient");
       return new ModelAndView(variables, "home.ftl");
-    } , marker);
+    }, marker);
 
     Spark.get("/profile", (req, res) -> {
       String s = req.session().attribute("name");
@@ -196,9 +198,9 @@ public final class Main {
       }
 
       Map<String, Object> variables = ImmutableMap.of("title",
-          "Profile | Readient","username",s);
+          "Profile | Readient", "username", s);
       return new ModelAndView(variables, "profile.ftl");
-    } , marker);
+    }, marker);
 
     Spark.get("/signup", (req, res) -> {
       String s = req.session().attribute("username");
@@ -208,7 +210,7 @@ public final class Main {
       Map<String, Object> variables = ImmutableMap.of("title",
           "Signup | Readient");
       return new ModelAndView(variables, "signup.ftl");
-    } , marker);
+    }, marker);
 
     Spark.post("/exists", (req, res) -> {
       JsonObject obj = new JsonObject();
@@ -258,6 +260,9 @@ public final class Main {
         manager.addUser(username, password, name[0],
             name.length == 1 ? "" : name[1]);
         profile = getProfile(username, password);
+        Session s = req.session();
+        s.attribute("username", username);
+        s.attribute("name", profile.getUser().getName());
         final Profile p = profile;
         return GUI_GSON.toJson(profileJson(p));
       } catch (Exception e) {
@@ -278,7 +283,7 @@ public final class Main {
       String s = req.session().attribute("username");
       final Profile p = getProfileByUsername(s);
       if (p.containsArticle(artID)) {
-        return GUI_GSON.toJson(articleJson(p.getArticle(artID),true));
+        return GUI_GSON.toJson(articleJson(p.getArticle(artID), true));
       } else {
         return GUI_GSON.toJson(new JsonObject());
       }
@@ -294,9 +299,10 @@ public final class Main {
         String user = req.session().attribute("username");
         Article a = addArticleByUsername(user, url, rank);
         Map<String, Object> variables = ImmutableMap.of("article",
-            articleJson(a,true));
+            articleJson(a, true));
+        System.out.println(GUI_GSON.toJson(variables));
         return GUI_GSON.toJson(variables);
-      } catch (SQLException e) {
+      } catch (SQLException | ParseException e) {
         System.out.println(
             "Article could not be added to the databse :( " + e.getMessage());
       }
@@ -343,7 +349,7 @@ public final class Main {
             Pair<Profile, Article> res = addArticle(prof, line[1], null);
             prof = res.first();
             System.out.println(CMND_GSON.toJson(res.second()));
-          } catch (SQLException e) {
+          } catch (SQLException | ParseException e) {
             System.out.println("Article could not be added to the databse :( "
                 + e.getMessage());
           }
@@ -358,7 +364,7 @@ public final class Main {
               prof = res.first();
               System.out.println(CMND_GSON.toJson(res.second()));
             }
-          } catch (SQLException e) {
+          } catch (SQLException | ParseException e) {
             System.out.println("Article could not be added to the databse :( "
                 + e.getMessage());
           } catch (NumberFormatException e) {
@@ -399,7 +405,7 @@ public final class Main {
   }
 
   private synchronized Article addArticleByUsername(String username, String url,
-      Integer rank) throws SQLException {
+      Integer rank) throws SQLException, ParseException {
     ArticleParser p = new ArticleParser(url);
     Stats stats = StatsGenerator.analyze(p.iterator());
     String id = manager.addArticle(p.title(), p.url(), username, rank,
@@ -412,20 +418,12 @@ public final class Main {
     manager.addTopic(id, topic);
     Readability read = new Readability(stats);
     manager.addReadLevel(id, read.avgRead(), read.avgGrade());
-    Article art = new Article(id, p.title(), p.url(), username, rank,
-        read.avgRead(), read.avgGrade(), stats.words());
-    art.setMood(emotions);
-    List<String> topics = new ArrayList<>();
-    topics.add(topic);
-    art.setTopics(topics);
-    art.setSentiments(sent);
-    manager.avgReadLevel(username);
-    manager.wordsRead(username);
+    Article art = manager.getArticle(id);
     return art;
   }
 
   private synchronized Pair<Profile, Article> addArticle(Profile prof,
-      String url, Integer rank) throws SQLException {
+      String url, Integer rank) throws SQLException, ParseException {
     ArticleParser p = new ArticleParser(url);
     Stats stats = StatsGenerator.analyze(p.iterator());
     String id = manager.addArticle(p.title(), p.url(),
@@ -438,18 +436,7 @@ public final class Main {
     manager.addTopic(id, topic);
     Readability read = new Readability(stats);
     manager.addReadLevel(id, read.avgRead(), read.avgGrade());
-    Article art = new Article(id, p.title(), p.url(),
-        prof.getUser().getUsername(), rank, read.avgRead(), read.avgGrade(),
-        stats.words());
-    art.setMood(emotions);
-    List<String> topics = new ArrayList<>();
-    topics.add(topic);
-    art.setTopics(topics);
-    art.setSentiments(sent);
-    prof.addArticle(art);
-    prof.setAvgReadLevel(manager.avgReadLevel(prof.getUser().getUsername()));
-    prof.setWordsRead(manager.wordsRead(prof.getUser().getUsername()));
-    getAvgs(prof);
+    Article art = manager.getArticle(id);
     return new Pair<>(prof, art);
   }
 
@@ -460,7 +447,6 @@ public final class Main {
       System.out.println("Article could not be removed from the database");
     }
     prof.removeArticle(artID);
-    getAvgs(prof);
     return prof;
   }
 
@@ -473,7 +459,11 @@ public final class Main {
       System.out.println("Unable to connect to the database");
     }
   }
+
   private synchronized Profile getProfile(String username, String password) {
+    if (!usernames.contains(username)) {
+      throw new IllegalArgumentException("Invalid username");
+    }
     User user;
     try {
       user = manager.getUser(username, password);
@@ -483,13 +473,16 @@ public final class Main {
     Profile profile;
     try {
       profile = new Profile(user, manager.getArticles(user.getUsername()));
-    } catch (SQLException e) {
+    } catch (SQLException | ParseException e) {
       return null;
     }
     return profile;
   }
 
   private synchronized Profile getProfileByUsername(String username) {
+    if (!usernames.contains(username)) {
+      throw new IllegalArgumentException("Invalid username");
+    }
     User user;
     try {
       user = manager.getUserByUsername(username);
@@ -499,7 +492,7 @@ public final class Main {
     Profile profile;
     try {
       profile = new Profile(user, manager.getArticles(user.getUsername()));
-    } catch (SQLException e) {
+    } catch (SQLException | ParseException e) {
       return null;
     }
     return profile;
@@ -511,11 +504,11 @@ public final class Main {
     JsonArray art = new JsonArray();
     JsonArray moods = new JsonArray();
     for (Article a : p.getArticles()) {
-      art.add(articleJson(a,false));
+      art.add(articleJson(a, false));
     }
     json.add("articles", art);
     json.add("avgReadLevel", GUI_GSON.toJsonTree(p.getAvgReadLevel()));
-    //json.add("avgMoods", GUI_GSON.toJsonTree(p.getAvgMoods()));
+    // json.add("avgMoods", GUI_GSON.toJsonTree(p.getAvgMoods()));
     json.add("numArticles", GUI_GSON.toJsonTree(p.numArticles()));
     json.add("wordsRead", GUI_GSON.toJsonTree(p.wordsRead()));
 
@@ -539,8 +532,6 @@ public final class Main {
       obj.addProperty(key, moods.get(key).toString());
       m.add(obj);
     }
-    JsonArray s = new JsonArray();
-
     json.add("moods", m);
     json.add("sentiment", GUI_GSON.toJsonTree((a.getListSentiment())));
     json.add("readlevel", GUI_GSON.toJsonTree(a.getReadLevel()));
@@ -551,7 +542,8 @@ public final class Main {
     json.add("topic", GUI_GSON.toJsonTree(a.getTopics().get(0)));
     json.add("link", GUI_GSON.toJsonTree("/article/" + encode(a.getId())));
     if (wordCloud) {
-      json.add("wordCloud", GUI_GSON.toJsonTree(new ArticleParser(a.url()).jsonCounts()));
+      json.add("wordCloud",
+          GUI_GSON.toJsonTree(new ArticleParser(a.url()).jsonCounts()));
 
     }
 
@@ -568,8 +560,6 @@ public final class Main {
   private static String encode(String id) {
     return id.replaceAll("/", "+");
   }
-
-
 
   /**
    * Decodes the string id.

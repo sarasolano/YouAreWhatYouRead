@@ -36,7 +36,7 @@ div.well{
 }
 .err {
     border: red solid 1px;
-  }
+ }
 
 .selected {
   box-shadow: 0 0 10px blue;

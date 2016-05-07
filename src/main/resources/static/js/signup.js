@@ -6,16 +6,29 @@
 		var username = $('#username-signup');
 		var name = $('#first');
 	
-//		username.bind("keyup", function(e) {
-//			$("#repeat-err").hide();
-//				if (exists(username)) {
-//					$("#repeat-err").show();
-//					username.css("border", "red solid 1px");
-//				} else {
-//					username.css("border", "green solid 1px");
-//				}
-//			});
-//		});
+		username.keyup(function(e) {
+			if (!e || e.which == 13) {
+				return;
+			} else if (username.val()) {
+				username.css("border", "grey solid 1px");
+				return;
+			}
+			var params = {"username" : username.val()};
+			$.post("/exists", params, function(res) {
+				var result = JSON.parse(res);
+				if (result.isUserName === true) {
+					username.css("border", "red solid 1px");
+				} else {
+					username.css("border", "green solid 1px");
+				}
+			});
+		});
+	
+		$(document).keypress(function(e) {
+			if (e.which == 13) {
+				$('.btn').trigger("click");
+			}
+		});
 	
 		username.click(function(e) {
 			$("#success").hide();
@@ -61,7 +74,7 @@
 					pw2.addClass("err");
 				}
 		if ($("#first").val().length == 0) {
-			$("#name-err").show();
+				$("#name-err").show();
 				$("#first").addClass("err");
 		} 
 		if (username.val().length != 0  && !(pw.val().length < 8) && !(pw.val().length > 36) && (pw.val() == pw2.val()) && ($("#first").val().length != 0)) {
@@ -77,20 +90,10 @@
 								pw2.val('');
 								username.val('');
 								$("#success").show();
-								
+								window.location = "/home";
+								$.post("/home");
 							}
 						}); 
         }
     });
 })();
-
-function exists(username) {
-	var isUserName = false;
-	var params = {"username" : username};
-	$.post("/exists", params, function(res) {
-		if (res.isUserName) {
-			isUserName = true;
-		}
-	});
-	return isUserName;
-}

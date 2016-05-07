@@ -58,6 +58,7 @@ public class SQLImporter {
         + "name TEXT NOT NULL,"
         + "url TEXT NOT NULL,"
         + "user TEXT NOT NULL,"
+        + "added TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,"
         + "rank INT,"
         + "words INT NOT NULL,"
         + "PRIMARY KEY(id, user),"
@@ -120,7 +121,7 @@ public class SQLImporter {
         + "article TEXT NOT NULL,"
         + "sentence INT NOT NULL,"
         + "PRIMARY KEY(sentiment, article, sentence),"
-//        + "CONSTRAINT sentiment CHECK(sentiment == (-1) || sentiment == 1)"
+        // + "CONSTRAINT sentiment CHECK(sentiment == (-1) || sentiment == 1)"
         + "FOREIGN KEY(article) REFERENCES article(id)"
         + ")";
     PreparedStatement statement = CONN.prepareStatement(query);

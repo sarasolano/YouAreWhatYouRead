@@ -1,5 +1,5 @@
 <#assign content>
-<div class="container">
+<div class="container login">
 	<div class="row">
 		<div class="Absolute-Center is-Responsive">
 			<div id="logo-container"></div>

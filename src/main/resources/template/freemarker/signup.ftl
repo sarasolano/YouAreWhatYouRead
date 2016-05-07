@@ -1,7 +1,7 @@
 <#assign content>
 	<div class="container">
 		<div class="row">
-			<div class="Absolute-Center is-Responsive">
+			<div class="Absolute-Center is-Responsive signup">
 				<div id="logo-container"></div>
 				<div class="col-sm-12 col-md-10 col-md-offset-1">
 					<form action="">
@@ -32,7 +32,7 @@
 							<button id="submit" type="button" class="btn btn-def btn-block">Signup</button>
 						</div>
 						<span id="sub-err" style="color: red; display: none">Username already exists</span>
-						<div id = "success" class="alert alert-success" role="alert">Your account has been created</div>
+						<div id = "success" class="alert alert-success" role="alert" style="display: none">Your account has been created</div>
 						<form method="GET" action="/signup">
 							<div class="form-group text-center">
 								<span>Already have an account? <a href="/signin">Sign in</a>

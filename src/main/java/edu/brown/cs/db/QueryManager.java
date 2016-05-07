@@ -10,8 +10,12 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +38,8 @@ import edu.brown.cs.readient.User;
  * @author sarasolano
  */
 public class QueryManager implements AutoCloseable {
+  public static final DateFormat DATE_FORMAT =
+      new SimpleDateFormat("yyyy-MM-dd HH:mm");
   /**
    * The secure random number generator for salts.
    */
@@ -177,10 +183,13 @@ public class QueryManager implements AutoCloseable {
    *          the username of the user
    * @return a list of articles submitted by the user
    * @throws SQLException
+   * @throws ParseException
    */
-  public List<Article> getArticles(String username) throws SQLException {
-    String query = "SELECT id, name, url, user, rank, read_level, grade_level, words FROM article, read_level "
-        + "WHERE article.id == read_level.article AND article.user == ?;";
+  public List<Article> getArticles(String username)
+      throws SQLException, ParseException {
+    String query =
+        "SELECT id, name, url, user, added, rank, read_level, grade_level, words FROM article, read_level "
+            + "WHERE article.id == read_level.article AND article.user == ?;";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, username);
     ResultSet rs = stat.executeQuery();
@@ -188,12 +197,36 @@ public class QueryManager implements AutoCloseable {
     while (rs.next()) {
       String id = rs.getString(1);
       Article art = new Article(id, rs.getString(2), rs.getString(3),
-          rs.getString(4), rs.getInt(5), rs.getDouble(6), rs.getDouble(7),
-          rs.getInt(8));
+          rs.getString(4), DATE_FORMAT.parse(rs.getString(5)), rs.getInt(6),
+          rs.getDouble(7), rs.getDouble(8), rs.getInt(9));
       art.setMood(getMoods(id));
       art.setSentiments(getSentiments(id));
       art.setTopics(getTopics(id));
       toReturn.add(art);
+    }
+    rs.close();
+    stat.close();
+    return toReturn;
+  }
+
+  public Article getArticle(String artID) throws SQLException, ParseException {
+    String query =
+        "SELECT id, name, url, user, added, rank, read_level, grade_level, words FROM article, read_level "
+            + "WHERE article.id == read_level.article AND article.id == ?;";
+    PreparedStatement stat = conn.prepareStatement(query);
+    stat.setString(1, artID);
+    ResultSet rs = stat.executeQuery();
+    Article toReturn = null;
+    while (rs.next()) {
+      String id = rs.getString(1);
+      Article art = new Article(id, rs.getString(2), rs.getString(3),
+          rs.getString(4), DATE_FORMAT.parse(rs.getString(5)), rs.getInt(6),
+          rs.getDouble(7), rs.getDouble(8),
+          rs.getInt(9));
+      art.setMood(getMoods(id));
+      art.setSentiments(getSentiments(id));
+      art.setTopics(getTopics(id));
+      toReturn = art;
     }
     rs.close();
     stat.close();
@@ -353,10 +386,6 @@ public class QueryManager implements AutoCloseable {
     return toReturn;
   }
 
-  // public Map<String, Double> avgMoods(String username) {
-  // String query = "S";
-  // }
-
   /**
    * Adds a user to the database.
    *
@@ -402,7 +431,7 @@ public class QueryManager implements AutoCloseable {
    */
   public String addArticle(String name, String url, String username,
       Integer rank, int words) throws SQLException {
-    String query = "INSERT INTO article VALUES(?, ?, ?, ?, "
+    String query = "INSERT INTO article VALUES(?, ?, ?, ?, ?, "
         + (rank == null ? "NULL," : "?,") + " ?);";
     PreparedStatement stat = conn.prepareStatement(query);
     String id = "a/" + UUID.randomUUID();
@@ -410,11 +439,12 @@ public class QueryManager implements AutoCloseable {
     stat.setString(2, name);
     stat.setString(3, url);
     stat.setString(4, username);
+    stat.setString(5, DATE_FORMAT.format(new Date()));
     if (rank != null) {
-      stat.setInt(5, rank);
-      stat.setInt(6, words);
+      stat.setInt(6, rank);
+      stat.setInt(7, words);
     } else {
-      stat.setInt(5, words);
+      stat.setInt(6, words);
     }
     stat.execute();
     stat.close();

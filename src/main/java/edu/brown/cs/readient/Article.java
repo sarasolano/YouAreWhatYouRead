@@ -2,6 +2,7 @@ package edu.brown.cs.readient;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ public class Article {
   private String title;
   private String user;
   private String url;
+  private Date addedDate;
   private Integer ranking;
   private double readLevel;
   private double gradeLevel;
@@ -22,11 +24,12 @@ public class Article {
   private int words;
 
   public Article(String artID, String name, String url, String username,
-      Integer rank,
-      double readLevel, double gradeLevel, int words) {
+      Date added, Integer rank, double readLevel, double gradeLevel,
+      int words) {
     this.id = artID;
     this.title = name;
     this.url = url;
+    this.addedDate = added;
     this.user = username;
     this.ranking = rank;
     this.readLevel = readLevel;
@@ -40,6 +43,7 @@ public class Article {
   public String getId() {
     return id;
   }
+
   public int getWords() {
     return words;
   }
@@ -54,6 +58,10 @@ public class Article {
 
   public String url() {
     return url;
+  }
+
+  public Date getAddedDate() {
+    return addedDate;
   }
 
   /**
