@@ -188,8 +188,10 @@ public class QueryManager implements AutoCloseable {
   public List<Article> getArticles(String username)
       throws SQLException, ParseException {
     String query =
-        "SELECT id, name, url, user, added, rank, read_level, grade_level, words FROM article, read_level "
-            + "WHERE article.id == read_level.article AND article.user == ?;";
+        "SELECT id, name, url, user, added, rank, read_level, grade_level, "
+            + "words FROM article, read_level "
+            + "WHERE article.id == read_level.article AND article.user == ? "
+            + "ORDER BY strftime('%s', added) DESC;";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, username);
     ResultSet rs = stat.executeQuery();

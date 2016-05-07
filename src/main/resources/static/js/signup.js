@@ -9,7 +9,7 @@
 		username.keyup(function(e) {
 			if (!e || e.which == 13) {
 				return;
-			} else if (username.val()) {
+			} else if (!username.val()) {
 				username.css("border", "grey solid 1px");
 				return;
 			}
@@ -85,11 +85,7 @@
 							if (jQuery.isEmptyObject(response)) {
 								$("#sub-err").show();
 							} else {
-								$("#first").val('');
-								pw.val('');
-								pw2.val('');
-								username.val('');
-								$("#success").show();
+//								$("#success").show();
 								window.location = "/home";
 								$.post("/home");
 							}

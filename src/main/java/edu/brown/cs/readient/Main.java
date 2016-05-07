@@ -437,6 +437,7 @@ public final class Main {
     Readability read = new Readability(stats);
     manager.addReadLevel(id, read.avgRead(), read.avgGrade());
     Article art = manager.getArticle(id);
+    prof.addArticle(art);
     return new Pair<>(prof, art);
   }
 
@@ -461,9 +462,6 @@ public final class Main {
   }
 
   private synchronized Profile getProfile(String username, String password) {
-    if (!usernames.contains(username)) {
-      throw new IllegalArgumentException("Invalid username");
-    }
     User user;
     try {
       user = manager.getUser(username, password);
