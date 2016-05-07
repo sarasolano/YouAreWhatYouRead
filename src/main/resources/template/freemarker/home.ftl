@@ -45,38 +45,22 @@
 				<p id ="word-count">  </p>
 				<p id ="pages"> </p>
 				</div>
+				<div class="row" id="row2" >
+				<div class="col-md-8">
+						<div id="cloud"></div>
+				</div>
+				<div class="col-md-4">
+					<div id="mood"></div>
+				</div>
+				</div>
 				<div class="row">
 					<div class="col-md-4">
-						<div id="wc"></div>
-					</div>
-					<div class="col-md-4">
-						<div id="topic"></div>
-					</div>
-					<div class="col-md-4">
-						<div id="pages"></div>
-					</div>
-				</div>
-				<div class="row" id="row2" >
-				<div class="col-md-4">
 						<div id="level"></div>
 					</div>
-					<div class="col-md-8">
-						<div id="cloud"></div>
-					</div>
-					<div class="col-md-4">
-						<div id="mood"></div>
-						
-					</div>
-					
 					<div class="col-md-8">
 						<div id="sentiment"></div>
 					</div>
 				</div>
-				<div class="row">
-					
-					
-				</div>
-			
 		</div>
 	</div>
 
