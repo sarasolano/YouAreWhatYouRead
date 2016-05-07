@@ -462,9 +462,6 @@ public final class Main {
   }
 
   private synchronized Profile getProfile(String username, String password) {
-    if (!usernames.contains(username)) {
-      throw new IllegalArgumentException("Invalid username");
-    }
     User user;
     try {
       user = manager.getUser(username, password);
