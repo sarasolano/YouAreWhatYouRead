@@ -22,51 +22,49 @@ import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.process.DocumentPreprocessor;
 
 public class ArticleParser implements Iterable<String> {
-	private String url;
-	private String text;
-	private String title;
-	private DocumentPreprocessor dp;
-	private List<String> sentences;
-	private List<String> noStopwords;
-	private WordCounter wc;
-	private static Set<String> stopwords;
+  private String url;
+  private String text;
+  private String title;
+  private DocumentPreprocessor dp;
+  private List<String> sentences;
+  private List<String> noStopwords;
+  private WordCounter wc;
+  private static Set<String> stopwords;
 
-	public ArticleParser(String path) {
-		Document doc;
-		this.url = path;
-		this.sentences = new ArrayList<>();
-		this.noStopwords = new ArrayList<>();
-		this.wc = new WordCounter();
-		if (stopwords == null || stopwords.isEmpty()) {
-			try {
-				fillStopwords(new File("stops.txt"));
-			} catch (IOException e) {
-				System.out.println("ERROR: Error filling stopwords.");
-			}
-		}
-		try {
-			Response response = Jsoup.connect(path)
-			           .ignoreContentType(true)
-			           .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36")  
-			           .referrer("http://www.google.com")   
-			           .timeout(12000) 
-			           .followRedirects(true)
-			           .execute();
-			doc = response.parse();
-			title = doc.select("h1").text();
-			String text = doc.select("p").text();
-			if (text.split(" ").length < 150) {
-				text = doc.body().text();
-			}
-			String allText = title + ". " + text;
-			this.text = allText;
-			Reader r = new StringReader(allText);
-			this.dp = new DocumentPreprocessor(r);
-			makeSentences();
-		} catch (IOException e) {
-			System.out.println("ERROR: Problem extracting the text.");
-		}
-	}
+  public ArticleParser(String path) {
+    Document doc;
+    this.url = path;
+    this.sentences = new ArrayList<>();
+    this.noStopwords = new ArrayList<>();
+    this.wc = new WordCounter();
+    if (stopwords == null || stopwords.isEmpty()) {
+      try {
+        fillStopwords(new File("stops.txt"));
+      } catch (IOException e) {
+        System.out.println("ERROR: Error filling stopwords.");
+      }
+    }
+    try {
+      Response response = Jsoup.connect(path).ignoreContentType(true)
+          .userAgent(
+              "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36")
+          .referrer("http://www.google.com").timeout(12000)
+          .followRedirects(true).execute();
+      doc = response.parse();
+      title = doc.select("h1").text();
+      String text = doc.select("p").text();
+      if (text.split(" ").length < 150) {
+        text = doc.body().text();
+      }
+      String allText = title + ". " + text;
+      this.text = allText;
+      Reader r = new StringReader(allText);
+      this.dp = new DocumentPreprocessor(r);
+      makeSentences();
+    } catch (IOException e) {
+      System.out.println("ERROR: Problem extracting the text.");
+    }
+  }
 
   private void makeSentences() {
 
@@ -76,8 +74,8 @@ public class ArticleParser implements Iterable<String> {
       for (HasWord word : sent) {
         sentence.append(word + " ");
         if (!stopwords.contains(word.word().toLowerCase())) {
-        	 wc.increment(word.word().toLowerCase());
-        	 stopSentence.append(word + " ");
+          wc.increment(word.word().toLowerCase());
+          stopSentence.append(word + " ");
         }
       }
       sentences.add(sentence.toString());
@@ -85,62 +83,71 @@ public class ArticleParser implements Iterable<String> {
     }
   }
 
-	public String title() {
-		return title;
-	}
+  public String title() {
+    return title;
+  }
 
-	public String url() {
-		return url;
-	}
+  public String url() {
+    return url;
+  }
 
-	public String text() {
-		return text;
-	}
+  public String text() {
+    return text;
+  }
 
-	public List<String> sentences() {
-		return Collections.unmodifiableList(sentences);
-	}
-	
-	public List<String> stopSentences() {
-		return Collections.unmodifiableList(noStopwords);
-	}
-	
-	public String jsonCounts() {
-		return wc.getJSON();
-	}
-	
-	public static void fillStopwords(File stopwords) throws IOException {
-		ArticleParser.stopwords = new HashSet<>();
-		BufferedReader br = new BufferedReader(new FileReader(stopwords));
-		String line = null;
-		while ((line = br.readLine()) != null) {
-			String word = line.trim();
-			ArticleParser.stopwords.add(word);
-		}
-		br.close();
-		List<String> punctuation = Arrays.asList(".", ",", "'", "`", ":", "!", "?", "``", "''", "-rrb-", "-lrb-", "a", "...", "'s", "n't", "--", "'ll", "advertisement");
-		ArticleParser.stopwords.addAll(punctuation);
-	}
+  public List<String> sentences() {
+    return Collections.unmodifiableList(sentences);
+  }
 
-	// example of how to use it
-	public static void main(String[] args) {
-		// ArticleParser p = new ArticleParser("http://www.economist.com/blogs/democracyinamerica/2016/05/pivotal-primary");
-		// ArticleParser p = new ArticleParser("http://blogs.scientificamerican.com/cross-check/psychedelic-therapy-and-bad-trips/");
-		// ArticleParser p = new ArticleParser("http://www.nytimes.com/2016/05/04/us/politics/indiana-republican-democratic.html?hp&action=click&pgtype=Homepage&clickSource=story-heading&module=span-ab-top-region&region=top-news&WT.nav=top-news");
-		// ArticleParser p = new ArticleParser("http://hotair.com/archives/2016/05/05/wow-im-not-ready-to-endorse-trump-says-paul-ryan/");
-		//ArticleParser p = new ArticleParser("http://www.helpguide.org/articles/emotional-health/anger-management.htm");
-		ArticleParser p = new ArticleParser("http://www.cnn.com/2016/05/07/americas/el-chapo-prison-transfer/");
-		// ArticleParser p = new ArticleParser("http://www.bustle.com/articles/158767-10-ways-to-pull-off-a-style-youre-intimidated-by");
-		for (String sentence : p.stopSentences()) {
-			// you can use HasWords by doing .word() -> string
-			// will fix this to use strings at some point
-			System.out.println(sentence);
-		}
-		System.out.println(p.jsonCounts());
-	}
+  public List<String> stopSentences() {
+    return Collections.unmodifiableList(noStopwords);
+  }
 
-	@Override
-	public Iterator<String> iterator() {
-		return sentences.iterator();
-	}
+  public String jsonCounts() {
+    return wc.getJSON();
+  }
+
+  public static void fillStopwords(File stopwords) throws IOException {
+    ArticleParser.stopwords = new HashSet<>();
+    BufferedReader br = new BufferedReader(new FileReader(stopwords));
+    String line = null;
+    while ((line = br.readLine()) != null) {
+      String word = line.trim();
+      ArticleParser.stopwords.add(word);
+    }
+    br.close();
+    List<String> punctuation = Arrays.asList(".", ",", "'", "+", "`", ":", "!",
+        "?", "``", "''", "-rrb-", "-lrb-", "a", "...", "'s", "n't", "--", "'ll",
+        "advertisement","1","2","3","4","5","6","7","8","9","10","0");
+    ArticleParser.stopwords.addAll(punctuation);
+  }
+
+  // example of how to use it
+  public static void main(String[] args) {
+    // ArticleParser p = new
+    // ArticleParser("http://www.economist.com/blogs/democracyinamerica/2016/05/pivotal-primary");
+    // ArticleParser p = new
+    // ArticleParser("http://blogs.scientificamerican.com/cross-check/psychedelic-therapy-and-bad-trips/");
+    // ArticleParser p = new
+    // ArticleParser("http://www.nytimes.com/2016/05/04/us/politics/indiana-republican-democratic.html?hp&action=click&pgtype=Homepage&clickSource=story-heading&module=span-ab-top-region&region=top-news&WT.nav=top-news");
+    // ArticleParser p = new
+    // ArticleParser("http://hotair.com/archives/2016/05/05/wow-im-not-ready-to-endorse-trump-says-paul-ryan/");
+    // ArticleParser p = new
+    // ArticleParser("http://www.helpguide.org/articles/emotional-health/anger-management.htm");
+    ArticleParser p = new ArticleParser(
+        "http://www.cnn.com/2016/05/07/americas/el-chapo-prison-transfer/");
+    // ArticleParser p = new
+    // ArticleParser("http://www.bustle.com/articles/158767-10-ways-to-pull-off-a-style-youre-intimidated-by");
+    for (String sentence : p.stopSentences()) {
+      // you can use HasWords by doing .word() -> string
+      // will fix this to use strings at some point
+      System.out.println(sentence);
+    }
+    System.out.println(p.jsonCounts());
+  }
+
+  @Override
+  public Iterator<String> iterator() {
+    return sentences.iterator();
+  }
 }
