@@ -38,17 +38,23 @@ $( document ).ready(function() {
 	$.post("/getprof", postParameters, function(res) {
 			var response = JSON.parse(res);
 			var articles = response["articles"];
-			var ul = document.getElementById("articlelist");
+			var ul = $("#articlelist");
 			loadProfGraphs(response["avgReadLevel"],response["wordsRead"],response["numArticles"],response["avgMoods"]);
 				
 			for (var i = 0; i <articles.length; i++){
 				var a = articles[i];
-					var li = document.createElement('li');
-					var link = a["link"];
+				var link = a["link"];
 					var title = a["title"];
-					li.innerHTML = '<a class="list-group-item" href =' + '"' +link + '"' + ">" + title + "</a>";
-					ul.insertBefore(li,ul.childNodes[0]);
+					if (a["rank"]>0){
+						ul.prepend("<li class='list-group-item up'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
+					} else if (a["rank"] == 0){
+						ul.prepend("<li class='list-group-item neutral'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
 
+					} else {
+						ul.prepend("<li class='list-group-item down'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
+					}
+					
+					
 				
 			}
 
@@ -100,12 +106,12 @@ $( document ).ready(function() {
 		} else if (minus) {
 			postParameters = {
 				url : url,
-				rank : JSON.stringify(0)
+				rank : JSON.stringify(-1)
 			};
 		} else {
 			postParameters = {
 				url : url,
-				rank : null
+				rank : JSON.stringify(0)
 			};
 		}
 		
@@ -222,12 +228,12 @@ $( document ).ready(function() {
 			var width = "style='width: " + Math.abs(progressBar[z]) +"%'";
 			console.log(width);
 			if (progressBar[z] >0) {
-				var div = '<div class="progress-bar progress-bar-success"' + width +'> <span class="sr-only">35% Complete (success)</span> </div>';
+				var div = '<div class="progress-bar progress-bar-success progress-bar-striped active"' + width +'> <span class="sr-only">35% Complete (success)</span> </div>';
 				bar.append(div);
 			} else {
 				var div = '<div class="progress-bar progress-bar-danger"' + width +'> <span class="sr-only">35% Complete (success)</span> </div>';
 				bar.append(div);
-			}
+			} 
 			
 		}
 
@@ -246,7 +252,7 @@ $( document ).ready(function() {
 		    title: "Mood",
 		  }
 	});
-	
+	/*
 	
 	var chart2 = c3.generate({
 		bindto: '#sentiment',
@@ -264,6 +270,7 @@ $( document ).ready(function() {
         	}
     	}
 	});
+*/
 	
 	var chart3 = c3.generate({
 		bindto: '#level',

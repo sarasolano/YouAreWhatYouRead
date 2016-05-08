@@ -1,44 +1,14 @@
 package edu.brown.cs.readient;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Scanner;
-import java.util.Set;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
-import edu.brown.cs.db.QueryManager;
-import edu.brown.cs.parsing.ArticleParser;
-import edu.brown.cs.stats.Readability;
-import edu.brown.cs.stats.StatsGenerator;
-import edu.brown.cs.stats.StatsGenerator.Stats;
-import edu.brown.cs.stats.Utils;
-import edu.stanford.nlp.util.Pair;
-import freemarker.template.Configuration;
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-import spark.ExceptionHandler;
-import spark.ModelAndView;
-import spark.QueryParamsMap;
-import spark.Request;
-import spark.Response;
-import spark.Session;
-import spark.Spark;
-import spark.template.freemarker.FreeMarkerEngine;
+import src.main.java.edu.brown.cs.db.QueryManager;
+import src.main.java.edu.brown.cs.parsing.ArticleParser;
+import src.main.java.edu.brown.cs.readient.Article;
+import src.main.java.edu.brown.cs.readient.Profile;
+import src.main.java.edu.brown.cs.readient.User;
+import src.main.java.edu.brown.cs.stats.Readability;
+import src.main.java.edu.brown.cs.stats.StatsGenerator;
+import src.main.java.edu.brown.cs.stats.StatsGenerator.Stats;
+import src.main.java.edu.brown.cs.stats.Utils;
 
 public final class Main {
   public static void main(String[] args) {
@@ -333,8 +303,7 @@ public final class Main {
     Spark.post("/add", (req, res) -> {
       QueryParamsMap qm = req.queryMap();
       String url = qm.value("url");
-      Integer rank = qm.value("rank") == null ? null
-          : Integer.parseInt(qm.value("rank"));
+      Integer rank = Integer.parseInt(qm.value("rank"));
 
       try {
         String user = req.session().attribute("username");
@@ -579,6 +548,8 @@ public final class Main {
     json.add("url", GUI_GSON.toJsonTree(a.url()));
     json.add("topic", GUI_GSON.toJsonTree(a.getTopics().get(0)));
     json.add("link", GUI_GSON.toJsonTree("/article/" + encode(a.getId())));
+    json.add("addedDate", GUI_GSON.toJsonTree(a.getAddedDate()));
+    json.add("rank", GUI_GSON.toJsonTree(a.getRanking()));
     if (wordCloud) {
       json.add("wordCloud",
           GUI_GSON.toJsonTree(new ArticleParser(a.url()).jsonCounts()));
