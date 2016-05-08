@@ -211,6 +211,34 @@ public class QueryManager implements AutoCloseable {
     return toReturn;
   }
 
+  public List<Article> getArticlesBetweenDates(String start, String end,
+      String username) throws SQLException, ParseException {
+    String query =
+        "SELECT id, name, url, user, added, rank, read_level, grade_level, "
+            + "words FROM article, read_level WHERE article.id == read_level.article "
+            + "AND article.user == ? AND added BETWEEN ? AND ? "
+            + "ORDER BY strftime('%s', added) ASC;";
+    PreparedStatement stat = conn.prepareStatement(query);
+    stat.setString(1, username);
+    stat.setString(1, DATE_FORMAT.format(start));
+    stat.setString(1, DATE_FORMAT.format(end));
+    ResultSet rs = stat.executeQuery();
+    List<Article> toReturn = new ArrayList<>();
+    while (rs.next()) {
+      String id = rs.getString(1);
+      Article art = new Article(id, rs.getString(2), rs.getString(3),
+          rs.getString(4), DATE_FORMAT.parse(rs.getString(5)), rs.getInt(6),
+          rs.getDouble(7), rs.getDouble(8), rs.getInt(9));
+      art.setMood(getMoods(id));
+      art.setSentiments(getSentiments(id));
+      art.setTopics(getTopics(id));
+      toReturn.add(art);
+    }
+    rs.close();
+    stat.close();
+    return toReturn;
+  }
+
   public Article getArticle(String artID) throws SQLException, ParseException {
     String query =
         "SELECT id, name, url, user, added, rank, read_level, grade_level, words FROM article, read_level "

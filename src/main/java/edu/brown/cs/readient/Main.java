@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import edu.brown.cs.parsing.ArticleParser;
 import edu.brown.cs.stats.Readability;
 import edu.brown.cs.stats.StatsGenerator;
 import edu.brown.cs.stats.StatsGenerator.Stats;
+import edu.brown.cs.stats.Utils;
 import edu.stanford.nlp.util.Pair;
 import freemarker.template.Configuration;
 import joptsimple.OptionParser;
@@ -152,7 +154,6 @@ public final class Main {
     });
 
     Spark.get("/home", (req, res) -> {
-
       String s = req.session().attribute("name");
       if (s == null) {
         res.redirect("/signin");
@@ -183,10 +184,9 @@ public final class Main {
     }, marker);
 
     Spark.get("/", (req, res) -> {
-
       res.redirect("/home");
       Map<String, Object> variables = ImmutableMap.of("title",
-          "Home | Readient","username",req.session().attribute("name"));
+          "Home | Readient", "username", req.session().attribute("name"));
       return new ModelAndView(variables, "home.ftl");
     }, marker);
 
@@ -195,7 +195,6 @@ public final class Main {
       if (s == null) {
         res.redirect("/signin");
       }
-
       Map<String, Object> variables = ImmutableMap.of("title",
           "Profile | Readient", "username", s);
       return new ModelAndView(variables, "profile.ftl");
@@ -292,6 +291,45 @@ public final class Main {
       }
     });
 
+    Spark.post("/articles/time", (req, res) -> {
+      QueryParamsMap qm = req.queryMap();
+      String s = req.session().attribute("username");
+      String format = qm.value("format");
+      int amount = Integer.parseInt(qm.value("amount"));
+      Date d = null;
+      Date end = null;
+      try {
+        d = QueryManager.DATE_FORMAT.parse(qm.value("start"));
+        if (format == null && qm.value("end") != null) {
+          end = QueryManager.DATE_FORMAT.parse(qm.value("end"));
+        } else if (format.equals("h")) {
+          end = Utils.minusHours(d, amount);
+        } else if (format.equals("d")) {
+          end = Utils.minusDays(d, amount);
+        } else if (format.equals("w")) {
+          end = Utils.minusWeeks(d, amount);
+        } else if (format.equals("m")) {
+          end = Utils.minusMonths(d, amount);
+        } else if (format.equals("y")) {
+          end = Utils.minusYears(d, amount);
+        } else {
+          return GUI_GSON.toJson(new JsonObject());
+        }
+
+        List<Article> arts = manager.getArticlesBetweenDates(
+            QueryManager.DATE_FORMAT.format(d),
+            QueryManager.DATE_FORMAT.format(end), s);
+        JsonArray json = new JsonArray();
+        for (Article art : arts) {
+          json.add(articleJson(art, false));
+        }
+        return GUI_GSON.toJson(json);
+      } catch (Exception e) {
+        System.out.println(e.getMessage());
+      }
+      return GUI_GSON.toJson(new JsonObject());
+    });
+
     Spark.post("/add", (req, res) -> {
       QueryParamsMap qm = req.queryMap();
       String url = qm.value("url");
@@ -316,7 +354,8 @@ public final class Main {
       QueryParamsMap qm = req.queryMap();
       String in = qm.value("articles");
       JsonArray arts = GUI_GSON.fromJson(in, JsonArray.class);
-      Profile profile = getProfileByUsername(req.session().attribute("username"));
+      Profile profile =
+          getProfileByUsername(req.session().attribute("username"));
       for (JsonElement obj : arts) {
         if (profile.containsArticle(obj.getAsString())) {
           removeArticle(obj.getAsString(), profile);
