@@ -54,7 +54,6 @@ public final class Main {
   private QueryManager manager;
   private StatsGenerator sg;
   private HashSet<String> usernames;
-  private Profile profile = null; // profile for gui
   private String[] args;
 
   public Main(String[] a) {
@@ -187,7 +186,7 @@ public final class Main {
 
       res.redirect("/home");
       Map<String, Object> variables = ImmutableMap.of("title",
-          "Home | Readient");
+          "Home | Readient","username",req.session().attribute("name"));
       return new ModelAndView(variables, "home.ftl");
     }, marker);
 
@@ -230,7 +229,7 @@ public final class Main {
       String username = qm.value("username");
       String password = qm.value("password");
       try {
-        profile = getProfile(username, password);
+        Profile profile = getProfile(username, password);
         if (profile == null) {
           JsonObject obj = new JsonObject();
           obj.addProperty("error", "profile doesn't exist");
@@ -259,11 +258,12 @@ public final class Main {
       try {
         manager.addUser(username, password, name[0],
             name.length == 1 ? "" : name[1]);
-        profile = getProfile(username, password);
+        Profile profile = getProfile(username, password);
         Session s = req.session();
         s.attribute("username", username);
         s.attribute("name", profile.getUser().getName());
         final Profile p = profile;
+        usernames.add(username);
         return GUI_GSON.toJson(profileJson(p));
       } catch (Exception e) {
         System.out.println(e.getMessage());
@@ -272,8 +272,11 @@ public final class Main {
     });
 
     Spark.post("/getprof", (req, res) -> {
+      System.out.println("hello");
       String s = req.session().attribute("username");
+      System.out.println(s);
       final Profile p = getProfileByUsername(s);
+      System.out.println(GUI_GSON.toJson(profileJson(p)));
       return GUI_GSON.toJson(profileJson(p));
     });
 
@@ -313,6 +316,7 @@ public final class Main {
       QueryParamsMap qm = req.queryMap();
       String in = qm.value("articles");
       JsonArray arts = GUI_GSON.fromJson(in, JsonArray.class);
+      Profile profile = getProfileByUsername(req.session().attribute("username"));
       for (JsonElement obj : arts) {
         if (profile.containsArticle(obj.getAsString())) {
           removeArticle(obj.getAsString(), profile);
@@ -478,9 +482,6 @@ public final class Main {
   }
 
   private synchronized Profile getProfileByUsername(String username) {
-    if (!usernames.contains(username)) {
-      throw new IllegalArgumentException("Invalid username");
-    }
     User user;
     try {
       user = manager.getUserByUsername(username);
