@@ -211,7 +211,7 @@ public class QueryManager implements AutoCloseable {
     return toReturn;
   }
 
-  public List<Article> getArticlesBetweenDates(String start, String end,
+  public List<Article> getArticlesBetweenDates(long start, long end,
       String username) throws SQLException, ParseException {
     String query =
         "SELECT id, name, url, user, added, rank, read_level, grade_level, "
@@ -233,6 +233,26 @@ public class QueryManager implements AutoCloseable {
       art.setSentiments(getSentiments(id));
       art.setTopics(getTopics(id));
       toReturn.add(art);
+    }
+    rs.close();
+    stat.close();
+    return toReturn;
+  }
+
+  public Map<String, Integer> countArticlesByDates(String username)
+      throws SQLException {
+    String query =
+        "SELECT COUNT(id), strftime('%s', added) as date "
+            + "FROM article WHERE article.user == ? "
+            + "GROUP BY date;";
+    PreparedStatement stat = conn.prepareStatement(query);
+    stat.setString(1, username);
+    ResultSet rs = stat.executeQuery();
+    Map<String, Integer> toReturn = new HashMap<>();
+    while (rs.next()) {
+      int count = rs.getInt(1);
+      String date = rs.getString(2);
+      toReturn.put(date, count);
     }
     rs.close();
     stat.close();

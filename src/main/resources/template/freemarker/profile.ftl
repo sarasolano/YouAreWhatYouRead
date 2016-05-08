@@ -35,10 +35,8 @@
 						<div id="avgMoods"></div>
 					</div
 					</div>
-			
-				
-			
 		</div>
+				<div id="cal-heatmap" class="jumbotron"></div>
 				<ul class="list-group" id = "articlelist"> 
 				</ul>
 				</div>
