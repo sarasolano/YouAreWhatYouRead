@@ -15,6 +15,16 @@
 							<input id="username-signup" class="form-control" type="text" name='username' placeholder="username"/>
 						</div>
 						<span id="username-err" style="color: red; display: none">Required field.</span>
+						<div id="username-taken" class="alert alert-danger hide" role="alert">
+  							<strong>Oh snap!</strong> That username is already taken.
+							</div>
+							
+						<div class="alert alert-success hide" id="available" role="alert">
+  							<strong>Great!</strong> Username is available.
+						</div>
+						<div class="alert alert-danger hide" id="spaces" role="alert">
+  							<strong>Error!</strong> Usernames cannot include spaces.
+						</div>
 
 						<div class="form-group input-group">
 							<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>

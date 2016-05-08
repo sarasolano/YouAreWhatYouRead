@@ -1,27 +1,50 @@
+	function hasWhiteSpace(s) {
+  return s.indexOf(' ') >= 0;
+}
+
 (function() {
+
 		$("#success").hide();
     var form = $('#signup');
 		var pw = $("#pwd-signup");
 		var pw2 = $("#pwd2");
 		var username = $('#username-signup');
 		var name = $('#first');
+		$("#username-taken").addClass("hide");
 	
 		username.keyup(function(e) {
-			if (!e || e.which == 13) {
+			var split = username.val().split(" ");
+			if (hasWhiteSpace(username.val())) {
+				$("#username-taken").addClass("hide");
+				$("#spaces").removeClass("hide");
+				$("#available").addClass("hide");
+			} else if (!e || e.which == 13) {
 				return;
 			} else if (!username.val()) {
-				username.css("border", "grey solid 1px");
+				$("#username-taken").addClass("hide");
+				$("#available").addClass("hide");
+					$("#spaces").addClass("hide");
 				return;
 			}
+
+			if (hasWhiteSpace(username.val())) {
+				$("#username-taken").addClass("hide");
+				$("#available").addClass("hide");
+				$("#spaces").removeClass("hide");
+			} else {
 			var params = {"username" : username.val()};
 			$.post("/exists", params, function(res) {
 				var result = JSON.parse(res);
 				if (result.isUserName === true) {
-					username.css("border", "red solid 1px");
+					$("#spaces").addClass("hide");
+					$("#username-taken").removeClass("hide");
 				} else {
-					username.css("border", "green solid 1px");
+					$("#username-taken").addClass("hide");
+					$("#available").removeClass("hide");
+						$("#spaces").addClass("hide");
 				}
 			});
+		}
 		});
 	
 		$(document).keypress(function(e) {
@@ -77,7 +100,9 @@
 				$("#name-err").show();
 				$("#first").addClass("err");
 		} 
-		if (username.val().length != 0  && !(pw.val().length < 8) && !(pw.val().length > 36) && (pw.val() == pw2.val()) && ($("#first").val().length != 0)) {
+
+
+		if (username.val().length != 0  && !(pw.val().length < 8) && !(pw.val().length > 36) && (pw.val() == pw2.val()) && ($("#first").val().length != 0)&& !(hasWhiteSpace(username.val()))) {
 						var name = $("#first").val();
             var postParameters = {"username" : username.val(), "password" : pw.val(), "name" : name};
             $.post("/create", postParameters, function(res) {

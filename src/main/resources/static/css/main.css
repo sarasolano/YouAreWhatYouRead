@@ -21,6 +21,10 @@ body {
 
 }
 
+.hide {
+  display: none;
+}
+
 
 .jumbotron {
   color: #AB2121;
