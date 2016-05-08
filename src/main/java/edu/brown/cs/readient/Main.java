@@ -53,7 +53,7 @@ public final class Main {
       .create();
   private static final Gson GUI_GSON = new GsonBuilder().create();
   private static final String DB = "data.db";
-  private edu.brown.cs.db.QueryManager manager;
+  private QueryManager manager;
   private StatsGenerator sg;
   private HashSet<String> usernames;
   private String[] args;

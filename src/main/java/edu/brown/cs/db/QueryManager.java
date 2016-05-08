@@ -41,7 +41,7 @@ import edu.brown.cs.readient.User;
  */
 public class QueryManager implements AutoCloseable {
   public static final DateFormat DATE_FORMAT =
-      new SimpleDateFormat("yyyy-MM-dd HH:mm zzz");
+      new SimpleDateFormat("yyyy-MM-dd HH:mm");
   /**
    * The secure random number generator for salts.
    */
