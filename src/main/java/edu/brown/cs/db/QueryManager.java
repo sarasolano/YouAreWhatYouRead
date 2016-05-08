@@ -15,6 +15,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import javax.crypto.SecretKeyFactory;
@@ -39,7 +41,7 @@ import edu.brown.cs.readient.User;
  */
 public class QueryManager implements AutoCloseable {
   public static final DateFormat DATE_FORMAT =
-      new SimpleDateFormat("yyyy-MM-dd HH:mm");
+      new SimpleDateFormat("yyyy-MM-dd HH:mm zzz");
   /**
    * The secure random number generator for salts.
    */
@@ -211,7 +213,7 @@ public class QueryManager implements AutoCloseable {
     return toReturn;
   }
 
-  public List<Article> getArticlesBetweenDates(String start, String end,
+  public List<Article> getArticlesBetweenDates(long start, long end,
       String username) throws SQLException, ParseException {
     String query =
         "SELECT id, name, url, user, added, rank, read_level, grade_level, "
@@ -220,8 +222,8 @@ public class QueryManager implements AutoCloseable {
             + "ORDER BY strftime('%s', added) ASC;";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, username);
-    stat.setString(1, DATE_FORMAT.format(start));
-    stat.setString(1, DATE_FORMAT.format(end));
+    stat.setString(2, DATE_FORMAT.format(start));
+    stat.setString(3, DATE_FORMAT.format(end));
     ResultSet rs = stat.executeQuery();
     List<Article> toReturn = new ArrayList<>();
     while (rs.next()) {
@@ -233,6 +235,26 @@ public class QueryManager implements AutoCloseable {
       art.setSentiments(getSentiments(id));
       art.setTopics(getTopics(id));
       toReturn.add(art);
+    }
+    rs.close();
+    stat.close();
+    return toReturn;
+  }
+
+  public Map<String, Integer> countArticlesByDates(String username)
+      throws SQLException {
+    String query =
+        "SELECT COUNT(id), strftime('%s', added) as date "
+            + "FROM article WHERE article.user == ? "
+            + "GROUP BY date;";
+    PreparedStatement stat = conn.prepareStatement(query);
+    stat.setString(1, username);
+    ResultSet rs = stat.executeQuery();
+    Map<String, Integer> toReturn = new HashMap<>();
+    while (rs.next()) {
+      int count = rs.getInt(1);
+      String date = rs.getString(2);
+      toReturn.put(date, count);
     }
     rs.close();
     stat.close();
@@ -469,7 +491,10 @@ public class QueryManager implements AutoCloseable {
     stat.setString(2, name);
     stat.setString(3, url);
     stat.setString(4, username);
-    stat.setString(5, DATE_FORMAT.format(new Date()));
+    Calendar cal =
+        Calendar.getInstance(TimeZone.getTimeZone("America/New_York"));
+    cal.setTime(new Date());
+    stat.setString(5, DATE_FORMAT.format(cal.getTime()));
     if (rank != null) {
       stat.setInt(6, rank);
       stat.setInt(7, words);

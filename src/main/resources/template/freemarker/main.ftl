@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/css/c3.css">
     <link rel="stylesheet" href="/css/jqcloud.css">
     <link rel="stylesheet" href="/css/main.css">
+		<link rel="stylesheet" href="/css/cal-heatmap.css">
   </head>
   <body>
      ${content}
@@ -20,10 +21,11 @@
      <script src="/js/jqcloud-1.0.4.min.js"></script> 
      <script src="/js/bootstrap.js"></script> 
       <script src="/js/d3.js"></script> 
-       <script src="/js/c3.js"></script> 
-	<script src="/js/signin.js"></script>
-	<script src="/js/signup.js"></script>
-	<script src="/js/natalie.js"></script>
+     <script src="/js/c3.js"></script> 
+		<script src="/js/signin.js"></script>
+		<script src="/js/signup.js"></script>
+		<script src="/js/natalie.js"></script>
+		<script src="/js/cal-heatmap.min.js"></script>
   </body>
   <!-- See http://html5boilerplate.com/ for a good place to start
        dealing with real world issues like old browsers.  -->

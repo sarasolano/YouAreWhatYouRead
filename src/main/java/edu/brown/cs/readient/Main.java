@@ -174,7 +174,6 @@ public final class Main {
     }, marker);
 
     Spark.get("/confirmation", (req, res) -> {
-
       String s = req.session().attribute("username");
       if (s != null) {
         res.redirect("/home");
@@ -291,34 +290,43 @@ public final class Main {
       }
     });
 
+    Spark.post("/articles/dates", (req, rest) -> {
+      String s = req.session().attribute("username");
+      Map<String, Integer> arts;
+      try {
+        arts = manager.countArticlesByDates(s);
+      } catch (SQLException e) {
+        return GUI_GSON.toJson(new JsonObject());
+      }
+      return GUI_GSON.toJson(arts);
+    });
+
     Spark.post("/articles/time", (req, res) -> {
       QueryParamsMap qm = req.queryMap();
       String s = req.session().attribute("username");
       String format = qm.value("format");
       int amount = Integer.parseInt(qm.value("amount"));
-      Date d = null;
-      Date end = null;
+      long d = 0;
+      long end = 0;
       try {
-        d = QueryManager.DATE_FORMAT.parse(qm.value("start"));
+        d = Long.parseLong(qm.value("start"));
         if (format == null && qm.value("end") != null) {
-          end = QueryManager.DATE_FORMAT.parse(qm.value("end"));
+          end = Long.parseLong(qm.value("end"));
         } else if (format.equals("h")) {
-          end = Utils.minusHours(d, amount);
+          end = Utils.minusHours(new Date(d), amount).getTime();
         } else if (format.equals("d")) {
-          end = Utils.minusDays(d, amount);
+          end = Utils.minusDays(new Date(d), amount).getTime();
         } else if (format.equals("w")) {
-          end = Utils.minusWeeks(d, amount);
+          end = Utils.minusWeeks(new Date(d), amount).getTime();
         } else if (format.equals("m")) {
-          end = Utils.minusMonths(d, amount);
+          end = Utils.minusMonths(new Date(d), amount).getTime();
         } else if (format.equals("y")) {
-          end = Utils.minusYears(d, amount);
+          end = Utils.minusYears(new Date(d), amount).getTime();
         } else {
-          return GUI_GSON.toJson(new JsonObject());
+          end = Utils.minusHours(new Date(d), -24).getTime();
         }
 
-        List<Article> arts = manager.getArticlesBetweenDates(
-            QueryManager.DATE_FORMAT.format(d),
-            QueryManager.DATE_FORMAT.format(end), s);
+        List<Article> arts = manager.getArticlesBetweenDates(d, end, s);
         JsonArray json = new JsonArray();
         for (Article art : arts) {
           json.add(articleJson(art, false));

@@ -29,37 +29,114 @@ $( document ).ready(function() {
 	}
 
 	if (window.location.pathname == "/profile") {
-
-	 postParameters = {
-				
-			};
-				
-	$.post("/getprof", postParameters, function(res) {
-			var response = JSON.parse(res);
-			var articles = response["articles"];
+		var loadArticles = function(start, end) {
 			var ul = $("#articlelist");
-			loadProfGraphs(response["avgReadLevel"],response["wordsRead"],response["numArticles"],response["avgMoods"]);
-				
-			for (var i = 0; i <articles.length; i++){
-				var a = articles[i];
-				var link = a["link"];
-					var title = a["title"];
-					if (a["rank"]>0){
-						ul.prepend("<li class='list-group-item up'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
-					} else if (a["rank"] == 0){
-						ul.prepend("<li class='list-group-item neutral'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
+			postParameters = {"start" : start, "end" : end, "amount" : 0};
+			$.post("/articles/time", postParameters, function(res) {
+				var articles = JSON.parse(res);
+				for (var i = 0; i <articles.length; i++){
+					var a = articles[i];
+					var link = a["link"];
+						var title = a["title"];
+						if (a["rank"]>0){
+							ul.prepend("<li class='list-group-item up'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
+						} else if (a["rank"] == 0){
+							ul.prepend("<li class='list-group-item neutral'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
 
-					} else {
-						ul.prepend("<li class='list-group-item down'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
-					}
-					
-					
+						} else {
+							ul.prepend("<li class='list-group-item down'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
+						}
+				}
+			});
+		}	
+	 
 				
-			}
+		$.post("/getprof", function(res) {
+				var response = JSON.parse(res);
+				var articles = response["articles"];
+				
+						loadProfGraphs(response["avgReadLevel"],response["wordsRead"],response["numArticles"],response["avgMoods"]);
+		});
+		
+		var map = {};
+		var cal;
+		
+		jQuery.ajax({
+  		type: "POST",
+			url: "/articles/dates",
+			success: function(res) {
+				map = JSON.parse(res);
+			},
+			async: false
+		});
+		
+		var monthsAgo = function(size){
+				now = new Date();
+				now.setMonth(now.getMonth() - size);
+				return now;
+		}
 
-			   //window.location = "/profile";
-			
-	}); 
+		var oneYearAgo = function(){
+				now = new Date();
+				now.setYear(now.getFullYear() - 1);
+				now.setMonth(now.getMonth() + 1);
+				return now;
+		}
+
+		var responsiveCal = function( options ) {
+				if( $(window).width() < 1000 ) {
+						options.start = monthsAgo(7);
+						options.range = 7;
+				} else if ( $(window).width() < 1200 ) {
+					options.start = monthsAgo(10);
+					options.range = 10;
+				} else {
+						options.start = oneYearAgo();
+						options.range = 12;
+				}
+
+				if( typeof cal === "object" ) {
+						$('#cal-heatmap').html('');
+						cal = cal.destroy();
+				}
+				cal = new CalHeatMap();
+				cal.init( options );
+		}
+
+		caloptions = {
+				domain: 'month',
+				subdomain: 'x_day',
+				cellSize: 15,
+				cellPadding: 2,
+				itemName:["action","actions"],
+				legend: [1, 5, 10, 15, 20, 25, 30],
+				displayLegend: false,
+				maxDate: new Date(),
+				data: map,
+				legendColors: {
+					empty: "#ededed",
+					min: "#FFB9B9",
+					max: "#AB2121"
+  			},
+				tooltip: true,
+				onClick: function (date, nb) {
+					date.setHours(00);
+					date.setMinutes(00);
+          var unixS = date.getTime();
+					date.setHours(23);
+					date.setMinutes(59);
+					var unixEnd = date.getTime();
+					loadArticles(unixS, unixEnd);
+        }
+		};
+
+		// run first time, put in load if your scripts are in footer
+		responsiveCal( caloptions );
+
+		$(window).on("resize", function() {
+				// run on resize
+				responsiveCal( cal.options );
+		});
 }
 	var plus = false;
 	var minus = false;

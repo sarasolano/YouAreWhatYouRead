@@ -4,3 +4,4 @@
 .mvn-classpath
 /bin/
 .classpath
+/sentiment_categorizer.ser
