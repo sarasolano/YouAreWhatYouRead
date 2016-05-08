@@ -185,7 +185,53 @@ $( document ).ready(function() {
 		$("#topic").text("Topic: " + topic);
 		$("#title").attr("href", link);
 
-		
+		console.log(sentiments);
+		var sen = sentiments[0];
+		var currsent = sen[0];
+		var percent = currsent/sen.length *100;
+		var y =0;
+		var progressBar = [];
+		var total =0;
+		//total = percent;
+		var i;
+		for(i =1; i < sen.length; i++) {
+			if (sen[i] == currsent) {
+				//total += Math.abs(100* currsent/sen.length);
+				percent = percent + (100* currsent/sen.length);
+			} else {
+				progressBar[y] = percent;
+				currsent = sen[i];
+				total += Math.abs(percent);
+				percent = 100 *currsent/sen.length;
+				y++;
+				
+			}
+
+		}
+
+		console.log(total);
+		console.log(100 - total -1);
+		progressBar[y] = 100 - total -.001;
+		console.log(percent + (100* currsent/sen.length)-.1);
+		console.log(y);
+		console.log(progressBar.length);
+
+		var bar = $("#bar");
+		bar.empty();
+		for (var z = 0; z < progressBar.length; z++) {
+			var width = "style='width: " + Math.abs(progressBar[z]) +"%'";
+			console.log(width);
+			if (progressBar[z] >0) {
+				var div = '<div class="progress-bar progress-bar-success"' + width +'> <span class="sr-only">35% Complete (success)</span> </div>';
+				bar.append(div);
+			} else {
+				var div = '<div class="progress-bar progress-bar-danger"' + width +'> <span class="sr-only">35% Complete (success)</span> </div>';
+				bar.append(div);
+			}
+			
+		}
+
+		console.log(progressBar);
 
 		var chart = c3.generate({
 		  bindto: '#mood',

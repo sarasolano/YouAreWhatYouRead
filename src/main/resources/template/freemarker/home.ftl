@@ -59,6 +59,9 @@
 					</div>
 					<div class="col-md-8">
 						<div id="sentiment"></div>
+						<div class="progress" id ="bar">
+  						</div>
+					</div>
 					</div>
 				</div>
 		</div>
