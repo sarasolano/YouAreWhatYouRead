@@ -174,7 +174,6 @@ public final class Main {
     }, marker);
 
     Spark.get("/confirmation", (req, res) -> {
-
       String s = req.session().attribute("username");
       if (s != null) {
         res.redirect("/home");
@@ -324,7 +323,7 @@ public final class Main {
         } else if (format.equals("y")) {
           end = Utils.minusYears(new Date(d), amount).getTime();
         } else {
-          return GUI_GSON.toJson(new JsonObject());
+          end = Utils.minusHours(new Date(d), -24).getTime();
         }
 
         List<Article> arts = manager.getArticlesBetweenDates(d, end, s);

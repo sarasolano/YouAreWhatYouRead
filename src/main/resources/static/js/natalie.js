@@ -30,17 +30,11 @@ $( document ).ready(function() {
 	}
 
 	if (window.location.pathname == "/profile") {
-
-	 postParameters = {
-				
-			};
-				
-		$.post("/getprof", postParameters, function(res) {
-				var response = JSON.parse(res);
-				var articles = response["articles"];
-				var ul = $("#articlelist");
-						loadProfGraphs(response["avgReadLevel"],response["wordsRead"],response["numArticles"],response["avgMoods"]);
-
+		var loadArticles = function(start, end) {
+			var ul = $("#articlelist");
+			postParameters = {"start" : start, "end" : end, "amount" : 0};
+			$.post("/articles/time", postParameters, function(res) {
+				var articles = JSON.parse(res);
 				for (var i = 0; i <articles.length; i++){
 					var a = articles[i];
 					var link = a["link"];
@@ -54,7 +48,15 @@ $( document ).ready(function() {
 							ul.prepend("<li class='list-group-item down'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
 						}
 				}
-
+			});
+		}	
+	 
+				
+		$.post("/getprof", function(res) {
+				var response = JSON.parse(res);
+				var articles = response["articles"];
+				
+						loadProfGraphs(response["avgReadLevel"],response["wordsRead"],response["numArticles"],response["avgMoods"]);
 		});
 		
 		var map = {};
@@ -71,7 +73,7 @@ $( document ).ready(function() {
 		
 		var monthsAgo = function(size){
 				now = new Date();
-				now.getMonth(now.getMonth() - size);
+				now.setMonth(now.getMonth() - size);
 				return now;
 		}
 
@@ -83,7 +85,6 @@ $( document ).ready(function() {
 		}
 
 		var responsiveCal = function( options ) {
-			console.log($(window).width());
 				if( $(window).width() < 1000 ) {
 						options.start = monthsAgo(7);
 						options.range = 7;
@@ -120,7 +121,13 @@ $( document ).ready(function() {
   			},
 				tooltip: true,
 				onClick: function (date, nb) {
-           var unix = Date.parse(date).getTime()/1000;
+					date.setHours(00);
+					date.setMinutes(00);
+          var unixS = date.getTime();
+					date.setHours(23);
+					date.setMinutes(59);
+					var unixEnd = date.getTime();
+					loadArticles(unixS, unixEnd);
         }
 		};
 

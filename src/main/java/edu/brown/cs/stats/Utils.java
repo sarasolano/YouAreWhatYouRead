@@ -3,6 +3,7 @@ package edu.brown.cs.stats;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class Utils {
   public static final int WEEK = 7;
@@ -16,14 +17,16 @@ public class Utils {
   }
 
   public static Date minusHours(Date d, int hours) {
-    Calendar cal = Calendar.getInstance();
+    Calendar cal =
+        Calendar.getInstance(TimeZone.getTimeZone("America/New_York"));
     cal.setTime(d);
     cal.add(Calendar.HOUR, -hours);
     return cal.getTime();
   }
 
   public static Date minusDays(Date d, int days) {
-    Calendar cal = Calendar.getInstance();
+    Calendar cal =
+        Calendar.getInstance(TimeZone.getTimeZone("America/New_York"));
     cal.setTime(d);
     cal.add(Calendar.DATE, -days);
     return cal.getTime();
@@ -34,14 +37,16 @@ public class Utils {
   }
 
   public static Date minusMonths(Date d, int months) {
-    Calendar cal = Calendar.getInstance();
+    Calendar cal =
+        Calendar.getInstance(TimeZone.getTimeZone("America/New_York"));
     cal.setTime(d);
     cal.add(Calendar.MONTH, -months);
     return cal.getTime();
   }
 
   public static Date minusYears(Date d, int years) {
-    Calendar cal = Calendar.getInstance();
+    Calendar cal =
+        Calendar.getInstance(TimeZone.getTimeZone("America/New_York"));
     cal.setTime(d);
     cal.add(Calendar.YEAR, -years);
     return cal.getTime();
