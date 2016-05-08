@@ -20,37 +20,26 @@
 	
 	<div class="article-stats">
 		<div class="container">
-			<div class="jumbotron" id="article">
+			<div class="jumbotron hide" id="article">
 				<h2> Article: <a id="title" href ='#'></a> </h2>
 				<p id ="topic"> topic</p>
 				<p id ="word-count"> </p>
 				<p id ="pages"></p>
 				</div>
-				<div class="row">
-					<div class="col-md-4">
-						<div id="wc"></div>
-					</div>
-					<div class="col-md-4">
-						<div id="topic"></div>
-					</div>
-					<div class="col-md-4">
-						<div id="pages"></div>
-					</div>
-				</div>
+				<div class="progress hide" id ="bar">
+  						</div>
 				<div class="row" id="row2" >
-					<div class="col-md-8">
+				<div class="col-md-8">
 						<div id="cloud"></div>
-					</div>
-					<div class="col-md-4">
-						<div id="mood"></div>
-					</div>
+				</div>
+				<div class="col-md-4">
+					<div id="mood"></div>
+				</div>
 				</div>
 				<div class="row">
 					<div class="col-md-4">
 						<div id="level"></div>
 					</div>
-					<div class="col-md-8">
-						<div id="sentiment"></div>
 					</div>
 				</div>
 			

@@ -20,6 +20,31 @@ body {
   margin-top: -13px;
 
 }
+.progress {
+  height: 40px;
+}
+.date {
+  display: block;
+  text-align: right;
+
+  margin-right: 0px;
+}
+
+.neutral {
+    background-color: #fcf8e3;
+    border-color: #faebcc;
+
+}
+
+.up {
+  background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+
+.down {
+  background-color: #f2dede;
+    border-color: #ebccd1;
+}
 
 .hide {
   display: none;

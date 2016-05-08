@@ -1,6 +1,5 @@
 $( document ).ready(function() {
 	var err = $("#alert");
-	err.hide();
 	var pathArray = window.location.pathname.split( '/' );
 
 	if (pathArray[1] == "article") {
@@ -62,7 +61,6 @@ $( document ).ready(function() {
 			
 	}); 
 }
-	$("#article").hide();
 	var plus = false;
 	var minus = false;
 	var article;
@@ -92,7 +90,7 @@ $( document ).ready(function() {
 }
 
 	function sendUrl() {
-		err.hide();
+		err.addClass("hide");
 		var url = $("#url-input").val();
 		if (url.length != 0) {
 		var rank;
@@ -117,6 +115,7 @@ $( document ).ready(function() {
 		
 		$.post("/add", postParameters, function(res) {
 					var response = JSON.parse(res);
+					if (!jQuery.isEmptyObject(response)) {
 					article = response["article"];
 					moods = article["moods"];
 					sentiments = [article["sentiment"]];
@@ -130,10 +129,11 @@ $( document ).ready(function() {
 					loadGraphs();
 					 $('#article').animate({
   					scrollTop: $('#article').get(0).scrollHeight +10000});
+					}
 				
-				}); 
+				}, false); 
 	} else {
-		err.show();
+		err.removeClass("hide");
 
 	}
 
@@ -184,8 +184,8 @@ $( document ).ready(function() {
 	}
 
 	function loadGraphs(){
-		$("#article").show();
-		$("#title").text(title);
+		$("#article").removeClass("hide")
+		$("#bar").removeClass("hide");		$("#title").text(title);
 		$("#word-count").text("Word Count: " + wordcount);
 		$("#pages").text("Pages: " + pages);
 		$("#topic").text("Topic: " + topic);
@@ -303,8 +303,9 @@ $( document ).ready(function() {
 	          
 	           ];
 	           */
-
+	$("#cloud").empty();
 	$("#cloud").jQCloud(words, {
+
 		  width: $("#cloud").width(),
 		  height: $("#row2").height(),
 		  shape: 'rectangular',
