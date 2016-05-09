@@ -39,7 +39,7 @@
 					</div>
 					
 					<div class="row">
-					<div class="col-md-4 col-centered">
+					<div class="col-md-4 col-md-offset-4">
 						<div id="avg-rl"></div>
 					</div>
 					</div>

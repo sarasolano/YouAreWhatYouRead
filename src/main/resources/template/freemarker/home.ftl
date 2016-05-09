@@ -46,6 +46,7 @@
 				<p id ="pages"> </p>
 				<p id ="grade"></p>
 				</div>
+				<h3>Sentiment Timeline</h3>
 				<div class="progress hide" id ="bar">
   						</div>
   				
@@ -59,7 +60,7 @@
 				</div>
 				</div>
 				<div class="row">
-					<div class="col-md-4 col-centered">
+					<div class="col-md-4 col-md-offset-4">
 						<div id="level"></div>
 					</div>
 					</div>
