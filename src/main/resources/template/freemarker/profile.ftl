@@ -25,15 +25,23 @@
 				<h2>Profile</h2>
 				<p id ="totalwords"></p>
 				<p id ="numArticles"></p>
-		</div>
+				</div>
 				<div class="container">
+					<div class="row" id ="row2">
+						<div class="col-md-8">
+							<div id="cloud2"></div>
+						</div>
+						<div class="col-md-4">
+							<div id="avgMoods"></div>
+						</div
+					
+					
+					</div>
+					
 					<div class="row">
-					<div class="col-md-4">
+					<div class="col-md-4 col-centered">
 						<div id="avg-rl"></div>
 					</div>
-					<div class="col-md-4">
-						<div id="avgMoods"></div>
-					</div
 					</div>
 		</div>
 				<div id="cal-heatmap" class="jumbotron"></div>

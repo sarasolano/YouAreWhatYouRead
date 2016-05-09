@@ -54,7 +54,7 @@ $( document ).ready(function() {
 		$.post("/getprof", function(res) {
 				var response = JSON.parse(res);
 				var articles = response["articles"];
-				
+				getDomain(articles);
 						loadProfGraphs(response["avgReadLevel"],response["wordsRead"],response["numArticles"],response["avgMoods"]);
 		});
 		
@@ -461,6 +461,8 @@ $( document ).ready(function() {
 //		}
 //});
 
+
+
   $('#logout').click(function(e) {
   	e.preventDefault();
 				
@@ -486,6 +488,80 @@ $( document ).ready(function() {
     $(function () {
   $('[data-toggle="popover"]').popover()
 });
+
+    function getDomain(ar) {
+    	console.log(ar);
+	var domains = [];
+	var domainHashNeg= {};
+	var domainHashPos= {};
+	var domainHashNeu ={};
+	for (var i = 0; i <ar.length; i++){
+			var a = ar[i];
+			var url = a["url"];
+			var dom = extractDomain(url);
+			console.log(dom + a["rank"]);
+		
+			if (a["rank"]>0){
+				if (domainHashPos[dom] == null) {
+					domainHashPos[dom] = 1;
+				} else {
+
+					var num = domainHashPos[dom];
+					domainHashPos[dom] = num + 1;
+				}
+			} else if (a["rank"] == 0){
+				if (domainHashNeu[dom] == null) {
+					domainHashNeu[dom] = 1;
+				} else {
+					var num = domainHashNeu[dom];
+					domainHashNeu[dom] = num + 1;
+				}
+			} else {
+				if (domainHashNeg[dom] == null) {
+					domainHashNeg[dom] = 1;
+				} else {
+					var num = domainHashNeg[dom];
+					domainHashNeg[dom] = num + 1;
+				}
+			}
+				
+		}
+		var y =0;
+
+		for (var a in domainHashPos) {
+			console.log(a);
+			domains[y] = {text: a, weight: domainHashPos[a]};
+			y++;
+
+		}
+		console.log(domains);
+		//$("#cloud").empty();
+	$("#cloud2").jQCloud(domains, {
+		  width: $("#cloud2").width(),
+		  height: 50,
+		  shape: 'rectangular',
+		  autoResize: true
+	});
+
+	function extractDomain(url) {
+    var domain;
+    //find & remove protocol (http, ftp, etc.) and get domain
+    if (url.indexOf("://") > -1) {
+        domain = url.split('/')[2];
+    }
+    else {
+        domain = url.split('/')[0];
+    }
+
+    //find & remove port number
+    domain = domain.split(':')[0];
+
+    return domain;
+}
+
+
+
+}
 
 //var words = [{
 //  text: "Lorem",
