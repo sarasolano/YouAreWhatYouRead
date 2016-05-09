@@ -25,7 +25,7 @@
 				<h2>Profile</h2>
 				<p id ="totalwords"></p>
 				<p id ="numArticles"></p>
-				</div>
+		</div>
 				<div class="container">
 					<div class="row">
 					<div class="col-md-4">

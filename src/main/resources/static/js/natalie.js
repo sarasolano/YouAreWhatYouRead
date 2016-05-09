@@ -120,6 +120,7 @@ $( document ).ready(function() {
   			},
 				tooltip: true,
 				onClick: function (date, nb) {
+					$("ul").empty();
 					date.setHours(00);
 					date.setMinutes(00);
           var unixS = date.getTime();
@@ -303,12 +304,13 @@ $( document ).ready(function() {
 		bar.empty();
 		for (var z = 0; z < progressBar.length; z++) {
 			var width = "style='width: " + Math.abs(progressBar[z]) +"%'";
+			var per = Math.abs(progressBar[z]) + " percent";
 			console.log(width);
 			if (progressBar[z] >0) {
-				var div = '<div class="progress-bar progress-bar-success progress-bar-striped active"' + width +'> <span class="sr-only">35% Complete (success)</span> </div>';
+				var div = '<div class="progress-bar progress-bar-success progress-bar-striped active"' + width +'> <span class="sr-only">' + per +'</span> </div>';
 				bar.append(div);
 			} else {
-				var div = '<div class="progress-bar progress-bar-danger"' + width +'> <span class="sr-only">35% Complete (success)</span> </div>';
+				var div = '<div class="progress-bar progress-bar-danger"' + width +'> <span class="sr-only">' + per+ '</span> </div>';
 				bar.append(div);
 			} 
 			
@@ -365,7 +367,7 @@ $( document ).ready(function() {
 	            show: true
 	        },
 	      min: 3,
-	      max: 7
+	      max: 14
 	    }
 	});
 	
@@ -435,6 +437,13 @@ $( document ).ready(function() {
   	    e.preventDefault();
   	    window.location = "/profile";
   	 
+
+    });
+
+
+    $('.progressBar').hover(function(e) {
+    	console.log( $('.progressBar').text());
+
 
     });
 
