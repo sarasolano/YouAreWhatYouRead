@@ -294,7 +294,7 @@ public final class Main {
       Map<String, Integer> arts;
       try {
         arts = manager.countArticlesByDates(s);
-      } catch (SQLException e) {
+      } catch (Exception e) {
         return GUI_GSON.toJson(new JsonObject());
       }
       return GUI_GSON.toJson(arts);

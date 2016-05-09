@@ -242,18 +242,17 @@ public class QueryManager implements AutoCloseable {
   }
 
   public Map<String, Integer> countArticlesByDates(String username)
-      throws SQLException {
+      throws SQLException, ParseException {
     String query =
-        "SELECT COUNT(id), strftime('%s', added) as date "
-            + "FROM article WHERE article.user == ? "
-            + "GROUP BY date;";
+        "SELECT COUNT(id), added FROM article WHERE article.user == ? "
+            + "GROUP BY added;";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, username);
     ResultSet rs = stat.executeQuery();
     Map<String, Integer> toReturn = new HashMap<>();
     while (rs.next()) {
       int count = rs.getInt(1);
-      String date = rs.getString(2);
+      String date = DATE_FORMAT.parse(rs.getString(2)).getTime() / 1000 + " ";
       toReturn.put(date, count);
     }
     rs.close();
