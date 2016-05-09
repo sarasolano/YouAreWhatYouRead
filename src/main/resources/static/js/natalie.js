@@ -120,7 +120,7 @@ $( document ).ready(function() {
   			},
 				tooltip: true,
 				onClick: function (date, nb) {
-					$("ul").empty;
+					$("ul").empty();
 					date.setHours(00);
 					date.setMinutes(00);
           var unixS = date.getTime();
@@ -333,15 +333,17 @@ $( document ).ready(function() {
 
 		var bar = $("#bar");
 		bar.empty();
+		$("#pos").removeClass("hide");
+		$("#neg").removeClass("hide");
 		for (var z = 0; z < progressBar.length; z++) {
 			var width = "style='width: " + Math.abs(progressBar[z]) +"%'";
 			var per = Math.abs(progressBar[z]) + " percent";
 			console.log(width);
 			if (progressBar[z] >0) {
-				var div = '<div class="progress-bar progress-bar-success progress-bar-striped active"' + width +'> <span class="sr-only">' + per +'</span> </div>';
+				var div = '<div'+ ' data-trigger="hover" data-container="body" data-toggle="popover" data-placement="bottom" title="Positive" data-content="Positive" class="progress-bar progress-bar-success progress-bar-striped active pop"' + width +'> <span class="sr-only">' + per +'</span> </div>';
 				bar.append(div);
 			} else {
-				var div = '<div class="progress-bar progress-bar-danger"' + width +'> <span class="sr-only">' + per+ '</span> </div>';
+				var div = '<div'+ ' data-trigger="hover" data-container="body" data-toggle="popover" data-placement="bottom" title="Negative" data-content="Negative" class="progress-bar progress-bar-danger pop"' + width +'> <span class="sr-only">' + per +'</span> </div>'
 				bar.append(div);
 			} 
 			
@@ -477,6 +479,10 @@ $( document ).ready(function() {
 
 
     });
+
+    $(function () {
+  $('[data-toggle="popover"]').popover()
+});
 
 //var words = [{
 //  text: "Lorem",

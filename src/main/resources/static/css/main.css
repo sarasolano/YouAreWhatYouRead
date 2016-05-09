@@ -66,6 +66,17 @@ body {
   background-color: #FF9494;
 }
 
+#pos{
+  width: 10%;
+}
+#neg{
+  width: 10%;
+}
+
+.pop {
+  font-size: 100px;
+}
+
 #big {
   background-color: white;
 }
