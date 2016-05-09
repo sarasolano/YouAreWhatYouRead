@@ -28,11 +28,10 @@ public class StatsGenerator {
   private static final String EMOTION_DICTIONARY = "emotionDictionary.txt";
   private static final Pattern WORD = Pattern.compile("\\b([a-z][-'a-z]*)\\b");
   private static final Pattern VOWEL = Pattern.compile("[aeiouy]");
-  private static final Pattern HYPHENATION =
-      Pattern.compile("[a-z]{2,}-[a-z]{2,}");
-  private static final Pattern SYLLABLE =
-      Pattern.compile("[bcdfghjklmnpqrstvwxz]"
-          + "*[aeiouy]+[bcdfghjklmnpqrstvwxz]*");
+  private static final Pattern HYPHENATION = Pattern
+      .compile("[a-z]{2,}-[a-z]{2,}");
+  private static final Pattern SYLLABLE = Pattern
+      .compile("[bcdfghjklmnpqrstvwxz]" + "*[aeiouy]+[bcdfghjklmnpqrstvwxz]*");
 
   private EmotionCategorizer emotion;
   private SentimentCategorizer sentiment;
@@ -120,7 +119,7 @@ public class StatsGenerator {
 
       stats.addWord(word);
 
-      int syl = syllables(word);
+      int syl = countSyllables(word);
 
       stats.syllables += syl;
 
@@ -132,12 +131,31 @@ public class StatsGenerator {
     stats.sentences++;
   }
 
+  public static int countSyllables(String word) {
+
+    ArrayList<String> tokens = new ArrayList<String>();
+    String regexp = "[bcdfghjklmnpqrstvwxz]*[aeiouy]+[bcdfghjklmnpqrstvwxz]*";
+    Pattern p = Pattern.compile(regexp);
+    Matcher m = p.matcher(word.toLowerCase());
+
+    while (m.find()) {
+      tokens.add(m.group());
+    }
+
+    // check if e is at last and e is not the only vowel or not
+    if (tokens.size() > 1 && tokens.get(tokens.size() - 1).equals("e"))
+      return tokens.size() - 1; // e is at last and not the only vowel so total
+                                // syllable -1
+    return tokens.size();
+  }
+
   private static int syllables(String w) {
     Matcher m = SYLLABLE.matcher(w);
     int count = 0;
     while (m.find()) {
       count++;
     }
+    System.out.println(count);
     return w.charAt(w.length() - 1) != 'e' ? count - 1 : count;
   }
 
@@ -147,8 +165,7 @@ public class StatsGenerator {
     private int words;
     private int syllables;
     private int characters;
-    private Map<String, AtomicInteger> uniqueWords =
-        new HashMap<>();
+    private Map<String, AtomicInteger> uniqueWords = new HashMap<>();
 
     protected void addWord(String w) {
       if (!uniqueWords.containsKey(w)) {

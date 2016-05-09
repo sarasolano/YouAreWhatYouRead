@@ -274,7 +274,6 @@ public final class Main {
       String s = req.session().attribute("username");
       System.out.println(s);
       final Profile p = getProfileByUsername(s);
-      System.out.println(GUI_GSON.toJson(profileJson(p)));
       return GUI_GSON.toJson(profileJson(p));
     });
 
@@ -348,7 +347,6 @@ public final class Main {
         Article a = addArticleByUsername(user, url, rank);
         Map<String, Object> variables = ImmutableMap.of("article",
             articleJson(a, true));
-        System.out.println(GUI_GSON.toJson(variables));
         return GUI_GSON.toJson(variables);
       } catch (SQLException | ParseException e) {
         System.out.println(
@@ -588,6 +586,7 @@ public final class Main {
     json.add("link", GUI_GSON.toJsonTree("/article/" + encode(a.getId())));
     json.add("addedDate", GUI_GSON.toJsonTree(a.getAddedDate()));
     json.add("rank", GUI_GSON.toJsonTree(a.getRanking()));
+    json.add("gradelevel", GUI_GSON.toJsonTree(a.getGradeLevel()));
     if (wordCloud) {
       json.add("wordCloud",
           GUI_GSON.toJsonTree(new ArticleParser(a.url()).jsonCounts()));

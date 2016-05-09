@@ -120,7 +120,7 @@ $( document ).ready(function() {
   			},
 				tooltip: true,
 				onClick: function (date, nb) {
-					$("ul").empty();
+					$("#articlelist").empty();
 					date.setHours(00);
 					date.setMinutes(00);
           var unixS = date.getTime();
@@ -151,6 +151,7 @@ $( document ).ready(function() {
 	var link;
 	var topic;
 	var words;
+	var grade;
 
 	if (window.location.pathname == "/home") {
 	$("#plus").click(function(e) {
@@ -210,6 +211,7 @@ $( document ).ready(function() {
 					link = article["url"];
 					topic = article["topic"];
 					words = JSON.parse(article["wordCloud"]);
+					grade = article["gradelevel"];
 					loadGraphs();
 					 $('#article').animate({
   					scrollTop: $('#article').get(0).scrollHeight +10000});
@@ -267,8 +269,8 @@ $( document ).ready(function() {
 	            },
 	            show: true
 	        },
-	      min: 3,
-	      max: 7
+	      min: 0,
+	      max: 100
 	    }
 	});
 		$("#totalwords").text("You have read " + tw + " total words" );
@@ -299,6 +301,7 @@ $( document ).ready(function() {
 		$("#pages").text("Pages: " + pages);
 		$("#topic").text("Topic: " + topic);
 		$("#title").attr("href", link);
+		$("#grade").text("Grade: " + grade);
 
 		console.log(sentiments);
 		var sen = sentiments[0];
@@ -399,8 +402,8 @@ $( document ).ready(function() {
 	            },
 	            show: true
 	        },
-	      min: 3,
-	      max: 14
+	      min: 0,
+	      max: 100
 	    }
 	});
 	

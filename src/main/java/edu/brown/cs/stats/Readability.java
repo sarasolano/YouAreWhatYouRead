@@ -29,15 +29,15 @@ public class Readability {
 
   // http://en.wikipedia.org/wiki/Flesch-Kincaid_Readability_Test
   public double fleschReadingEase() {
-    double score = 206.835 - 1.015 * (stat.words() / stat.sentences())
-        - 84.6 * (stat.syllables() / stat.words());
+    double score = 206.835 - 1.015 * ((1.0 *stat.words()) / stat.sentences())
+        - 84.6 * ((stat.syllables() * 1.0) / stat.words());
     return Utils.round(score, Utils.DECIMAL_PLACE);
   }
 
   // // http://en.wikipedia.org/wiki/Flesch-Kincaid_Readability_Test
   public double fleschGradeLevel() {
-    double score = 0.39 * stat.words() / stat.sentences()
-        + 11.8 * stat.syllables() / stat.words() - 15.59;
+    double score = 0.39 * (1.0 *stat.words() / stat.sentences())
+        + 11.8 * (stat.syllables() * 1.0) / stat.words() - 15.59;
     return Utils.round(score, Utils.DECIMAL_PLACE);
   }
 
@@ -71,12 +71,13 @@ public class Readability {
     // double sum = smogIndex() + fleschReadingEase() + ari() + gunningFog()
     // + colemanLiau();
     // double avg = sum / INDEX_SCORES;
-    return smogIndex();
+    return fleschReadingEase();
+    //return smogIndex();
   }
 
   public double avgGrade() {
     // double sum = fleschGradeLevel() + smog();
     // double avg = sum / GRADE_SCORES;
-    return smog();
+    return fleschGradeLevel();
   }
 }

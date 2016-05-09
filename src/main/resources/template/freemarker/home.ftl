@@ -44,6 +44,7 @@
 				<p id ="topic"> topic</p>
 				<p id ="word-count">  </p>
 				<p id ="pages"> </p>
+				<p id ="grade"></p>
 				</div>
 				<div class="progress hide" id ="bar">
   						</div>
