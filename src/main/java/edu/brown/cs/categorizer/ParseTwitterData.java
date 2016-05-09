@@ -6,28 +6,39 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-
+/**
+ * Formats twitter data into proper format.
+ *
+ * @author Baab
+ *
+ */
 public class ParseTwitterData {
 
+  /**
+   * Parses the document.
+   *
+   * @param path
+   *          the path to the document
+   * @throws IOException
+   *           if ill-formated file
+   */
   public static void parseDoc(String path) throws IOException {
     BufferedReader br = new BufferedReader(new FileReader(path));
     FileWriter fw = new FileWriter("../readient/twitter.txt");
     BufferedWriter bw = new BufferedWriter(fw);
     String newLine = br.readLine();
-    while(newLine != null) {
+    while (newLine != null) {
       String[] line = br.readLine().split(",");
       String classify = line[0].replace("\"", "");
-      String document = line[line.length -1].replace("\"", "");
+      String document = line[line.length - 1].replace("\"", "");
       String whitespace = document.replace(" ", "");
-      if(!whitespace.isEmpty() && !classify.isEmpty()) {
-        String output = String.format("%s    %s",classify,document);
+      if (!whitespace.isEmpty() && !classify.isEmpty()) {
+        String output = String.format("%s    %s", classify, document);
         bw.write(output);
         bw.newLine();
       }
 
-
       newLine = br.readLine();
-
 
     }
     br.close();
@@ -38,7 +49,5 @@ public class ParseTwitterData {
   public static void main(String[] args) throws Exception {
     parseDoc("../readient/trainer.csv");
   }
-
-
 
 }

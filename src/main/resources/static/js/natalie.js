@@ -20,6 +20,7 @@ $( document ).ready(function() {
 					link = article["url"];
 					topic = article["topic"];
 					words = JSON.parse(article["wordCloud"]);
+					grade = article["gradelevel"];
 					loadGraphs();
 
 			   //window.location = "/profile";
@@ -53,9 +54,11 @@ $( document ).ready(function() {
 				
 		$.post("/getprof", function(res) {
 				var response = JSON.parse(res);
+			if (!jQuery.isEmptyObject(response)) {
 				var articles = response["articles"];
 				getDomain(articles);
-						loadProfGraphs(response["avgReadLevel"],response["wordsRead"],response["numArticles"],response["avgMoods"]);
+				loadProfGraphs(response["avgReadLevel"],response["wordsRead"],response["numArticles"],response["avgMoods"]);
+			}
 		});
 		
 		var map = {};
@@ -139,8 +142,7 @@ $( document ).ready(function() {
 				responsiveCal( cal.options );
 		});
 }
-	var plus = false;
-	var minus = false;
+
 	var article;
 	var moods;
 	var sentiments;
@@ -155,20 +157,20 @@ $( document ).ready(function() {
 
 	if (window.location.pathname == "/home") {
 	$("#plus").click(function(e) {
-			plus = true;
-			sendUrl();
+			sendUrl(true,false);
+		
 		});
 
 	$("#minus").click(function(e) {
-			minus = true;
-			sendUrl();
+			sendUrl(false,true);
+			
 		});
 	$("#add-article").click(function(e) {
-			sendUrl();
+			sendUrl(false,false);
 		});
 }
 
-	function sendUrl() {
+	function sendUrl(plus,minus) {
 		err.addClass("hide");
 		var url = $("#url-input").val();
 		if (url.length != 0) {
@@ -215,6 +217,9 @@ $( document ).ready(function() {
 					loadGraphs();
 					 $('#article').animate({
   					scrollTop: $('#article').get(0).scrollHeight +10000});
+					} else {
+						err.removeClass("hide");
+
 					}
 			}, 
 			error : function (xhr, ajaxOptions, thrownError) {
@@ -539,6 +544,7 @@ $( document ).ready(function() {
 
 		}
 		console.log(domains);
+
 		//$("#cloud").empty();
 	$("#cloud2").jQCloud(domains, {
 		  width: $("#cloud2").width(),

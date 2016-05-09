@@ -16,6 +16,12 @@ import opennlp.tools.doccat.DocumentSampleStream;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.PlainTextByLineStream;
 
+/**
+ * Sentiment categorizer class.
+ *
+ * @author Baab
+ *
+ */
 public class SentimentCategorizer {
   DoccatModel model;
 
@@ -34,10 +40,17 @@ public class SentimentCategorizer {
 
   }
 
+  /**
+   * Sentiment categorizer constructor
+   */
   public SentimentCategorizer() {
     trainModel();
   }
 
+  /**
+   * Loads in serialized model or trains model if serialized model does not
+   * exist.
+   */
   private void trainModel() {
     InputStream dataIn = null;
     File serializedModel = new File("../readient/sentiment_categorizer.ser");
@@ -53,10 +66,10 @@ public class SentimentCategorizer {
     } else {
       try {
         dataIn = new FileInputStream("../readient/twitter.txt");
-        ObjectStream<String> lineStream =
-            new PlainTextByLineStream(dataIn, "UTF-8");
-        ObjectStream<DocumentSample> sampleStream =
-            new DocumentSampleStream(lineStream);
+        ObjectStream<String> lineStream = new PlainTextByLineStream(dataIn,
+            "UTF-8");
+        ObjectStream<DocumentSample> sampleStream = new DocumentSampleStream(
+            lineStream);
         // Specifies the minimum number of times a feature must be seen
         model = DocumentCategorizerME.train("en", sampleStream);
       } catch (IOException e) {
@@ -88,6 +101,13 @@ public class SentimentCategorizer {
     }
   }
 
+  /**
+   * Classifies a string with a sentiment.
+   *
+   * @param s
+   *          the string
+   * @return an int indicating whether positive or negative
+   */
   public int classify(String s) {
     DocumentCategorizerME myCategorizer = new DocumentCategorizerME(model);
     double[] outcomes = myCategorizer.categorize(s);

@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,7 +30,7 @@ public class ArticleParser implements Iterable<String> {
   private WordCounter wc;
   private static Set<String> stopwords;
 
-  public ArticleParser(String path) {
+  public ArticleParser(String path) throws IOException {
     Document doc;
     this.url = path;
     this.sentences = new ArrayList<>();
@@ -44,7 +43,6 @@ public class ArticleParser implements Iterable<String> {
         System.out.println("ERROR: Error filling stopwords.");
       }
     }
-    try {
       Response response = Jsoup.connect(path).ignoreContentType(true)
           .userAgent(
               "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36")
@@ -61,9 +59,6 @@ public class ArticleParser implements Iterable<String> {
       Reader r = new StringReader(allText);
       this.dp = new DocumentPreprocessor(r);
       makeSentences();
-    } catch (IOException e) {
-      System.out.println("ERROR: Problem extracting the text.");
-    }
   }
 
   private void makeSentences() {
@@ -117,13 +112,13 @@ public class ArticleParser implements Iterable<String> {
     }
     br.close();
   }
-  
+
   public Set<String> topThree() {
 	  return wc.topThree();
   }
 
   // example of how to use it
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     // ArticleParser p = new
     // ArticleParser("http://www.economist.com/blogs/democracyinamerica/2016/05/pivotal-primary");
     // ArticleParser p = new

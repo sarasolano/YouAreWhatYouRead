@@ -243,8 +243,9 @@ public final class Main {
         }
       } catch (Exception e) {
         System.out.println(e.getMessage());
+        return GUI_GSON.toJson(new JsonObject());
       }
-      return GUI_GSON.toJson(new JsonObject());
+
 
     });
 
@@ -270,23 +271,33 @@ public final class Main {
     });
 
     Spark.post("/getprof", (req, res) -> {
-      System.out.println("hello");
       String s = req.session().attribute("username");
-      System.out.println(s);
-      final Profile p = getProfileByUsername(s);
-      return GUI_GSON.toJson(profileJson(p));
+      Profile p;
+      try {
+        p = getProfileByUsername(s);
+        return GUI_GSON.toJson(profileJson(p));
+      } catch (Exception e) {
+        return GUI_GSON.toJson(new JsonObject());
+      }
+
     });
 
     Spark.post("/article/a", (req, res) -> {
       QueryParamsMap qm = req.queryMap();
       String artID = decode(qm.value("id"));
       String s = req.session().attribute("username");
-      final Profile p = getProfileByUsername(s);
-      if (p.containsArticle(artID)) {
-        return GUI_GSON.toJson(articleJson(p.getArticle(artID), true));
-      } else {
+      Profile p;
+      try {
+        p = getProfileByUsername(s);
+        if (p.containsArticle(artID)) {
+          return GUI_GSON.toJson(articleJson(p.getArticle(artID), true));
+        } else {
+          return GUI_GSON.toJson(new JsonObject());
+        }
+      } catch (Exception e) {
         return GUI_GSON.toJson(new JsonObject());
       }
+
     });
 
     Spark.post("/articles/dates", (req, rest) -> {
@@ -348,7 +359,7 @@ public final class Main {
         Map<String, Object> variables = ImmutableMap.of("article",
             articleJson(a, true));
         return GUI_GSON.toJson(variables);
-      } catch (SQLException | ParseException e) {
+      } catch (Exception e) {
         System.out.println(
             "Article could not be added to the databse :( " + e.getMessage());
         return GUI_GSON.toJson(new JsonObject());
@@ -359,14 +370,19 @@ public final class Main {
       QueryParamsMap qm = req.queryMap();
       String in = qm.value("articles");
       JsonArray arts = GUI_GSON.fromJson(in, JsonArray.class);
-      Profile profile =
-          getProfileByUsername(req.session().attribute("username"));
-      for (JsonElement obj : arts) {
-        if (profile.containsArticle(obj.getAsString())) {
-          removeArticle(obj.getAsString(), profile);
+      Profile profile;
+      try {
+        profile = getProfileByUsername(req.session().attribute("username"));
+        for (JsonElement obj : arts) {
+          if (profile.containsArticle(obj.getAsString())) {
+            removeArticle(obj.getAsString(), profile);
+          }
         }
+        return GUI_GSON.toJson(profileJson(profile));
+      } catch (Exception e) {
+        return GUI_GSON.toJson(new JsonObject());
       }
-      return GUI_GSON.toJson(profileJson(profile));
+
     });
   }
 
@@ -397,7 +413,7 @@ public final class Main {
             Pair<Profile, Article> res = addArticle(prof, line[1], null);
             prof = res.first();
             System.out.println(CMND_GSON.toJson(res.second()));
-          } catch (SQLException | ParseException e) {
+          } catch (SQLException | ParseException | IOException e) {
             System.out.println("Article could not be added to the databse :( "
                 + e.getMessage());
           }
@@ -417,6 +433,9 @@ public final class Main {
                 + e.getMessage());
           } catch (NumberFormatException e) {
             System.out.println("That wasn't a number, was it...");
+          } catch (IOException e) {
+            System.out.println("Article could not be added to the databse :( "
+                + e.getMessage());
           }
         } else {
           printHelp();
@@ -453,7 +472,7 @@ public final class Main {
   }
 
   private synchronized Article addArticleByUsername(String username, String url,
-      Integer rank) throws SQLException, ParseException {
+      Integer rank) throws SQLException, ParseException, IOException {
     ArticleParser p = new ArticleParser(url);
     Stats stats = StatsGenerator.analyze(p.iterator());
     String id = manager.addArticle(p.title(), p.url(), username, rank,
@@ -471,7 +490,7 @@ public final class Main {
   }
 
   private synchronized Pair<Profile, Article> addArticle(Profile prof,
-      String url, Integer rank) throws SQLException, ParseException {
+      String url, Integer rank) throws SQLException, ParseException, IOException {
     ArticleParser p = new ArticleParser(url);
     Stats stats = StatsGenerator.analyze(p.iterator());
     String id = manager.addArticle(p.title(), p.url(),
@@ -525,7 +544,7 @@ public final class Main {
     return profile;
   }
 
-  private synchronized Profile getProfileByUsername(String username) {
+  private synchronized Profile getProfileByUsername(String username) throws SQLException, ParseException {
     User user;
     try {
       user = manager.getUserByUsername(username);
@@ -533,11 +552,8 @@ public final class Main {
       return null;
     }
     Profile profile;
-    try {
       profile = new Profile(user, manager.getArticles(user.getUsername()));
-    } catch (SQLException | ParseException e) {
-      return null;
-    }
+
     return profile;
   }
 
@@ -588,8 +604,12 @@ public final class Main {
     json.add("rank", GUI_GSON.toJsonTree(a.getRanking()));
     json.add("gradelevel", GUI_GSON.toJsonTree(a.getGradeLevel()));
     if (wordCloud) {
-      json.add("wordCloud",
-          GUI_GSON.toJsonTree(new ArticleParser(a.url()).jsonCounts()));
+      try {
+        json.add("wordCloud",
+            GUI_GSON.toJsonTree(new ArticleParser(a.url()).jsonCounts()));
+      } catch (IOException e) {
+        json.add("wordCloud",new JsonObject());
+      }
 
     }
 

@@ -8,10 +8,24 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Emotion dictionary that maps words to emotions. Uses NRC-emotion-lexicon
+ * dictionary.
+ *
+ * @author Baab
+ *
+ */
 public class EmotionDictionary {
-  private Map<String, List<Emotion>> emotionLexicons =
-      new HashMap<String, List<Emotion>>();
+  private Map<String, List<Emotion>> emotionLexicons = new HashMap<String, List<Emotion>>();
 
+  /**
+   * The emotion dictionary constructor.
+   *
+   * @param dict
+   *          the string of the path to the dictionary
+   * @throws IOException
+   *           if ill-formatted dictionary
+   */
   public EmotionDictionary(String dict) throws IOException {
     generateDict(dict);
   }
@@ -49,6 +63,13 @@ public class EmotionDictionary {
     br.close();
   }
 
+  /**
+   * Looks up a word for its emotion.
+   *
+   * @param word
+   *          the word
+   * @return a list of emotions associated with word
+   */
   public List<Emotion> lookup(String word) {
     return emotionLexicons.get(word);
   }

@@ -16,6 +16,12 @@ import opennlp.tools.doccat.DocumentSampleStream;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.PlainTextByLineStream;
 
+/**
+ * Topic categorizer for documents.
+ *
+ * @author Baab
+ *
+ */
 public class TopicCategorizer {
   DoccatModel model;
 
@@ -81,8 +87,8 @@ public class TopicCategorizer {
             + " imported during March. China is a major oil consumer so analysts watch"
             + " its import numbers closely as one of many indicators of world oil demand."));
 
-    System.out.println(docCategorizer
-        .classifyNewDoc("In recent years, Serbia has also made"
+    System.out.println(
+        docCategorizer.classifyNewDoc("In recent years, Serbia has also made"
             + " progress in its relations with Kosovo through"
             + " European Union-brokered talks."
             + " Kosovo broke away from Belgrade’s rule in 1999 with"
@@ -94,8 +100,8 @@ public class TopicCategorizer {
             + "relations with Kosovo’s government is a prerequisite for Serbia’s European Union "
             + "membership."));
 
-    System.out.println(docCategorizer
-        .classifyNewDoc("ads sweep across America like thunderstorms. One of the latest"
+    System.out.println(docCategorizer.classifyNewDoc(
+        "ads sweep across America like thunderstorms. One of the latest"
             + " — selfies — may already be slackening. Colleges in Florida and Rhode"
             + " Island banned selfies at graduation. Reports that the White House was"
             + " discussing the fad brought out the selfie loathing. Even tastemaker"
@@ -118,10 +124,17 @@ public class TopicCategorizer {
             + " became loosened from her hair and fell into the man's mouth."));
   }
 
+  /**
+   * Topic categorizer constructor.
+   */
   public TopicCategorizer() {
     trainModel();
   }
 
+  /**
+   * Trains model if serialized file does not exist. If it does, then it loads
+   * model from file.
+   */
   private void trainModel() {
     File serializedModel = new File("../readient/topic_categorizer.ser");
     if (serializedModel.exists()) {
@@ -139,13 +152,13 @@ public class TopicCategorizer {
       InputStream dataIn = null;
       try {
 
-        dataIn = new FileInputStream("trainingnew.txt");
-        ObjectStream<String> lineStream =
-            new PlainTextByLineStream(dataIn, "UTF-8");
-        ObjectStream<DocumentSample> sampleStream =
-            new DocumentSampleStream(lineStream);
+        dataIn = new FileInputStream("nyt_topics2.txt");
+        ObjectStream<String> lineStream = new PlainTextByLineStream(dataIn,
+            "UTF-8");
+        ObjectStream<DocumentSample> sampleStream = new DocumentSampleStream(
+            lineStream);
         // Specifies the minimum number of times a feature must be seen
-        model = DocumentCategorizerME.train("en", sampleStream,10,500);
+        model = DocumentCategorizerME.train("en", sampleStream, 10, 500);
 
       } catch (IOException e) {
         e.printStackTrace();
@@ -176,6 +189,13 @@ public class TopicCategorizer {
     }
   }
 
+  /**
+   * Classifies a string by the topic.
+   *
+   * @param doc
+   *          the string
+   * @return the topic
+   */
   public String classifyNewDoc(String doc) {
     DocumentCategorizerME myCategorizer = new DocumentCategorizerME(model);
     double[] outcomes = myCategorizer.categorize(doc);

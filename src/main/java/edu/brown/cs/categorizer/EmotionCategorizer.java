@@ -5,9 +5,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The emotion categorizer. Uses NRC-emotion-lexicon dictionary.
+ *
+ * @author Baab
+ *
+ */
 public class EmotionCategorizer {
   EmotionDictionary ed;
 
+  /**
+   * Constructor for categorizer.
+   *
+   * @param dict
+   *          the dictionary
+   */
   public EmotionCategorizer(EmotionDictionary dict) {
     ed = dict;
   }
@@ -41,6 +53,13 @@ public class EmotionCategorizer {
     return emotions;
   }
 
+  /**
+   * Gets the top emotions in the doc.
+   *
+   * @param doc
+   *          the string of the document
+   * @return the top emotions in order
+   */
   public List<Emotion> getTopEmotions(String doc) {
     List<Emotion> topEmotions = new LinkedList<Emotion>();
     topEmotions.addAll(categorize(doc).values());

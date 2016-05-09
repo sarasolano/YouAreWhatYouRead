@@ -22,17 +22,38 @@ import com.google.gson.JsonParser;
 
 import edu.brown.cs.parsing.ArticleParser;
 
+/**
+ * NYT parser for gathering training data
+ *
+ * @author Baab
+ *
+ */
 public class NYTParser {
   public static void main(String[] args)
       throws IOException, InterruptedException, ParseException {
-    NYTParser.getArticles("20090407","87d9d45ce8993daaa7a7e72b676cced2:17:75079570");
-   // NYTParser.getArticles("20120101","5132d82e4c312ddeae7c0165f36ea3be:0:75165660");
+    NYTParser.getArticles("20090617",
+        "26bbfebb8a394243a20271a9cb4efc32");
+    // NYTParser.getArticles("20120101","5132d82e4c312ddeae7c0165f36ea3be:0:75165660");
   }
 
-  public static void getArticles(String date,String key)
+  /**
+   * Gets articles starting at date
+   *
+   * @param date
+   *          start date
+   * @param key
+   *          the key
+   * @throws IOException
+   *           if something went wrong
+   * @throws InterruptedException
+   *           if it gets interrupted
+   * @throws ParseException
+   *           if it cannot be parsed
+   */
+  public static void getArticles(String date, String key)
       throws IOException, InterruptedException, ParseException {
 
-    FileWriter fw = new FileWriter("nyt_topics2.txt",true);
+    FileWriter fw = new FileWriter("nyt_topics2.txt", true);
     BufferedWriter bw = new BufferedWriter(fw);
     String startDate = date; // Start date
 
@@ -44,10 +65,10 @@ public class NYTParser {
         System.out.println(newsdesk);
         String urlString = String.format(
             "http://api.nytimes.com/svc/search/v2/articlesearch."
-            + "json?fq=news_desk:(%s)&begin_date=%s&"
-            + "end_date=%s&api-key=%s",
-            "\"" + newsdesk.replaceAll(" ", "%20") + "\"", startDate,
-            startDate,key);
+                + "json?fq=news_desk:(%s)&begin_date=%s&"
+                + "end_date=%s&api-key=%s",
+            "\"" + newsdesk.replaceAll(" ", "%20") + "\"", startDate, startDate,
+            key);
         System.out.println(urlString);
         URL url = new URL(urlString);
         URLConnection conn = url.openConnection();
@@ -93,7 +114,6 @@ public class NYTParser {
             }
 
           }
-
 
           // System.out.println(result);
         }

@@ -38,6 +38,7 @@
 				if (result.isUserName === true) {
 					$("#spaces").addClass("hide");
 					$("#username-taken").removeClass("hide");
+					$("#available").addClass("hide");
 				} else {
 					$("#username-taken").addClass("hide");
 					$("#available").removeClass("hide");
