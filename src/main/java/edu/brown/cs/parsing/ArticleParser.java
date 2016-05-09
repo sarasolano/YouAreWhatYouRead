@@ -116,10 +116,6 @@ public class ArticleParser implements Iterable<String> {
       ArticleParser.stopwords.add(word);
     }
     br.close();
-    List<String> punctuation = Arrays.asList(".", ",", "'", "+", "`", ":", "!",
-        "?", "``", "''", "-rrb-", "-lrb-", "a", "...", "'s", "n't", "--", "'ll",
-        "advertisement","1","2","3","4","5","6","7","8","9","10","0");
-    ArticleParser.stopwords.addAll(punctuation);
   }
 
   // example of how to use it
@@ -128,14 +124,14 @@ public class ArticleParser implements Iterable<String> {
     // ArticleParser("http://www.economist.com/blogs/democracyinamerica/2016/05/pivotal-primary");
     // ArticleParser p = new
     // ArticleParser("http://blogs.scientificamerican.com/cross-check/psychedelic-therapy-and-bad-trips/");
-    // ArticleParser p = new
-    // ArticleParser("http://www.nytimes.com/2016/05/04/us/politics/indiana-republican-democratic.html?hp&action=click&pgtype=Homepage&clickSource=story-heading&module=span-ab-top-region&region=top-news&WT.nav=top-news");
+    ArticleParser p = new
+     ArticleParser("http://www.nytimes.com/2016/05/04/us/politics/indiana-republican-democratic.html?hp&action=click&pgtype=Homepage&clickSource=story-heading&module=span-ab-top-region&region=top-news&WT.nav=top-news");
     // ArticleParser p = new
     // ArticleParser("http://hotair.com/archives/2016/05/05/wow-im-not-ready-to-endorse-trump-says-paul-ryan/");
     // ArticleParser p = new
     // ArticleParser("http://www.helpguide.org/articles/emotional-health/anger-management.htm");
-    ArticleParser p = new ArticleParser(
-        "http://www.cnn.com/2016/05/07/americas/el-chapo-prison-transfer/");
+//    ArticleParser p = new ArticleParser(
+//        "http://www.cnn.com/2016/05/07/americas/el-chapo-prison-transfer/");
     // ArticleParser p = new
     // ArticleParser("http://www.bustle.com/articles/158767-10-ways-to-pull-off-a-style-youre-intimidated-by");
     for (String sentence : p.stopSentences()) {
