@@ -117,6 +117,10 @@ public class ArticleParser implements Iterable<String> {
     }
     br.close();
   }
+  
+  public Set<String> topThree() {
+	  return wc.topThree();
+  }
 
   // example of how to use it
   public static void main(String[] args) {
@@ -140,6 +144,7 @@ public class ArticleParser implements Iterable<String> {
       System.out.println(sentence);
     }
     System.out.println(p.jsonCounts());
+    System.out.println(p.topThree());
   }
 
   @Override

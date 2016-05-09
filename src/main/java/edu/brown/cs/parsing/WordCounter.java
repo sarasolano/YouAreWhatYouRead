@@ -3,10 +3,10 @@ package edu.brown.cs.parsing;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Map.Entry;
-
-import cc.mallet.util.CommandOption.Set;
+import java.util.Set;
 
 import com.google.gson.Gson;
 
@@ -15,11 +15,13 @@ public class WordCounter {
 	private HashMap<String, Integer> wc;
 	private PriorityQueue<Word> words;
 	private Collection<Word> top20;
+	private Set<String> top3;
 
 	public WordCounter() {
 		wc = new HashMap<>();
 		words = new PriorityQueue<>();
 		top20 = new ArrayList<>();
+		top3 = new HashSet<>();
 	}
 
 	public void increment(String word) {
@@ -36,13 +38,24 @@ public class WordCounter {
 			Word word = new Word(entry.getKey(), entry.getValue());
 			words.add(word);
 		}
-		for (int i = 0; i < 19; i++) {
+		for (int i = 1; i <= 3; i++) {
+			Word w = words.poll();
+			if (w != null) {
+				top20.add(w);
+				top3.add(w.text);
+			}
+		}
+		for (int i = 4; i <= 20; i++) {
 			Word w = words.poll();
 			if (w != null) {
 				top20.add(w);
 			}
 		}
 		return new Gson().toJson(top20);
+	}
+	
+	public Set<String> topThree() {
+		return top3;
 	}
 
 	private class Word implements Comparable<Word> {
