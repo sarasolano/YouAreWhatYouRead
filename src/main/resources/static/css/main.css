@@ -93,9 +93,19 @@ div.well{
 
 
 }
+
+.progress-bar-danger{
+  background-color: #AB2121;
+}
 .box {
   border-color: #9ecaed;
     box-shadow: 0 0 10px #9ecaed;
+}
+#sent {
+  border: 5px;
+  border-style: solid;
+  border-color: #FF9494;
+  background-color: white;
 }
 
 #des {
@@ -159,7 +169,7 @@ h3 {
 }
 
 #article {
-   background-color: #FFB9B9;
+   background-color: #FF9494;
 }
 
 #cloud {
