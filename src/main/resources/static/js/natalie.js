@@ -120,7 +120,7 @@ $( document ).ready(function() {
   			},
 				tooltip: true,
 				onClick: function (date, nb) {
-					$("ul").empty();
+					$("ul").empty;
 					date.setHours(00);
 					date.setMinutes(00);
           var unixS = date.getTime();
@@ -191,7 +191,37 @@ $( document ).ready(function() {
 			};
 		}
 		
-		$.post("/add", postParameters, function(res) {
+
+
+		jQuery.ajax({
+  		type: "POST",
+			url: "/add",
+			data: postParameters,
+			success: function(res) {
+				var response = JSON.parse(res);
+					if (!jQuery.isEmptyObject(response)) {
+					article = response["article"];
+					moods = article["moods"];
+					sentiments = [article["sentiment"]];
+					readlevel = article["readlevel"];
+					wordcount = article["word-count"];
+					pages = article["pages"];
+					title = article["title"];
+					link = article["url"];
+					topic = article["topic"];
+					words = JSON.parse(article["wordCloud"]);
+					loadGraphs();
+					 $('#article').animate({
+  					scrollTop: $('#article').get(0).scrollHeight +10000});
+					}
+			}, 
+			error : function (xhr, ajaxOptions, thrownError) {
+				err.removeClass("hide");
+			}
+		});
+		
+
+		/*$.post("/add", postParameters, function(res) {
 					var response = JSON.parse(res);
 					if (!jQuery.isEmptyObject(response)) {
 					article = response["article"];
@@ -210,6 +240,7 @@ $( document ).ready(function() {
 					}
 				
 				}, false); 
+*/
 	} else {
 		err.removeClass("hide");
 
