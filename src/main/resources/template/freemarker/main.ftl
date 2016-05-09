@@ -26,6 +26,7 @@
 		<script src="/js/signup.js"></script>
 		<script src="/js/natalie.js"></script>
 		<script src="/js/cal-heatmap.min.js"></script>
+		<script src="/js/tinygradient.js"></script>
   </body>
   <!-- See http://html5boilerplate.com/ for a good place to start
        dealing with real world issues like old browsers.  -->

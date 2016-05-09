@@ -530,7 +530,11 @@ $( document ).ready(function() {
 
 		for (var a in domainHashPos) {
 			console.log(a);
-			domains[y] = {text: a, weight: domainHashPos[a]};
+			domains[y] = {text: a, weight: domainHashPos[a], handlers: {
+    			click: function() {
+      			window.open("https://" +a,'_blank');
+      		}
+    		}};
 			y++;
 
 		}
