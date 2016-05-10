@@ -51,9 +51,19 @@ public class ArticleParser implements Iterable<String> {
       doc = response.parse();
       title = doc.select("h1").text();
       String text = doc.select("p").text();
+      int numLinks = doc.select("a").size();
+      int numImages = doc.select("img").size();
+//      System.out.println(numLinks);
+//      System.out.println(numImages);
+//      System.out.println(text.split(" ").length);
       if (text.split(" ").length < 150) {
         text = doc.body().text();
       }
+      // cheap hack for buzzfeed
+      if (text.split(" ").length < 500) {
+          text = text + ". " + doc.select("h2").text();
+      }
+      System.out.println(text.split(" ").length);
       String allText = title + ". " + text;
       this.text = allText;
       Reader r = new StringReader(allText);
@@ -119,12 +129,13 @@ public class ArticleParser implements Iterable<String> {
 
   // example of how to use it
   public static void main(String[] args) throws IOException {
+	 // ArticleParser p = new ArticleParser("https://en.wikipedia.org/wiki/Andrew_Novell");
     // ArticleParser p = new
     // ArticleParser("http://www.economist.com/blogs/democracyinamerica/2016/05/pivotal-primary");
     // ArticleParser p = new
     // ArticleParser("http://blogs.scientificamerican.com/cross-check/psychedelic-therapy-and-bad-trips/");
-    ArticleParser p = new
-     ArticleParser("http://www.nytimes.com/2016/05/04/us/politics/indiana-republican-democratic.html?hp&action=click&pgtype=Homepage&clickSource=story-heading&module=span-ab-top-region&region=top-news&WT.nav=top-news");
+    //ArticleParser p = new
+     //ArticleParser("http://www.nytimes.com/2016/05/04/us/politics/indiana-republican-democratic.html?hp&action=click&pgtype=Homepage&clickSource=story-heading&module=span-ab-top-region&region=top-news&WT.nav=top-news");
     // ArticleParser p = new
     // ArticleParser("http://hotair.com/archives/2016/05/05/wow-im-not-ready-to-endorse-trump-says-paul-ryan/");
     // ArticleParser p = new
@@ -132,8 +143,9 @@ public class ArticleParser implements Iterable<String> {
 //    ArticleParser p = new ArticleParser(
 //        "http://www.cnn.com/2016/05/07/americas/el-chapo-prison-transfer/");
     // ArticleParser p = new
-    // ArticleParser("http://www.bustle.com/articles/158767-10-ways-to-pull-off-a-style-youre-intimidated-by");
-    for (String sentence : p.stopSentences()) {
+   // ArticleParser("http://www.bustle.com/articles/158767-10-ways-to-pull-off-a-style-youre-intimidated-by");
+	  ArticleParser p = new ArticleParser("https://www.buzzfeed.com/carolinekee/what-the-heck-is-a-peenus?utm_term=.oxNWqX3AWG#.alx643vX6q");
+	  for (String sentence : p) {
       // you can use HasWords by doing .word() -> string
       // will fix this to use strings at some point
       System.out.println(sentence);
