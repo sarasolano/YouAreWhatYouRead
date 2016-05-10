@@ -46,6 +46,7 @@
 				<p id ="pages"> </p>
 				<p id ="grade"></p>
 				</div>
+				<div id="cloud"></div>
 				<div class="jumbotron hide" id="sent">
 				<h3>Sentiment Timeline </h3>
 				<div class="progress hide" id ="bar">
@@ -54,9 +55,6 @@
   				
 				<div class="row" id="row2" >
 				
-				<div class="col-md-8">
-						<div id="cloud"></div>
-				</div>
 				<div class="col-md-4">
 					<div id="mood"></div>
 				</div>

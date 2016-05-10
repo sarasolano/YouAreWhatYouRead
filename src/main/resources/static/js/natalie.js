@@ -435,9 +435,13 @@ $( document ).ready(function() {
 	$("#cloud").jQCloud(words, {
 
 		  width: $("#cloud").width(),
-		  height: 500,
+		  height: 400,
 		  shape: 'rectangular',
-		  autoResize: true
+		  autoResize: true,
+		  fontSize: {
+    from: 0.8,
+    to: 0.02
+  }
 	});
 
 
