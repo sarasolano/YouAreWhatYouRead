@@ -207,6 +207,9 @@ public class TopicCategorizer {
 
     } else if (category.equals("Science")) {
       return "Science/Health";
+    } else if (category.equals("Sports")) {
+      return "Sports/Entertainment";
+
     } else {
       return category;
 
