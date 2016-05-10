@@ -173,15 +173,6 @@ public final class Main {
       return new ModelAndView(variables, "article.ftl");
     }, marker);
 
-    Spark.get("/confirmation", (req, res) -> {
-      String s = req.session().attribute("username");
-      if (s != null) {
-        res.redirect("/home");
-      }
-      Map<String, Object> variables = ImmutableMap.of("title", "Confirmation");
-      return new ModelAndView(variables, "confirmation.ftl");
-    }, marker);
-
     Spark.get("/", (req, res) -> {
       res.redirect("/home");
       Map<String, Object> variables = ImmutableMap.of("title",
@@ -245,8 +236,6 @@ public final class Main {
         System.out.println(e.getMessage());
         return GUI_GSON.toJson(new JsonObject());
       }
-
-
     });
 
     Spark.post("/create", (req, res) -> {
@@ -335,7 +324,6 @@ public final class Main {
         } else {
           end = Utils.minusHours(new Date(d), -24).getTime();
         }
-
         List<Article> arts = manager.getArticlesBetweenDates(d, end, s);
         JsonArray json = new JsonArray();
         for (Article art : arts) {
@@ -352,7 +340,6 @@ public final class Main {
       QueryParamsMap qm = req.queryMap();
       String url = qm.value("url");
       Integer rank = Integer.parseInt(qm.value("rank"));
-
       try {
         String user = req.session().attribute("username");
         Article a = addArticleByUsername(user, url, rank);
@@ -382,7 +369,22 @@ public final class Main {
       } catch (Exception e) {
         return GUI_GSON.toJson(new JsonObject());
       }
+    });
 
+    Spark.post("/password", (req, res) -> {
+      QueryParamsMap qm = req.queryMap();
+      JsonObject obj = new JsonObject();
+      try {
+        String user = req.session().attribute("username");
+        String oldPass = qm.value("old");
+        String newPass = qm.value("new");
+        manager.changePassword(user, oldPass, newPass);
+        obj.addProperty("success", true);
+      } catch (Exception e) {
+        System.out.println(e.getMessage());
+        obj.addProperty("success", false);
+      }
+      return GUI_GSON.toJson(obj);
     });
   }
 
@@ -490,7 +492,8 @@ public final class Main {
   }
 
   private synchronized Pair<Profile, Article> addArticle(Profile prof,
-      String url, Integer rank) throws SQLException, ParseException, IOException {
+      String url, Integer rank)
+      throws SQLException, ParseException, IOException {
     ArticleParser p = new ArticleParser(url);
     Stats stats = StatsGenerator.analyze(p.iterator());
     String id = manager.addArticle(p.title(), p.url(),
@@ -544,7 +547,8 @@ public final class Main {
     return profile;
   }
 
-  private synchronized Profile getProfileByUsername(String username) throws SQLException, ParseException {
+  private synchronized Profile getProfileByUsername(String username)
+      throws SQLException, ParseException {
     User user;
     try {
       user = manager.getUserByUsername(username);
@@ -552,7 +556,7 @@ public final class Main {
       return null;
     }
     Profile profile;
-      profile = new Profile(user, manager.getArticles(user.getUsername()));
+    profile = new Profile(user, manager.getArticles(user.getUsername()));
 
     return profile;
   }
@@ -608,7 +612,7 @@ public final class Main {
         json.add("wordCloud",
             GUI_GSON.toJsonTree(new ArticleParser(a.url()).jsonCounts()));
       } catch (IOException e) {
-        json.add("wordCloud",new JsonObject());
+        json.add("wordCloud", new JsonObject());
       }
 
     }

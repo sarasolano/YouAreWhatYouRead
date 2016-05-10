@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.PriorityQueue;
 import java.util.Map.Entry;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 import com.google.gson.Gson;
@@ -45,7 +45,7 @@ public class WordCounter {
 				top3.add(w.text);
 			}
 		}
-		for (int i = 4; i <= 20; i++) {
+		for (int i = 4; i <= 30; i++) {
 			Word w = words.poll();
 			if (w != null) {
 				top20.add(w);
@@ -53,7 +53,7 @@ public class WordCounter {
 		}
 		return new Gson().toJson(top20);
 	}
-	
+
 	public Set<String> topThree() {
 		return top3;
 	}
