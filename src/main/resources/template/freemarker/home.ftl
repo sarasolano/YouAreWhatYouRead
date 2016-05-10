@@ -25,27 +25,30 @@
 				</div>
 			</div>
 		</div>
-		<div class="container input-group" id="small-stats">
+		<div class="container">
+			<div class="container input-group" id="small-stats">
 			<input id ="url-input"type="text" class="form-control" placeholder="Add an article!">
 			<span class="input-group-btn">
 			<button id="plus" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-thumbs-up"></span></button>
 			<button id = "add-article" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-plus"></span></button>
 			<button id ="minus" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-thumbs-down"></span></button>
 			</span> 
-		</div>
-		<div class="container input-group">
 		<div id="alert"class="alert alert-danger hide" role="alert">Must give a valid url</div>
 		</div>
+		</div>
 	</div>
-	<div class="article-stats">
+	<div class="jumbotron hide bord" id="article">
 		<div class="container">
-			<div class="jumbotron hide" id="article">
 				<h2> Article: <a id="title" href ='#'></a> </h2>
 				<p id ="topic"> topic</p>
 				<p id ="word-count">  </p>
 				<p id ="pages"> </p>
 				<p id ="grade"></p>
 				</div>
+		</div>
+	<div class="article-stats">
+	
+		<div class="container">
 			
 	
 					<div  id="cloud"></div>

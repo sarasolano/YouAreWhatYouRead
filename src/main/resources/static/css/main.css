@@ -101,6 +101,7 @@ div.well{
   border-color: #9ecaed;
     box-shadow: 0 0 10px #9ecaed;
 }
+
 #sent {
   border: 5px;
   border-style: solid;
@@ -171,6 +172,10 @@ h3 {
   color: #AB2121;
 }
 
+#small-stats {
+  width: 100%;
+}
+
 #topics {
   background-color: blue;
 }
@@ -180,7 +185,7 @@ h3 {
 }
 
 #article {
-   background-color: #FF9494;
+  background-color: white;
 }
 
 #cloud {
