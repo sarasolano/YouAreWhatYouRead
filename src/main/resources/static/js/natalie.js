@@ -41,6 +41,7 @@ $( document ).ready(function() {
 				topic = article["topic"];
 				words = JSON.parse(article["wordCloud"]);
 				grade = article["gradelevel"];
+				$("#clickbait").text(article["click-bait"]);
 				$("#added").text(article["addedDate"]);
 				loadGraphs();
 			}
@@ -390,6 +391,7 @@ $( document ).ready(function() {
 					topic = article["topic"];
 					words = JSON.parse(article["wordCloud"]);
 					grade = article["gradelevel"];
+					$("#clickbait").text(article["click-bait"]);
 					loadGraphs();
 					} else {
 						err.removeClass("hide");

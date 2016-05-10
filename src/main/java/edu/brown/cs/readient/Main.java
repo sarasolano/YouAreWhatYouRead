@@ -648,8 +648,10 @@ public final class Main {
     json.add("gradelevel", GUI_GSON.toJsonTree(a.getGradeLevel()));
     if (wordCloud) {
       try {
+        ArticleParser ap = new ArticleParser(a.url());
         json.add("wordCloud",
-            GUI_GSON.toJsonTree(new ArticleParser(a.url()).jsonCounts()));
+            GUI_GSON.toJsonTree(ap.jsonCounts()));
+        json.add("click-bait", GUI_GSON.toJsonTree(ap.getClickbait()));
       } catch (IOException e) {
         json.add("wordCloud", new JsonObject());
       }
