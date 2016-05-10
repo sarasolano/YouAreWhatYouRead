@@ -552,11 +552,7 @@ $( document ).ready(function() {
 		var length = 0;
 		for (var a in domainHashPos) {
 			if (1/domainHashPos[a] !=undefined) {
-				console.log(1/domainHashPos[a]);
-				console.log(a);
-				console.log ({p: a},1/domainHashPos[a]);
 				queue.push({p: a},1/domainHashPos[a]);
-				console.log(queue.heap.toString());
 				length++;
 
 			} else {
@@ -567,8 +563,6 @@ $( document ).ready(function() {
 		}
 		var domainNames = [];
 		for (y=0; y < 5 && length > y; y++) {
-			console.log(length);
-			console.log(queue.length);
 			var n = (queue.pop())["p"];
 			domains[y] = [n, domainHashPos[n]];
 			domainNames[y] = n;
@@ -581,9 +575,7 @@ $( document ).ready(function() {
 		  data: {
 		        columns: domains,
 		        type: 'pie',
-		        onclick: function (d, i) { window.open("https://" + d["id"], '_blank'); },
-        		onmouseover: function (d, i) { console.log("onmouseover", d, i); },
-        		onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+		        onclick: function (d, i) { window.open("https://" + d["id"], '_blank'); }
 		   }
 	});
 		

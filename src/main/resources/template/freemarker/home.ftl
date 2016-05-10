@@ -33,6 +33,9 @@
 			<button id = "add-article" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-plus"></span></button>
 			<button id ="minus" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-thumbs-down"></span></button>
 			</span> 
+		
+		</div>
+		<div class="container">
 		<div id="alert"class="alert alert-danger hide" role="alert">Must give a valid url</div>
 		</div>
 		</div>
