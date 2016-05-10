@@ -1,5 +1,7 @@
 package edu.brown.cs.db;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.security.NoSuchAlgorithmException;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -31,8 +34,13 @@ import javax.crypto.spec.PBEKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
 
+import edu.brown.cs.parsing.ArticleParser;
 import edu.brown.cs.readient.Article;
 import edu.brown.cs.readient.User;
+import edu.brown.cs.stats.Readability;
+import edu.brown.cs.stats.StatsGenerator;
+import edu.brown.cs.stats.StatsGenerator.Stats;
+import edu.brown.cs.stats.Utils;
 
 /**
  * A QueryManager for a database with the following schema.
@@ -40,6 +48,29 @@ import edu.brown.cs.readient.User;
  * @author sarasolano
  */
 public class QueryManager implements AutoCloseable {
+
+  public static void main(String[] args) {
+    try {
+      int[] ranks = {-1, 0, 1};
+      QueryManager m = new QueryManager("data.db");
+      StatsGenerator sg = new StatsGenerator();
+      Random r = new Random();
+      long max = (new Date()).getTime();
+      long min = Utils.minusYears(new Date(max), 1).getTime();
+      long diff = max - min + 1;
+      Scanner s = new Scanner(new FileReader("dummy.txt"));
+      while (s.hasNext()) {
+        String url = s.next();
+        addArticleByUsername(m, sg, "", url, ranks[r.nextInt(2)],
+            min + (r.nextLong() * diff));
+      }
+      s.close();
+    } catch (IOException | ClassNotFoundException | ParseException
+        | SQLException e) {
+      System.out.println(e.getMessage());
+    }
+  }
+
   public static final DateFormat DATE_FORMAT =
       new SimpleDateFormat("yyyy-MM-dd HH:mm");
   /**
@@ -76,6 +107,25 @@ public class QueryManager implements AutoCloseable {
   public QueryManager(String db) throws SQLException, ClassNotFoundException {
     Class.forName("org.sqlite.JDBC");
     conn = DriverManager.getConnection("jdbc:sqlite:" + db);
+  }
+
+  private static Article addArticleByUsername(QueryManager manager,
+      StatsGenerator sg, String username, String url, Integer rank, long date)
+      throws SQLException, ParseException, IOException {
+    ArticleParser p = new ArticleParser(url);
+    Stats stats = StatsGenerator.analyze(p.iterator());
+    String id = manager.addArticle(p.title(), p.url(), username, rank,
+        stats.words(), date);
+    Map<String, Double> emotions = sg.moods(p, stats);
+    manager.addMoods(id, emotions);
+    List<Integer> sent = sg.sentiment(p, stats);
+    manager.addSentiments(id, sent);
+    String topic = sg.topic(p);
+    manager.addTopic(id, topic);
+    Readability read = new Readability(stats);
+    manager.addReadLevel(id, read.avgRead(), read.avgGrade());
+    Article art = manager.getArticle(id);
+    return art;
   }
 
   /**
@@ -480,6 +530,32 @@ public class QueryManager implements AutoCloseable {
     stat.setString(3, username);
     stat.execute();
     stat.close();
+  }
+
+  public String addArticle(String name, String url, String username,
+      Integer rank, int words, long time) throws SQLException {
+    String query = "INSERT INTO article VALUES(?, ?, ?, ?, ?, "
+        + (rank == null ? "NULL," : "?,") + " ?);";
+    PreparedStatement stat = conn.prepareStatement(query);
+    String id = "a/" + UUID.randomUUID();
+    stat.setString(1, id);
+    stat.setString(2, name);
+    stat.setString(3, url);
+    stat.setString(4, username);
+    // Calendar cal =
+    // Calendar.getInstance(TimeZone.getTimeZone("America/New_York"));
+    // cal.setTime(new Date());
+    // stat.setString(5, DATE_FORMAT.format(cal.getTime()));
+    stat.setString(5, DATE_FORMAT.format(time));
+    if (rank != null) {
+      stat.setInt(6, rank);
+      stat.setInt(7, words);
+    } else {
+      stat.setInt(6, words);
+    }
+    stat.execute();
+    stat.close();
+    return id;
   }
 
   /**
