@@ -34,16 +34,16 @@
         <!-- SIDEBAR MENU -->
         <div class="profile-usermenu">
           <ul class="nav">
-            <li class="active">
+            <li id="prof">
               <a href="/profile">
                 <i class="glyphicon glyphicon-home"></i> Overview </a>
             </li>
-            <li>
-              <a href="/settings">
+            <li id="settings">
+              <a href="/profile?tab=settings">
                 <i class="glyphicon glyphicon-user"></i> Account Settings </a>
             </li>
-            <li>
-              <a href="/history">
+            <li id="history">
+              <a href="/profile?tab=history">
                 <i class="glyphicon glyphicon-book"></i> History </a>
             </li>
           </ul>

@@ -1,4 +1,5 @@
 <#assign profileContent>
+<!--
       <div class="profile-content">
         <div class="row">
           <div class="col-md-9">
@@ -26,5 +27,6 @@
           </div>
         </div>
       </div>
+-->
 </#assign>
 <#include "profileContainer.ftl">

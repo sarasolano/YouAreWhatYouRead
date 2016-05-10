@@ -219,7 +219,7 @@ public class QueryManager implements AutoCloseable {
         "SELECT id, name, url, user, added, rank, read_level, grade_level, "
             + "words FROM article, read_level WHERE article.id == read_level.article "
             + "AND article.user == ? AND added BETWEEN ? AND ? "
-            + "ORDER BY strftime('%s', added) ASC;";
+            + "ORDER BY added ASC;";
     PreparedStatement stat = conn.prepareStatement(query);
     stat.setString(1, username);
     stat.setString(2, DATE_FORMAT.format(start));
@@ -472,7 +472,7 @@ public class QueryManager implements AutoCloseable {
       new IllegalArgumentException("Invalid username or password");
     }
     String query =
-        "UPDATE user SET password_hash = ?, salt = ? WHERE username = ?";
+        "UPDATE user SET password_hash = ?, salt = ? WHERE user_name = ?";
     PreparedStatement stat = conn.prepareStatement(query);
     byte[] salt = getSalt();
     stat.setString(1, bytetoString(hash(newPass, salt)));
