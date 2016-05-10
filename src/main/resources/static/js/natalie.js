@@ -31,7 +31,7 @@ $( document ).ready(function() {
 
 	}
 
-	if (window.location.pathname == "/profile") {
+	if (window.location.pathname == "/profile") {		
 		var loadArticles = function(start, end) {
 			var ul = $("#articlelist");
 			postParameters = {"start" : start, "end" : end, "amount" : 0};
@@ -55,7 +55,7 @@ $( document ).ready(function() {
 	 
 				
 		$.post("/getprof", function(res) {
-				var response = JSON.parse(res);
+			var response = JSON.parse(res);
 			if (!jQuery.isEmptyObject(response)) {
 				var articles = response["articles"];
 				getDomain(articles);
@@ -68,7 +68,7 @@ $( document ).ready(function() {
 							map = JSON.parse(res);
 							var monthsAgo = function(size){
 									now = new Date();
-									now.setMonth(now.getMonth() - size);
+									now.setMonth(now.getMonth() - size + 1);
 									return now;
 							}
 
@@ -80,12 +80,11 @@ $( document ).ready(function() {
 							}
 
 							var responsiveCal = function( options ) {
-									if( $(window).width() < 1000 ) {
-											options.start = monthsAgo(7);
-											options.range = 7;
-									} else if ( $(window).width() < 1200 ) {
-										options.start = monthsAgo(10);
-										options.range = 10;
+								console.log(parseInt($("#content").width() / 100));
+									if ($("#content").width() < 700) {
+											var w = $("#content").width() / 100;
+											options.start = monthsAgo(parseInt(w));
+											options.range = w;
 									} else {
 											options.start = oneYearAgo();
 											options.range = 12;
@@ -102,7 +101,7 @@ $( document ).ready(function() {
 							caloptions = {
 									domain: 'month',
 									subdomain: 'x_day',
-									cellSize: 15,
+									cellSize: 10,
 									cellPadding: 2,
 									itemName:["action","actions"],
 									legend: [1, 5, 10, 15, 20, 25, 30],
@@ -499,8 +498,6 @@ $( document ).ready(function() {
     $('#profile').click(function(e) {
   	    e.preventDefault();
   	    window.location = "/profile";
-  	 
-
     });
 
 
@@ -511,8 +508,8 @@ $( document ).ready(function() {
     });
 
     $(function () {
-  $('[data-toggle="popover"]').popover()
-});
+			$('[data-toggle="popover"]').popover()
+		});
 
     function getDomain(ar) {
     	console.log(ar);
