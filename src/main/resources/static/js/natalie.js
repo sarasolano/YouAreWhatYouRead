@@ -1,6 +1,6 @@
 $( document ).ready(function() {
 
-	
+	var id;
 	var err = $("#alert");
 	var pathArray = window.location.pathname.split( '/' );
 
@@ -8,6 +8,20 @@ $( document ).ready(function() {
 		postParameters = { 
 			id : pathArray[2]
 		};
+		$('#trash').click(function(e) {
+  	    	e.preventDefault();
+  	    
+  	    	$.post("/remove",postParameters, function(res) {
+  	    		var response = JSON.parse(res);
+  	    		if (jQuery.isEmptyObject(response)){
+  	    			$("#failure").removeClass("hide");
+  	    			$("#success").addClass("hide");
+  	    		} else {
+  	    			$("#success").removeClass("hide");
+  	    			$("#failure").addClass("hide");
+  	    		}
+  	    	});
+    	});
 
 
 		$.post("/article/a", postParameters, function(res) {
@@ -307,7 +321,6 @@ $( document ).ready(function() {
 		$("#title").attr("href", link);
 		$("#grade").text(grade);
 
-		console.log(sentiments);
 		var sen = sentiments[0];
 		var currsent = sen[0];
 		var percent = currsent/sen.length *100;
@@ -498,6 +511,8 @@ $( document ).ready(function() {
   	    e.preventDefault();
   	    window.location = "/profile";
     });
+
+    
 
 
     $('.progressBar').hover(function(e) {
