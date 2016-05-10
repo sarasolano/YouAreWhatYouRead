@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/css/c3.css">
     <link rel="stylesheet" href="/css/jqcloud.css">
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/profile.css">
 		<link rel="stylesheet" href="/css/cal-heatmap.css">
   </head>
   <body>

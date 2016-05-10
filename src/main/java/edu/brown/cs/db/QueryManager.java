@@ -465,6 +465,23 @@ public class QueryManager implements AutoCloseable {
     stat.close();
   }
 
+  public void changePassword(String username, String oldPass, String newPass)
+      throws SQLException {
+    User user = getUser(username, oldPass);
+    if (user == null) {
+      new IllegalArgumentException("Invalid username or password");
+    }
+    String query =
+        "UPDATE user SET password_hash = ?, salt = ? WHERE username = ?";
+    PreparedStatement stat = conn.prepareStatement(query);
+    byte[] salt = getSalt();
+    stat.setString(1, bytetoString(hash(newPass, salt)));
+    stat.setString(2, bytetoString(salt));
+    stat.setString(3, username);
+    stat.execute();
+    stat.close();
+  }
+
   /**
    * Adds an article to the database.
    *
