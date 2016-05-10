@@ -198,8 +198,12 @@ h3 {
   margin-top: 20px;
   text-transform: uppercase;
   color: #93a3b5;
-  font-size: 1.5em;
+  font-size: 1.2em;
   font-weight: 600;
+
+}
+#title:hover{
+  color:#AB2121;
 }
 
 #title-container {

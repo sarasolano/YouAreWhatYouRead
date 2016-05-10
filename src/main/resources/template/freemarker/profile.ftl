@@ -16,7 +16,7 @@
             <div id="avg-rl"></div>
           </div>
           <div class="col-md-4">
-          	<div class="chartLabel">Websites</div>
+          	<div class="chartLabel">Liked Websites</div>
             <div id="websites"></div>
           </div>
         </div>

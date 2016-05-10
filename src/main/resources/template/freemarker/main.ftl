@@ -22,7 +22,8 @@
      <script src="/js/jqcloud-1.0.4.min.js"></script> 
      <script src="/js/bootstrap.js"></script> 
       <script src="/js/d3.js"></script> 
-     <script src="/js/c3.js"></script> 
+     <script src="/js/c3.js"></script>
+     	<script src="/js/priorityQueue.js"></script> 
 		<script src="/js/signin.js"></script>
 		<script src="/js/signup.js"></script>
 		<script src="/js/natalie.js"></script>
@@ -30,6 +31,7 @@
 		<script src="/js/tinygradient.js"></script>
 		<script src="/js/tinygradient.min.js"></script>
 		<script src="/js/tinycolor.js"></script>
+	
   </body>
   <!-- See http://html5boilerplate.com/ for a good place to start
        dealing with real world issues like old browsers.  -->
