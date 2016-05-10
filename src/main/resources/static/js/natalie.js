@@ -68,7 +68,7 @@ $( document ).ready(function() {
 							map = JSON.parse(res);
 							var monthsAgo = function(size){
 									now = new Date();
-									now.setMonth(now.getMonth() - size);
+									now.setMonth(now.getMonth() - size + 1);
 									return now;
 							}
 
@@ -80,12 +80,11 @@ $( document ).ready(function() {
 							}
 
 							var responsiveCal = function( options ) {
-									if( $(window).width() < 1000 ) {
-											options.start = monthsAgo(7);
-											options.range = 7;
-									} else if ( $(window).width() < 1200 ) {
-										options.start = monthsAgo(10);
-										options.range = 10;
+								console.log(parseInt($("#content").width() / 100));
+									if ($("#content").width() < 700) {
+											var w = $("#content").width() / 100;
+											options.start = monthsAgo(parseInt(w));
+											options.range = w;
 									} else {
 											options.start = oneYearAgo();
 											options.range = 12;
@@ -102,7 +101,7 @@ $( document ).ready(function() {
 							caloptions = {
 									domain: 'month',
 									subdomain: 'x_day',
-									cellSize: 15,
+									cellSize: 10,
 									cellPadding: 2,
 									itemName:["action","actions"],
 									legend: [1, 5, 10, 15, 20, 25, 30],
