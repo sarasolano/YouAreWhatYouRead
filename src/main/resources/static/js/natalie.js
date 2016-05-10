@@ -549,13 +549,26 @@ $( document ).ready(function() {
 		}
 		var y =0;
 		var queue = new PriorityQueue();
-
+		var length = 0;
 		for (var a in domainHashPos) {
-			queue.push({p: a},1/domainHashPos[a]);
+			if (1/domainHashPos[a] !=undefined) {
+				console.log(1/domainHashPos[a]);
+				console.log(a);
+				console.log ({p: a},1/domainHashPos[a]);
+				queue.push({p: a},1/domainHashPos[a]);
+				console.log(queue.heap.toString());
+				length++;
+
+			} else {
+				console.log("hi");
+			}
+			
 
 		}
 		var domainNames = [];
-		for (y=0; y < 5; y++) {
+		for (y=0; y < 5 && length > y; y++) {
+			console.log(length);
+			console.log(queue.length);
 			var n = (queue.pop())["p"];
 			domains[y] = [n, domainHashPos[n]];
 			domainNames[y] = n;

@@ -60,6 +60,12 @@ PriorityQueue.prototype = {
         
     // returns true if node i is higher priority than j
     isHigherPriority: function(i,j) {
-        return this.heap[i].priority < this.heap[j].priority;
+        if (this.heap[i] == undefined) {
+            return false;
+        } else {
+            return this.heap[i].priority < this.heap[j].priority;
+
+        }
+        
     }
 }
