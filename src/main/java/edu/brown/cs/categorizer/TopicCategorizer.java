@@ -200,6 +200,17 @@ public class TopicCategorizer {
     DocumentCategorizerME myCategorizer = new DocumentCategorizerME(model);
     double[] outcomes = myCategorizer.categorize(doc);
     String category = myCategorizer.getBestCategory(outcomes);
-    return category;
+    if (category.equals("Foreign")) {
+      return "Politics";
+    } else if (category.equals("Business")){
+      return "Business/Industry";
+
+    } else if (category.equals("Science")) {
+      return "Science/Health";
+    } else {
+      return category;
+
+    }
+
   }
 }
