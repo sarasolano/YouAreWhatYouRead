@@ -435,7 +435,7 @@ $( document ).ready(function() {
 	$("#cloud").jQCloud(words, {
 
 		  width: $("#cloud").width(),
-		  height: $("#row2").height(),
+		  height: 500,
 		  shape: 'rectangular',
 		  autoResize: true
 	});
