@@ -44,13 +44,8 @@ $( document ).ready(function() {
 	});
 
 	}
-
-	if (window.location.pathname == "/profile") {		
-		var loadArticles = function(start, end) {
-			var ul = $("#articlelist");
-			postParameters = {"start" : start, "end" : end, "amount" : 0};
-			$.post("/articles/time", postParameters, function(res) {
-				var articles = JSON.parse(res);
+	
+	var loadArticles = function(ul, articles) {
 				for (var i = 0; i <articles.length; i++){
 					var a = articles[i];
 					var link = a["link"];
@@ -64,9 +59,176 @@ $( document ).ready(function() {
 							ul.prepend("<li >"  + '<a class="list-group-item down" href =' + '"' +link + '">' + title + "</a>" + "</li>" );
 						}
 				}
-			});
-		}	
-	 
+	}
+	var load = function(start, end) {
+		var ul = $("#articlelist");
+		postParameters = {"start" : start, "end" : end, "amount" : 0};
+		$.post("/articles/time", postParameters, function(res) {
+			var articles = JSON.parse(res);
+			loadArticles(ul, articles);
+		});
+	}	
+
+	if (window.location.pathname == "/profile") {
+		var query = location.search.substr(1);
+		var container = $("#content");
+		if (query) {
+			container.empty();
+			var view = query.split("=");
+			if (view[1] == "history") {
+				$("#prof").removeClass("active");
+				$("#settings").removeClass("active");
+				$("#history").addClass("active");
+				container.append("<ul class='list-group' id='articlelist'> </ul>");
+				container.append("<div id='load-row' class='row'><div id='load-more' class='col-md-8 col-md-offset-6'><span id='load' class='glyphicon glyphicon-menu-down'></span></div></div>");
+				var ul = $("#articlelist");
+				$.ajax({
+					type: 'POST',
+					url: "/articles", 
+					data: {"amount" : 0}, 
+					success: function(res) {
+						var articles = JSON.parse(res);
+						if (jQuery.isEmptyObject(articles)) {
+							$("#load-row").empty();
+							return;
+						}
+						
+						for (var i = 0; i <articles.length; i++){
+							var a = articles[i];
+							var link = a["link"];
+							var title = a["title"];
+							if (a["rank"]>0){
+										ul.append("<li class='list-group-item up'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
+							} else if (a["rank"] == 0){
+								ul.append("<li class='list-group-item neutral'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
+
+							} else {
+								ul.append("<li class='list-group-item down'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
+							}
+						}
+						
+						$("#load-more").on("click", function(e) {
+								$.ajax({
+									type: 'POST',
+									url: "/articles",
+									data: {"amount" : ul.children().length}, 
+									success: function(res) {
+										var articles = JSON.parse(res);
+										if (jQuery.isEmptyObject(articles)) {
+											$("#load-row").empty();
+											return;
+										}
+										for (var i = 0; i <articles.length; i++){
+												var a = articles[i];
+												var link = a["link"];
+												var title = a["title"];
+												if (a["rank"]>0){
+													ul.append("<li class='list-group-item up'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
+												} else if (a["rank"] == 0){
+													ul.append("<li class='list-group-item neutral'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
+
+												} else {
+													ul.append("<li class='list-group-item down'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
+												}
+										}
+									}
+								});
+							});
+						}
+				});
+				
+				
+			} else if (view[1] == "settings") {
+				container.empty();
+				$("#prof").removeClass("active");
+				$("#history").removeClass("active");
+				$("#settings").addClass("active");
+				container.append("<div class='row'><div class='col-md-12'>");
+				container.append("<div class='chartLabel'>Change password</div>");
+				container.append("<div class='form-group input-group'><span class='input-group-addon'><i class='glyphicon glyphicon-lock'></i></span><input id='old-pwd' class='form-control' type='password' name='password' placeholder='password'/></div>");
+				container.append("<span id='pwd-err' style='color: red; display: none'>Invalid password</span>");
+				container.append("<div class='form-group input-group'><span class='input-group-addon'><i class='glyphicon glyphicon-lock'></i></span><input id='pwd-signup' class='form-control' type='password' name='password' placeholder='new password'/></div>");
+				container.append("<span id='pwd2-err' style='color: red; display: none'>Password must be 8-36 characters long.</span>");
+				container.append("<div class='form-group input-group'><span class='input-group-addon'><i class='glyphicon glyphicon-lock'></i></span><input id='pwd2' class='form-control' type='password' name='password' placeholder='repeat password'/></div>");
+				container.append("<span id='pwd3-err' style='color: red; display: none'>Passwords don't match</span>");
+				container.append("<div id ='success' class='alert alert-success' role='alert' style='display: none'>Your password has been changed!</div>");
+				container.append("<div class='form-group'><button id='submit' type='button' class='btn btn-def btn-block'>Submit</button></div>");
+				container.append("</div></div>");
+				
+				var pw = $("#old-pwd");
+				var pw2 = $("#pwd-signup");
+				var pw3 = $("#pwd2");
+				
+				pw.click(function(e) {
+					$("#success").hide();
+					$("#pwd-err").hide();
+					pw.removeClass("err");
+				});
+
+				pw2.click(function(e) {
+					$("#success").hide();
+					$("#pwd2-err").hide();
+					pw2.removeClass("err");
+				});
+				
+				pw3.click(function(e) {
+					$("#success").hide();
+					$("#pwd3-err").hide();
+					pw2.removeClass("err");
+				});
+				
+				$('#submit').on('click', function(e) {
+						$("#pwd-err").hide();
+						$("#pwd3-err").hide();
+						$("#pwd2-err").hide();
+						
+						var isPass;
+						$.ajax({
+							type: 'POST',
+							url: "/isPass",
+							data: {"pass" : pw.val()},
+							success: function(res) {
+								isPass = JSON.parse(res).password;
+							},
+							async:false
+						});
+					
+						if (!isPass) {
+							$("#pwd-err").show();
+							pw.addClass("err");
+							return;
+						}
+						
+						if (pw2.val().length < 8 || pw2.val().length > 36) {
+							$("#pwd2-err").show();
+							pw2.addClass("err");
+							return;
+						} 
+						if (pw3.val() != pw2.val()) {
+							$("#pwd3-err").show();
+							pw3.addClass("err");
+							return;
+						}
+
+
+				if (!(pw2.val().length < 8) && !(pw2.val().length > 36) && (pw3.val() == pw2.val())){
+								var name = $("#first").val();
+								var postParameters = {"old" : pw.val(), "new" : pw2.val()};
+								$.post("/password", postParameters, function(res) {
+									var response = JSON.parse(res);
+									if (response.success) {
+										$("#success").show();
+									} 
+								}); 
+						}
+				});
+			}
+			return;
+		}
+	 	
+		$("#settings").removeClass("active");
+		$("#history").removeClass("active");
+		$("#prof").addClass("active");
 				
 		$.post("/getprof", function(res) {
 			var response = JSON.parse(res);
@@ -132,11 +294,13 @@ $( document ).ready(function() {
 										$("#articlelist").empty();
 										date.setHours(00);
 										date.setMinutes(00);
+										date.setSeconds(00);
 										var unixS = date.getTime();
 										date.setHours(23);
 										date.setMinutes(59);
+										date.setSeconds(59);
 										var unixEnd = date.getTime();
-										loadArticles(unixS, unixEnd);
+										load(unixS, unixEnd);
 									}
 							};
 

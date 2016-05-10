@@ -189,16 +189,16 @@ public final class Main {
           "Profile | Readient", "username", s);
       return new ModelAndView(variables, "profile.ftl");
     }, marker);
-    
-    Spark.get("/settings", (req, res) -> {
-        String s = req.session().attribute("name");
-        if (s == null) {
-          res.redirect("/signin");
-        }
-        Map<String, Object> variables = ImmutableMap.of("title",
-            "Settings | Readient", "username", s);
-        return new ModelAndView(variables, "settings.ftl");
-      }, marker);
+
+    // Spark.get("/profile?tab=settings", (req, res) -> {
+    // String s = req.session().attribute("name");
+    // if (s == null) {
+    // res.redirect("/signin");
+    // }
+    // Map<String, Object> variables = ImmutableMap.of("title",
+    // "Settings | Readient", "username", s);
+    // return new ModelAndView(variables, "settings.ftl");
+    // }, marker);
 
     Spark.get("/signup", (req, res) -> {
       String s = req.session().attribute("username");
@@ -318,21 +318,21 @@ public final class Main {
       long d = 0;
       long end = 0;
       try {
-        d = Long.parseLong(qm.value("start"));
-        if (format == null && qm.value("end") != null) {
-          end = Long.parseLong(qm.value("end"));
+        end = Long.parseLong(qm.value("end"));
+        if (format == null && qm.value("start") != null) {
+          d = Long.parseLong(qm.value("start"));
         } else if (format.equals("h")) {
-          end = Utils.minusHours(new Date(d), amount).getTime();
+          d = Utils.minusHours(new Date(end), amount).getTime();
         } else if (format.equals("d")) {
-          end = Utils.minusDays(new Date(d), amount).getTime();
+          d = Utils.minusDays(new Date(end), amount).getTime();
         } else if (format.equals("w")) {
-          end = Utils.minusWeeks(new Date(d), amount).getTime();
+          d = Utils.minusWeeks(new Date(end), amount).getTime();
         } else if (format.equals("m")) {
-          end = Utils.minusMonths(new Date(d), amount).getTime();
+          d = Utils.minusMonths(new Date(end), amount).getTime();
         } else if (format.equals("y")) {
-          end = Utils.minusYears(new Date(d), amount).getTime();
+          d = Utils.minusYears(new Date(end), amount).getTime();
         } else {
-          end = Utils.minusHours(new Date(d), -24).getTime();
+          d = Utils.minusHours(new Date(end), 24).getTime();
         }
         List<Article> arts = manager.getArticlesBetweenDates(d, end, s);
         JsonArray json = new JsonArray();
@@ -344,6 +344,26 @@ public final class Main {
         System.out.println(e.getMessage());
       }
       return GUI_GSON.toJson(new JsonObject());
+    });
+
+    Spark.post("/articles", (req, res) -> {
+      QueryParamsMap qm = req.queryMap();
+      String s = req.session().attribute("username");
+      try {
+        int amount = Integer.parseInt(qm.value("amount"));
+        List<Article> arts = manager.getArticles(s);
+        if (arts.size() == amount) {
+          return GUI_GSON.toJson(new JsonObject());
+        }
+        JsonArray art = new JsonArray();
+        for (Article a : arts.subList(amount,
+            Math.min(arts.size(), amount + 20))) {
+          art.add(articleJson(a, false));
+        }
+        return GUI_GSON.toJson(art);
+      } catch (Exception e) {
+        return GUI_GSON.toJson(new JsonObject());
+      }
     });
 
     Spark.post("/add", (req, res) -> {
@@ -393,6 +413,20 @@ public final class Main {
       } catch (Exception e) {
         System.out.println(e.getMessage());
         obj.addProperty("success", false);
+      }
+      return GUI_GSON.toJson(obj);
+    });
+
+    Spark.post("/isPass", (req, res) -> {
+      QueryParamsMap qm = req.queryMap();
+      JsonObject obj = new JsonObject();
+      try {
+        String user = req.session().attribute("username");
+        String pass = qm.value("pass");
+        obj.addProperty("password", manager.getUser(user, pass) != null);
+      } catch (Exception e) {
+        System.out.println(e.getMessage());
+        obj.addProperty("password", false);
       }
       return GUI_GSON.toJson(obj);
     });
