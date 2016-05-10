@@ -192,3 +192,27 @@ h3 {
   height: 300px;
   width:100%;
 }
+
+#title {
+  text-align: center;
+  margin-top: 20px;
+  text-transform: uppercase;
+  color: #93a3b5;
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+#title-container {
+  text-align: center;
+  padding: 5% 2% 5% 2%;
+}
+
+.stat {
+  font-size: 2em;
+  color: #AB2121;
+  text-align: center;
+}
+
+#article-container {
+	background-color: white;
+}
