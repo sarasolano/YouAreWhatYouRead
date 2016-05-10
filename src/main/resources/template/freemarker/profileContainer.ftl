@@ -35,15 +35,15 @@
         <div class="profile-usermenu">
           <ul class="nav">
             <li class="active">
-              <a href="#">
+              <a href="/profile">
                 <i class="glyphicon glyphicon-home"></i> Overview </a>
             </li>
             <li>
-              <a href="#">
+              <a href="/settings">
                 <i class="glyphicon glyphicon-user"></i> Account Settings </a>
             </li>
             <li>
-              <a href="#">
+              <a href="/history">
                 <i class="glyphicon glyphicon-book"></i> History </a>
             </li>
           </ul>

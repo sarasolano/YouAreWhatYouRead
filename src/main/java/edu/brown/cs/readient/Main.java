@@ -189,6 +189,16 @@ public final class Main {
           "Profile | Readient", "username", s);
       return new ModelAndView(variables, "profile.ftl");
     }, marker);
+    
+    Spark.get("/settings", (req, res) -> {
+        String s = req.session().attribute("name");
+        if (s == null) {
+          res.redirect("/signin");
+        }
+        Map<String, Object> variables = ImmutableMap.of("title",
+            "Settings | Readient", "username", s);
+        return new ModelAndView(variables, "settings.ftl");
+      }, marker);
 
     Spark.get("/signup", (req, res) -> {
       String s = req.session().attribute("username");

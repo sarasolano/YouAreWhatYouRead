@@ -1,43 +1,30 @@
-<#assign content>
-	<nav class="navbar navbar-default navbar-fixed-top">
-		<div class="container">
-			<a class="navbar-brand" href="#">Readient</a>
-			<ul class="nav navbar-nav navbar-right">
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">${username}<span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li><a href="#">View Profile</a></li>
-						<li><a id="logout" href="#">Log Out</a></li>
-						<li><a id="settings" href="#">Settings</a></li>
-					</ul>
-				</li>
-			</ul>
-		</div>
-		</div>
-	</nav>
-	<div class="jumbotron">
-		<div class="container">
-			<div class="jumbotron">
-				<div id="border">
-					<h1>Readient</h1>
-					<p>You are what you read.</p>
-				</div>
-			</div>
-		</div>
-		<div class="container input-group">
-			<input id ="url-input"type="text" class="form-control" placeholder="Add an article!">
-			<span class="input-group-btn">
-			<button id="plus" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-thumbs-up"></span></button>
-			<button id = "add-article" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-plus"></span></button>
-			<button id ="minus" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-thumbs-down"></span></button>
-			</span> 
-		</div>
-	</div>
-
-	<div class="container">
-		
-	</div>
-	
-
+<#assign profileContent>
+      <div class="profile-content">
+        <div class="row">
+          <div class="col-md-9">
+            <div class="chartLabel">Topics</div>
+            <div id="topics"></div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="chartLabel">Mood</div>
+            <div id="avgMoods"></div>
+          </div>
+          <div class="col-md-5">
+          	<div class="chartLabel">Readability</div>
+            <div id="avg-rl"></div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-9">
+          <div class="chartLabel">Calendar</div>
+            <div id="cal-heatmap">
+            </div>
+            <ul class="list-group" id = "articlelist"> 
+		    </ul>
+          </div>
+        </div>
+      </div>
 </#assign>
-<#include "main.ftl">
+<#include "profileContainer.ftl">
