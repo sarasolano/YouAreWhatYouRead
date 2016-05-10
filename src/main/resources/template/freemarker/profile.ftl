@@ -1,5 +1,5 @@
 <#assign profileContent>
-      <div class="profile-content">
+      <div id="content">
         <div class="row">
           <div class="col-md-12">
             <div class="chartLabel">Topics</div>
