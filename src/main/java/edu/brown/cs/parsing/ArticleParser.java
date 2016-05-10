@@ -51,6 +51,9 @@ public class ArticleParser implements Iterable<String> {
           .followRedirects(true).execute();
       doc = response.parse();
       title = doc.select("h1").text();
+      if (title.equals("")) {
+        title = doc.title();
+      }
       String text = doc.select("p").text();
       int numLinks = doc.select("a").size();
       int numImages = doc.select("img").size();
@@ -65,7 +68,7 @@ public class ArticleParser implements Iterable<String> {
           text = text + ". " + doc.select("h2").text();
       }
       int wc = text.split(" ").length;
-      clickbait = ((double) numImages * numLinks) / (double) (wc);
+      clickbait = ((double) numImages * numLinks) / (wc);
       //System.out.println(text.split(" ").length);
       String allText = title + ". " + text;
       this.text = allText;
@@ -169,16 +172,16 @@ public class ArticleParser implements Iterable<String> {
   public Iterator<String> iterator() {
     return sentences.iterator();
   }
-  
+
   public String getClickbait() {
-	  if (clickbait > 150) {
+	  if (clickbait > 125) {
 		  return "Lol is this literally Buzzfeed?";
 	  } else if (clickbait > 30) {
 		  return "Clickbait.";
 	  } else if (clickbait > 7) {
 		  return "Classy Clickbait";
-	  } else if (clickbait > 5) {
-		  return "Great Level!";
+	  } else if (clickbait > 3) {
+		  return "Clicky but not baity.";
 	  } else if (clickbait > 0.7) {
 		  return "Serious Article";
 	  } else {
