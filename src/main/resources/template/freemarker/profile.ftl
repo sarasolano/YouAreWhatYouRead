@@ -1,12 +1,6 @@
 <#assign profileContent>
       <div id="content">
         <div class="row">
-          <div class="col-md-12">
-            <div class="chartLabel">Topics</div>
-            <div id="topics"></div>
-          </div>
-        </div>
-        <div class="row">
           <div class="col-md-4">
             <div class="chartLabel">Mood</div>
             <div id="avgMoods"></div>

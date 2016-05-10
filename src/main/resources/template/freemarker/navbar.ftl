@@ -16,16 +16,16 @@
 		</div>
 	</nav>
 	<div class="alert alert-warning hide" id="failure">
-  		<strong>Warning!</strong> Article could not be removed from database.
+  		<strong>Warning!</strong> Article was already removed from database.
 	</div>
-	<div class="alert alert-success hide" id="success">
-  		<strong>Success!</strong> Article was removed from database!.
-	</div>	
+	<div class="alert alert-success hide" id="s">
+  		<strong>Success!</strong> Article was successfully deleted from the database!
+	</div>
 	${page}
 	<nav class="navbar navbar-default navbar-fixed-bottom">
 		<div class="container">
 			<button type="button" id="trash" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-trash"></span></button>
-			<p class="navbar-text navbar-right">Added on 5/10</p>
+			<p class="navbar-text navbar-right" id="added"></p>
 		</div>
 	</nav>
 </#assign>

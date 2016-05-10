@@ -9,39 +9,42 @@ $( document ).ready(function() {
 			id : pathArray[2]
 		};
 		$('#trash').click(function(e) {
-  	    	e.preventDefault();
-  	    
-  	    	$.post("/remove",postParameters, function(res) {
-  	    		var response = JSON.parse(res);
-  	    		if (jQuery.isEmptyObject(response)){
-  	    			$("#failure").removeClass("hide");
-  	    			$("#success").addClass("hide");
-  	    		} else {
-  	    			$("#success").removeClass("hide");
-  	    			$("#failure").addClass("hide");
-  	    		}
-  	    	});
-    	});
+			e.preventDefault();
+
+			$.post("/remove",postParameters, function(res) {
+				var response = JSON.parse(res);
+				if (jQuery.isEmptyObject(response)){
+					$("#failure").removeClass("hide");
+					$("#s").addClass("hide");
+				} else {
+					$("#s").removeClass("hide");
+					$("#failure").addClass("hide");
+				}
+				$("#success").removeClass("hide");
+			});
+    });
 
 
 		$.post("/article/a", postParameters, function(res) {
 			var response = JSON.parse(res);
-			article = response;
-					moods = article["moods"];
-					sentiments = [article["sentiment"]];
-					readlevel = article["readlevel"];
-					wordcount = article["word-count"];
-					pages = article["pages"];
-					title = article["title"];
-					link = article["url"];
-					topic = article["topic"];
-					words = JSON.parse(article["wordCloud"]);
-					grade = article["gradelevel"];
-					loadGraphs();
-
-			   //window.location = "/profile";
-			
-	});
+			if (jQuery.isEmptyObject(response)) {
+				window.location ="/home";
+			} else {
+				article = response;
+				moods = article["moods"];
+				sentiments = [article["sentiment"]];
+				readlevel = article["readlevel"];
+				wordcount = article["word-count"];
+				pages = article["pages"];
+				title = article["title"];
+				link = article["url"];
+				topic = article["topic"];
+				words = JSON.parse(article["wordCloud"]);
+				grade = article["gradelevel"];
+				$("#added").text(article["addedDate"]);
+				loadGraphs();
+			}
+		});
 
 	}
 	

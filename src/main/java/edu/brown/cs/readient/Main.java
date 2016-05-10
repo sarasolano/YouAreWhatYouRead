@@ -18,7 +18,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import edu.brown.cs.db.QueryManager;
@@ -296,7 +295,6 @@ public final class Main {
       } catch (Exception e) {
         return GUI_GSON.toJson(new JsonObject());
       }
-
     });
 
     Spark.post("/articles/dates", (req, rest) -> {
@@ -385,20 +383,17 @@ public final class Main {
 
     Spark.post("/remove", (req, res) -> {
       QueryParamsMap qm = req.queryMap();
-      String in = qm.value("articles");
-      JsonArray arts = GUI_GSON.fromJson(in, JsonArray.class);
+      String id = qm.value("id");
+      String decodedId = decode(id);
       Profile profile;
       try {
         profile = getProfileByUsername(req.session().attribute("username"));
-        for (JsonElement obj : arts) {
-          if (profile.containsArticle(obj.getAsString())) {
-            removeArticle(obj.getAsString(), profile);
-          }
-        }
+        removeArticle(decodedId, profile);
         return GUI_GSON.toJson(profileJson(profile));
       } catch (Exception e) {
         return GUI_GSON.toJson(new JsonObject());
       }
+
     });
 
     Spark.post("/password", (req, res) -> {
