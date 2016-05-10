@@ -346,6 +346,26 @@ public final class Main {
       return GUI_GSON.toJson(new JsonObject());
     });
 
+    Spark.post("/articles", (req, res) -> {
+      QueryParamsMap qm = req.queryMap();
+      String s = req.session().attribute("username");
+      try {
+        int amount = Integer.parseInt(qm.value("amount"));
+        List<Article> arts = manager.getArticles(s);
+        if (arts.size() == amount) {
+          return GUI_GSON.toJson(new JsonObject());
+        }
+        JsonArray art = new JsonArray();
+        for (Article a : arts.subList(amount,
+            Math.min(arts.size(), amount + 20))) {
+          art.add(articleJson(a, false));
+        }
+        return GUI_GSON.toJson(art);
+      } catch (Exception e) {
+        return GUI_GSON.toJson(new JsonObject());
+      }
+    });
+
     Spark.post("/add", (req, res) -> {
       QueryParamsMap qm = req.queryMap();
       String url = qm.value("url");

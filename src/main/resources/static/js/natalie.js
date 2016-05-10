@@ -80,66 +80,64 @@ $( document ).ready(function() {
 				$("#settings").removeClass("active");
 				$("#history").addClass("active");
 				container.append("<ul class='list-group' id='articlelist'> </ul>");
-				container.append("<div class='row'><div id='load-more' class='col-md-8 col-md-offset-6'><span id='load' class='glyphicon glyphicon-menu-down'></span></div></div>");
+				container.append("<div id='load-row' class='row'><div id='load-more' class='col-md-8 col-md-offset-6'><span id='load' class='glyphicon glyphicon-menu-down'></span></div></div>");
 				var ul = $("#articlelist");
-				var date = new Date();
-				date.setHours(23);
-				date.setMinutes(59);
-				date.setSeconds(59);
-				var count = 0;
-				while (ul.children().length === 0 && count < 31) {
-					postParameters = {"end" : date.getTime(), "format" : "d", "amount" : 1};
-					$.ajax({
-						type: 'POST',
-						url: "/articles/time", 
-						data: postParameters, 
-						success: function(res) {
-							var articles = JSON.parse(res);
-							loadArticles(ul, articles);
-						},
-						async:false
-					});
-					date.setDate(date.getDate() - 1);
-					count++;
-				}
-				
-				$("#load-more").on("click", function(e) {
-					var last = ul.children()[ul.children().length - 1];
-					var d = ul.find(last).find("span").text();
-					var date = new Date(d);
-					date.setHours(00);
-					date.setMinutes(00);
-					date.setSeconds(00);
-					var l = ul.children().length;
-					var count = 0;
-					while (ul.children().length === l && count < 31) {
-						postParameters = {"end" : date.getTime(), "format" : "d", "amount" : 1};
-						$.ajax({
-							type: 'POST',
-							url: "/articles/time", 
-							data: postParameters, 
-							success: function(res) {
-								var articles = JSON.parse(res);
-								for (var i = 0; i <articles.length; i++){
-										var a = articles[i];
-										var link = a["link"];
-											var title = a["title"];
-											if (a["rank"]>0){
-												ul.append("<li class='list-group-item up'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
-											} else if (a["rank"] == 0){
-												ul.append("<li class='list-group-item neutral'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
+				$.ajax({
+					type: 'POST',
+					url: "/articles", 
+					data: {"amount" : 0}, 
+					success: function(res) {
+						var articles = JSON.parse(res);
+						if (jQuery.isEmptyObject(articles)) {
+							$("#load-row").empty();
+							return;
+						}
+						
+						for (var i = 0; i <articles.length; i++){
+							var a = articles[i];
+							var link = a["link"];
+							var title = a["title"];
+							if (a["rank"]>0){
+										ul.append("<li class='list-group-item up'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
+							} else if (a["rank"] == 0){
+								ul.append("<li class='list-group-item neutral'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
 
-											} else {
-												ul.append("<li class='list-group-item down'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
-											}
+							} else {
+								ul.append("<li class='list-group-item down'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
+							}
+						}
+						
+						$("#load-more").on("click", function(e) {
+								$.ajax({
+									type: 'POST',
+									url: "/articles",
+									data: {"amount" : ul.children().length}, 
+									success: function(res) {
+										var articles = JSON.parse(res);
+										if (jQuery.isEmptyObject(articles)) {
+											$("#load-row").empty();
+											return;
+										}
+										for (var i = 0; i <articles.length; i++){
+												var a = articles[i];
+												var link = a["link"];
+												var title = a["title"];
+												if (a["rank"]>0){
+													ul.append("<li class='list-group-item up'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
+												} else if (a["rank"] == 0){
+													ul.append("<li class='list-group-item neutral'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
+
+												} else {
+													ul.append("<li class='list-group-item down'>" + "<span class='date'>"+a["addedDate"] + "</span>" + '<a href =' + '"' +link + '">' + title + "</a>" + "</li>" );
+												}
+										}
 									}
-							},
-							async:false
-						});
-						date.setDate(date.getDate() - 1);
-						count++;
-					}
+								});
+							});
+						}
 				});
+				
+				
 			} else if (view[1] == "settings") {
 				container.empty();
 				$("#prof").removeClass("active");
