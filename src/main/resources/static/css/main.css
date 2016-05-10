@@ -2,6 +2,7 @@
 
 body {
   padding-top: 70px;
+  padding-bottom: 70px;
   font-family: 'Montserrat', "Palatino Linotype", "Book Antiqua", Palatino, serif;
 }
 
@@ -60,10 +61,8 @@ body {
   display: none;
 }
 
-
-.jumbotron {
-  color: #AB2121;
-  background-color: #FF9494;
+#logo {
+  text-align: center;
 }
 
 #pos{
@@ -219,4 +218,5 @@ h3 {
 
 #article-container {
 	background-color: white;
+  text-align: center;
 }

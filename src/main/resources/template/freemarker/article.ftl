@@ -50,14 +50,14 @@
 				<div id="level"></div>
 			</div>
 			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="chartLabel">Clickbait Level</div>
+					<p id="clickbait" class="stat"></p>
+				</div>
+			</div>
 		</div>
-		<button type="button" class="btn btn-danger" id="trash">Danger</button>
-		<div class="alert alert-warning hide" id="failure">
-  <strong>Warning!</strong> Article could not be removed from database.
-</div>
-<div class="alert alert-success hide" id="success">
-  <strong>Success!</strong> Article was removed from database!.
-</div>
+
 	</div>
 </div>
 

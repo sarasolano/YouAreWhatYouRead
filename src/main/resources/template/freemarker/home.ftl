@@ -18,10 +18,10 @@
 	</nav>
 	<div class="jumbotron" id="big">
 		<div class="container">
-			<div class="jumbotron">
+			<div class="jumbotron" id="small">
 				<div id="border">
-					<h1>Readient</h1>
-					<p id="des">You are what you read.</p>
+					<div id="logo-container">
+					</div>
 				</div>
 			</div>
 		</div>
@@ -33,7 +33,6 @@
 			<button id = "add-article" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-plus"></span></button>
 			<button id ="minus" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-thumbs-down"></span></button>
 			</span> 
-		
 		</div>
 		<div class="container">
 		<div id="alert"class="alert alert-danger hide" role="alert">Must give a valid url</div>
@@ -41,7 +40,7 @@
 		</div>
 	</div>
 	<div class="container">
-	<div id="article-container" class="col-md-10 col-md-offset-1 hide">
+	<div id="article-container" class="col-md-11 hide">
 		<div class="row">
 			<div class="col-md-12">
 				<div id="title-container">
@@ -90,6 +89,12 @@
 				<div class="chartLabel">Readability</div>
 				<div id="level"></div>
 			</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="chartLabel">Clickbait Level</div>
+					<p id="clickbait" class="stat"></p>
+				</div>
 			</div>
 		</div>
 	</div>
