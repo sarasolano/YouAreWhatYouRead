@@ -46,7 +46,11 @@
 				<p id ="pages"> </p>
 				<p id ="grade"></p>
 				</div>
-				<div id="cloud"></div>
+			
+	
+					<div  id="cloud"></div>
+		
+				
 				<div class="jumbotron hide" id="sent">
 				<h3>Sentiment Timeline </h3>
 				<div class="progress hide" id ="bar">

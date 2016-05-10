@@ -1,4 +1,6 @@
 $( document ).ready(function() {
+
+	
 	var err = $("#alert");
 	var pathArray = window.location.pathname.split( '/' );
 
@@ -242,6 +244,8 @@ $( document ).ready(function() {
 				
 				}, false); 
 */
+
+
 	} else {
 		err.removeClass("hide");
 
@@ -295,6 +299,7 @@ $( document ).ready(function() {
 
 	function loadGraphs(){
 		$("#url-input").val("");
+		$("#c").removeClass("hide");
 		$("#article").removeClass("hide");
 		$("#sent").removeClass("hide");
 		$("#bar").removeClass("hide");		$("#title").text(title);
@@ -435,14 +440,17 @@ $( document ).ready(function() {
 	$("#cloud").jQCloud(words, {
 
 		  width: $("#cloud").width(),
-		  height: 400,
-		  shape: 'rectangular',
+		  height: 250,
+		  classPattern: null,
+		  colors: ["#800026", "#bd0026", "#e31a1c", "#fc4e2a", "#fd8d3c", "#feb24c", "#fed976", "#ffeda0", "#ffffcc"],
+		  shape: 'oval',
 		  autoResize: true,
 		  fontSize: {
-    from: 0.8,
-    to: 0.02
+    from: 4,
+    to: 0.7
   }
 	});
+
 
 
 	}

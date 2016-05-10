@@ -115,6 +115,17 @@ div.well{
 li {
   list-style: none;
 }
+#cloud {
+  margin-left: auto;
+  margin-right: auto;
+} 
+
+#c {
+   border: 5px;
+  border-style: solid;
+  border-color: #AB2121;
+  background-color: white;
+}
 
 .Absolute-Center {
   margin: auto;
@@ -173,5 +184,6 @@ h3 {
 }
 
 #cloud {
+  height: 300px;
   width:100%;
 }
